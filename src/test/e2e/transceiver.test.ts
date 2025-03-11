@@ -18,7 +18,9 @@ describe("end-to-end transceiver", () => {
       choices: TransceiverDevices.map((device) => ({ name: `${device.deviceVendor} ${device.deviceName}`, value: device })),
       message: "Choose your transceiver",
       name: 'device',
-      result(value) { return (this as any).map(value) },
+      result(value) {
+        return (this as any).map(value) // eslint-disable-line @typescript-eslint/no-explicit-any
+      },
       type: 'select'
     }, {
       message: c.bold.red("Have you connected an appropriate dummy load to your device?"),
@@ -31,7 +33,7 @@ describe("end-to-end transceiver", () => {
     device = aDevice
   })
 
-  test("works", async () => {
-    expect(true).toBe(true)
+  test("set/read vfo", async () => {
+    expect(device).toBeTruthy()
   }, 10 * 60 * 1000) // 10 minutes timeout
 })
