@@ -4,10 +4,19 @@ import { YaesuTransceiverDevice } from "./base/types/YaesuTransceiverDevice";
 import { CommandFactory } from "../../base/types/CommandFactory";
 
 const setVFOParamType = z.object({
-  frequency: z.number().gte(30_000).lte(56_000_000),
-  vfo: z.number().int().min(0).max(1)
+  frequency: z
+    .number()
+    .int()
+    .gte(30_000)
+    .lte(56_000_000),
+  vfo: z
+    .number()
+    .int()
+    .min(0)
+    .max(1)
 })
-const setVFO: CommandFactory<z.infer<typeof setVFOParamType>> = ({ frequency, vfo }) => `F${vfo === 0 ? 'A' : 'B'}${frequency.toString(10).padStart(9, '0')};`
+const setVFO: CommandFactory<z.infer<typeof setVFOParamType>> =
+  ({ frequency, vfo }) => `F${vfo === 0 ? 'A' : 'B'}${frequency.toString(10).padStart(9, '0')};`
 setVFO.parameterType = setVFOParamType
 
 export const FT891 = {
