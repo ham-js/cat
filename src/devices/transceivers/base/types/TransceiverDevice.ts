@@ -4,6 +4,7 @@ import { Device } from "../../../base/types/Device"
 
 // this type defines commands all transceivers need to implement. It is a generic interface to transceivers. Concrete implementations can have more yet optional keys in the params object
 type Commands = {
+  getVFO: CommandFactory<{ vfo: number }>
   setVFO: CommandFactory<{ frequency: number, vfo: number }> // vfo is number based, although some vendors call it A/B
 }
 

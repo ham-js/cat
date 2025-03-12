@@ -37,4 +37,28 @@ describe("FT891", () => {
       )
     })
   })
+
+  describe("getVFO", () => {
+    test("implements the command factory correctly", () => {
+      expect(FT891.commands.getVFO({ vfo: 0 })).toBe("FA;")
+      expect(FT891.commands.getVFO({ vfo: 1 })).toBe("FB;")
+    })
+
+    test("specifies the parameter type correctly", () => {
+      expect(getJSONSchema(FT891.commands.getVFO)).toEqual(
+        expect.objectContaining({
+          properties: {
+            vfo: {
+              minimum: 0,
+              maximum: 1,
+              type: "integer"
+            }
+          },
+          required: [
+            "vfo"
+          ]
+        })
+      )
+    })
+  })
 })
