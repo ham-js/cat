@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://github.com/ham-js/cat">
-    <img src="/logo.png" alt="Logo" width="128" height="128">
+    <img src="/docs/static/img/logo.png" alt="Logo" width="128" height="128">
   </a>
 
 <h3 align="center">@ham-js/cat</h3>
