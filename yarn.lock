@@ -2609,6 +2609,11 @@ ts-jest@^29.2.6:
     semver "^7.7.1"
     yargs-parser "^21.1.1"
 
+tstyche@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/tstyche/-/tstyche-3.5.0.tgz#2cf1797c9664c544e6ebe8c2fada772680460755"
+  integrity sha512-N4SUp/ZWaMGEcglpVFIzKez0GQEiBdfFDgcnqwv9O1mePZgos8N1cZCzNgGtPGo/w0ym04MjJcDnsw1sorEzgA==
+
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/type-check/-/type-check-0.4.0.tgz#07b8203bfa7056c0657050e3ccd2c37730bab8f1"
