@@ -1,6 +1,7 @@
 import { DeviceType } from "../../../base/enums/DeviceType"
 import { CommandFactory } from "../../../base/types/CommandFactory"
 import { Device } from "../../../base/types/Device"
+import { TransceiverDeviceVendor } from "./TransceiverDeviceVendor"
 
 export enum AGCLevel {
   Off = 'Off',
@@ -9,14 +10,13 @@ export enum AGCLevel {
   Fast = 'Fast'
 }
 
-// this type defines commands all transceivers need to implement. It is a generic interface to transceivers. Concrete implementations can have more yet optional keys in the params object
-type Commands = {
-  getVFO: CommandFactory<{ vfo: number }>
-  setVFO: CommandFactory<{ frequency: number, vfo: number }> // vfo is number based, although some vendors call it A/B
-  setAGC?: CommandFactory<{ level: AGCLevel }>
-}
+export abstract class TransceiverDevice extends Device {
+  static readonly deviceType = DeviceType.Transceiver
+  static readonly deviceVendor: TransceiverDeviceVendor
 
-export interface TransceiverDevice extends Device {
-  commands: Commands
-  deviceType: DeviceType.Transceiver
+  abstract _commands: {
+    getVFO: CommandFactory<{ vfo: number }>
+    setAGC?: CommandFactory<{ level: AGCLevel }>
+    setVFO: CommandFactory<{ frequency: number; vfo: number }>
+  }
 }

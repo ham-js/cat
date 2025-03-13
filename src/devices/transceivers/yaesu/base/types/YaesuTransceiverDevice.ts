@@ -1,5 +1,6 @@
 import { TransceiverDevice } from "../../../base/types/TransceiverDevice";
+import { TransceiverDeviceVendor } from "../../../base/types/TransceiverDeviceVendor";
 
-export interface YaesuTransceiverDevice extends TransceiverDevice {
-  deviceVendor: "Yaesu"
+export abstract class YaesuTransceiverDevice extends TransceiverDevice {
+  static readonly deviceVendor = TransceiverDeviceVendor.Yaesu
 }
