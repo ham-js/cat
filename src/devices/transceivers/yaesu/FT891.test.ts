@@ -1,23 +1,32 @@
 import { describe, expect, test } from "@jest/globals";
-import { FT891, FT891AGCLevel } from "./FT891";
+import { FT891 } from "./FT891";
 import { DeviceType } from "../../base/enums/DeviceType";
 import { TransceiverDeviceVendor } from "../base/types/TransceiverDeviceVendor";
+import { TransceiverAGCAttack } from "../base/types/TransceiverAGCAttack";
 
 describe("FT891", () => {
   const ft891 = new FT891()
+  ft891.buildCommand('setVFO', {vfo: 0, frequency: 30000})
 
   test("device name", () => expect(FT891.deviceName).toBe("FT-891"))
   test("device type", () => expect(FT891.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(FT891.deviceVendor).toBe(TransceiverDeviceVendor.Yaesu))
 
   describe("setVFO", () => {
+    test("throws an error when the frequency or vfo are out of range", () => {
+      expect(() => ft891.buildCommand('setVFO', { frequency: 29_999, vfo: 0 })).toThrowError("Number must be greater than or equal to 30000")
+      expect(() => ft891.buildCommand('setVFO', { frequency: 56_000_001, vfo: 0 })).toThrowError("Number must be less than or equal to 56000000")
+      expect(() => ft891.buildCommand('setVFO', { frequency: 14_250_000, vfo: 2 })).toThrowError("Number must be less than or equal to 1")
+      expect(() => ft891.buildCommand('setVFO', { frequency: 7_250_000, vfo: -1 })).toThrowError("Number must be greater than or equal to 0")
+    })
+
     test("implements the command factory correctly", () => {
       expect(ft891.buildCommand('setVFO', { frequency: 14_250_000, vfo: 0 })).toBe("FA014250000;")
       expect(ft891.buildCommand('setVFO', { frequency: 7_250_000, vfo: 1 })).toBe("FB007250000;")
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(ft891.getCommandSchema('setVFO')).toEqual(
+      expect(ft891.getCommandFactorySchema('setVFO')).toEqual(
         expect.objectContaining({
           properties: {
             frequency: {
@@ -41,13 +50,18 @@ describe("FT891", () => {
   })
 
   describe("getVFO", () => {
+    test("throws an error when the vfo is out of range", () => {
+      expect(() => ft891.buildCommand('getVFO', { vfo: -1 })).toThrowError("Number must be greater than or equal to 0")
+      expect(() => ft891.buildCommand('getVFO', { vfo: 2 })).toThrowError("Number must be less than or equal to 1")
+    })
     test("implements the command factory correctly", () => {
+
       expect(ft891.buildCommand('getVFO', { vfo: 0 })).toBe("FA;")
       expect(ft891.buildCommand('getVFO', { vfo: 1 })).toBe("FB;")
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(ft891.getCommandSchema('getVFO')).toEqual(
+      expect(ft891.getCommandFactorySchema('getVFO')).toEqual(
         expect.objectContaining({
           properties: {
             vfo: {
@@ -66,17 +80,17 @@ describe("FT891", () => {
 
   describe("setAGC", () => {
     test("implements the command factory correctly", () => {
-      expect(ft891.buildCommand('setAGC', { level: FT891AGCLevel.Auto })).toBe("GT04;")
-      expect(ft891.buildCommand('setAGC', { level: FT891AGCLevel.Fast })).toBe("GT01;")
-      expect(ft891.buildCommand('setAGC', { level: FT891AGCLevel.Mid })).toBe("GT02;")
-      expect(ft891.buildCommand('setAGC', { level: FT891AGCLevel.Slow })).toBe("GT03;")
+      expect(ft891.buildCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).toBe("GT04;")
+      expect(ft891.buildCommand('setAGC', { attack: TransceiverAGCAttack.Fast })).toBe("GT01;")
+      expect(ft891.buildCommand('setAGC', { attack: TransceiverAGCAttack.Mid })).toBe("GT02;")
+      expect(ft891.buildCommand('setAGC', { attack: TransceiverAGCAttack.Slow })).toBe("GT03;")
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(ft891.getCommandSchema('setAGC')).toEqual(
+      expect(ft891.getCommandFactorySchema('setAGC')).toEqual(
         expect.objectContaining({
           properties: {
-            level: {
+            attack: {
               enum: [
                 "Off",
                 "Slow",
@@ -88,7 +102,7 @@ describe("FT891", () => {
             }
           },
           required: [
-            "level"
+            "attack"
           ]
         })
       )

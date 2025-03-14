@@ -12,7 +12,8 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "jsdoc": "jsdoc2md --files '../src/**/*.ts' --configure ./jsdoc2md.json > ./docs/API.md"
   },
   "dependencies": {
     "@docusaurus/core": "3.7.0",
@@ -24,9 +25,15 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.26.4",
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-typescript": "^7.26.0",
     "@docusaurus/module-type-aliases": "3.7.0",
     "@docusaurus/tsconfig": "3.7.0",
     "@docusaurus/types": "3.7.0",
+    "jsdoc-babel": "^0.5.0",
+    "jsdoc-to-markdown": "^9.1.1",
     "typescript": "~5.6.2"
   },
   "browserslist": {
