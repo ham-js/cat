@@ -48,7 +48,7 @@ export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
    * if (device.hasCommand('setAGC')) device.buildCommand('setAGC', { level: AGCLevel.Off }) // => "GC00;"
    * ```
    */
-  buildCommand<K extends keyof C>(key: K, parameter: this['_commandFactories'][typeof key] extends CommandFactory<infer P> ? P : never): string {
+  buildCommand<K extends keyof C>(key: K, parameter: this['_commandFactories'][typeof key] extends CommandFactory<infer P> ? P : never): ReturnType<CommandFactory<any>> {
     const commandFactory = this._commandFactories[key]
 
     return commandFactory(commandFactory.parameterType.parse(parameter))

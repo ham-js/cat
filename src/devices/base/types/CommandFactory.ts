@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z, ZodRawShape } from "zod"
 
 /**
  * A function which receives a parameter of type `ParameterType` and returns a
@@ -13,7 +13,7 @@ export interface CommandFactory<ParameterType extends object> {
    * CAT command as string.
    * @returns {string} the CAT command configured by `parameter`
    */
-  (parameter: ParameterType): string
+  (parameter: ParameterType): string | ArrayBuffer
 
   /**
    * This is a zod type describing the shape of the parameter. Properties can
@@ -22,5 +22,5 @@ export interface CommandFactory<ParameterType extends object> {
    * please use string keys, so the values in the JSON schema make sense.
    * @private
    */
-  parameterType: z.ZodType<ParameterType>
+  parameterType: z.ZodObject<{ [key in keyof ParameterType]: z.ZodType<ParameterType[key]> }>
 }

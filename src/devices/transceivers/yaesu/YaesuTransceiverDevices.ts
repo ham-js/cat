@@ -1,6 +1,6 @@
-import { YaesuTransceiverDevice } from "./base/types/YaesuTransceiverDevice";
+import { Generic } from "./Generic";
 import { FT891 } from "./FT891";
 
-export const YaesuTransceiverDevices: typeof YaesuTransceiverDevice[] = [
+export const YaesuTransceiverDevices: typeof Generic[] = [
   FT891
 ]

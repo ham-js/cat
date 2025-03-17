@@ -1,6 +1,7 @@
 import { describe, expect, test } from "@jest/globals";
-import { FT891 } from "./FT891";
+
+import { FT991 } from "./FT991"
 
 describe("YaesuTransceiverDevice", () => {
-  test("device name", () => expect(FT891.deviceName).toBe("FT-891"))
+  test("device name", () => expect(FT991.deviceName).toBe("FT-991"))
 })
