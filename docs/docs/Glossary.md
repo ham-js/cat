@@ -26,6 +26,8 @@ information such as the device name (e.g. "FT-891"), device vendor (e.g.
 There are subclasses to categories devices e.g. `TransceiverDevice` and
 `YaesuTransceiverDevice` (which is a subclass of `TransceiverDevice`).
 
+We also call a real device, like an actual Yaesu FT-891 a device sometimes.
+
 # Driver
 
 We call several things a "driver":
