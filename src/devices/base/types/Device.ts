@@ -1,7 +1,8 @@
 import { DeviceType } from "../enums/DeviceType"
-import { TransceiverDeviceVendor } from "../../transceivers/base/types/TransceiverDeviceVendor"
+import { TransceiverDeviceVendor } from "../../transceivers/base/enums/TransceiverDeviceVendor"
 import { CommandFactory } from "./CommandFactory"
 import zodToJsonSchema from "zod-to-json-schema"
+import { DeviceVendor } from "./DeviceVendor"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commandFactories: Required<{[k in K]: C[K]}>
@@ -14,7 +15,7 @@ interface DeviceWithCommand<C extends object, K extends keyof C> {
  * command factories for all instances of that device.
  * @property {string} deviceName The name of the actual device
  * @property {DeviceType} deviceType The type of the device
- * @property {TransceiverDeviceVendor} deviceVendor The vendor of the device. Will be extended when new devices of different kinds are added.
+ * @property {DeviceVendor} deviceVendor The vendor of the device. Will be extended when new devices of different kinds are added.
  * @property {object} _commandFactories Subclasses use this property to implement command factories. Do not access this directly, use `buildCommand` instead.
  */
 
@@ -22,7 +23,7 @@ interface DeviceWithCommand<C extends object, K extends keyof C> {
 export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
-  static readonly deviceVendor: TransceiverDeviceVendor
+  static readonly deviceVendor: DeviceVendor
 
   /** @protected */
   abstract readonly _commandFactories: C // we can't make this private or protected because then we can't use this in type params which are public

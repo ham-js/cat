@@ -1,8 +1,8 @@
 import { DeviceType } from "../../../base/enums/DeviceType"
 import { CommandFactory } from "../../../base/types/CommandFactory"
 import { Device } from "../../../base/types/Device"
-import { TransceiverAGCAttack } from "./TransceiverAGCAttack"
-import { TransceiverDeviceVendor } from "./TransceiverDeviceVendor"
+import { TransceiverAGCAttack } from "../enums/TransceiverAGCAttack"
+import { TransceiverDeviceVendor } from "../enums/TransceiverDeviceVendor"
 
 type TransceiverCommandFactories = {
   getVFO: CommandFactory<{ vfo: number }>

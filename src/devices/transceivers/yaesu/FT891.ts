@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { YaesuTransceiverDevice } from "./base/types/YaesuTransceiverDevice";
 import { CommandFactory } from "../../base/types/CommandFactory";
-import { TransceiverAGCAttack } from "../base/types/TransceiverAGCAttack";
+import { TransceiverAGCAttack } from "../base/enums/TransceiverAGCAttack";
 
 const vfoType = z.number().int().min(0).max(1) // FT-891 has two VFOs
 

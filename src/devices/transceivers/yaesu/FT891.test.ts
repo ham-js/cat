@@ -1,8 +1,8 @@
 import { describe, expect, test } from "@jest/globals";
 import { FT891 } from "./FT891";
 import { DeviceType } from "../../base/enums/DeviceType";
-import { TransceiverDeviceVendor } from "../base/types/TransceiverDeviceVendor";
-import { TransceiverAGCAttack } from "../base/types/TransceiverAGCAttack";
+import { TransceiverDeviceVendor } from "../base/enums/TransceiverDeviceVendor";
+import { TransceiverAGCAttack } from "../base/enums/TransceiverAGCAttack";
 
 describe("FT891", () => {
   const ft891 = new FT891()
