@@ -13,7 +13,7 @@ export default () => {
     >
       <div className="container">
         <div className="row">
-          <main className="col">
+          <main className="col padding--lg">
             <Readme />
           </main>
         </div>
