@@ -26,6 +26,18 @@ information such as the device name (e.g. "FT-891"), device vendor (e.g.
 There are subclasses to categories devices e.g. `TransceiverDevice` and
 `YaesuTransceiverDevice` (which is a subclass of `TransceiverDevice`).
 
+# Driver
+
+We call several things a "driver":
+
+* **Device driver** - classes that specifically know how to handle
+  communication with a real device through an abstract channel (e.g. a driver
+  for the Yaesu FT-891 knows it needs to send `FA;` and then listen for
+  `FA....;` coming from the device when you ask it for the frequency of VFO A)
+* **Communication driver** - mostly runtime-dependent drivers for actually
+  communicating through some kind of connection (whether that is a serial port on
+  your computer, a websocket, a HTTP API, WebUSB, ...).
+
 ## Parameter Type
 
 A parameter type is a way for a command factory to validate the parameter at
