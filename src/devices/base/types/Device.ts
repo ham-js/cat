@@ -80,4 +80,11 @@ export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
   getCommandFactorySchema<K extends keyof C>(key: this['_commandFactories'][K] extends CommandFactory<any> ? K : never): ReturnType<typeof zodToJsonSchema> {
     return zodToJsonSchema(this._commandFactories[key].parameterType)
   }
+
+  /**
+   * @returns {string[]} The command keys this class implements
+   */
+  getCommandKeys(): keyof C {
+    return Object.keys(this._commandFactories) as unknown as keyof C
+  }
 }

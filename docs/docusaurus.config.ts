@@ -47,10 +47,11 @@ const config: Config = {
         src: 'img/logo.png',
       },
       items: [
-        {to: '/docs/getting-started', position: 'left', label: 'Getting Started'},
-        {to: '/docs/collaboration', position: 'left', label: 'Collaboration'},
-        {to: '/docs/api', position: 'left', label: 'API'},
-        {to: '/docs/glossary', position: 'left', label: 'Glossary'},
+        {to: '/docs/getting-started', label: 'Getting Started'},
+        {type: "docSidebar", sidebarId: 'supportedDevices', label: 'Supported Devices'},
+        {to: '/docs/collaboration', label: 'Collaboration'},
+        {to: '/docs/api', label: 'API'},
+        {to: '/docs/glossary', label: 'Glossary'},
         {
           href: 'https://github.com/ham-js/cat',
           label: 'GitHub',

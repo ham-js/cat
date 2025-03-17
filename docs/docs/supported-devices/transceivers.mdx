@@ -1,0 +1,24 @@
+import { DeviceVendors } from "./DeviceVendors"
+import { TransceiverDeviceVendor } from "../../../src/devices/transceivers/base/enums/TransceiverDeviceVendor"
+import { TransceiverDevices } from "../../../src/devices/transceivers/TransceiverDevices.ts"
+
+# Transceivers
+
+## Command Factories
+
+Command factories for the following transceivers are implemented:
+
+{
+  TransceiverDevices.map((device) => <>
+    <details>
+      <summary>{DeviceVendors[device.deviceVendor]} {device.deviceName}</summary>
+
+      This device implements the following commands:
+      <ul>
+      {
+        new device().getCommandKeys().map((key) => <li>{key}</li>)
+      }
+      </ul>
+    </details>
+  </>)
+}

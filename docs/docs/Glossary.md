@@ -28,7 +28,7 @@ There are subclasses to categories devices e.g. `TransceiverDevice` and
 
 We also call a real device, like an actual Yaesu FT-891 a device sometimes.
 
-# Driver
+## Driver
 
 We call several things a "driver":
 
