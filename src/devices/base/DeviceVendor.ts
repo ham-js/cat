@@ -1,3 +1,3 @@
-import { TransceiverDeviceVendor } from "../../transceivers/base/TransceiverDeviceVendor";
+import { TransceiverDeviceVendor } from "../transceivers/base/TransceiverDeviceVendor";
 
 export type DeviceVendor = TransceiverDeviceVendor
