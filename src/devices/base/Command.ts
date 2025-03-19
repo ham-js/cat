@@ -1,4 +1,4 @@
-import { z, ZodRawShape } from "zod"
+import { z } from "zod"
 
 /**
  * A function which receives a parameter of type `ParameterType` and returns a
@@ -7,13 +7,13 @@ import { z, ZodRawShape } from "zod"
  * with TypeScript, e.g. the range of a frequency supported by a transceiver.
  * @private
  */
-export interface CommandFactory<ParameterType extends object> {
+export interface Command<ParameterType extends object, ReturnType> {
   /**
    * The function which receives an object as first parameter and returns the
    * CAT command as string.
    * @returns {string} the CAT command configured by `parameter`
    */
-  (parameter: ParameterType): string | ArrayBuffer
+  (parameter: ParameterType): ReturnType | Promise<ReturnType>
 
   /**
    * This is a zod type describing the shape of the parameter. Properties can

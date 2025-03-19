@@ -1,11 +1,11 @@
-import { DeviceType } from "../enums/DeviceType"
-import { TransceiverDeviceVendor } from "../../transceivers/base/enums/TransceiverDeviceVendor"
-import { CommandFactory } from "./CommandFactory"
+import { DeviceType } from "./DeviceType"
+import { Command } from "./Command"
 import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
+import { SerialPort } from "./SerialPort"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
-  _commandFactories: Required<{[k in K]: C[K]}>
+  _commands: Required<{[k in K]: C[K]}>
 }
 
 /**
@@ -20,13 +20,15 @@ interface DeviceWithCommand<C extends object, K extends keyof C> {
  */
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
+export abstract class Device<C extends {[k: string]: Command<any, any>}> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
 
   /** @protected */
-  abstract readonly _commandFactories: C // we can't make this private or protected because then we can't use this in type params which are public
+  abstract readonly _commands: C // we can't make this private or protected because then we can't use this in type params which are public
+
+  constructor(protected serialPort: SerialPort) {}
 
   /**
    * This method allows you to build command strings.
@@ -48,10 +50,11 @@ export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
    * if (device.hasCommand('setAGC')) device.buildCommand('setAGC', { level: AGCLevel.Off }) // => "GC00;"
    * ```
    */
-  buildCommand<K extends keyof C>(key: K, parameter: this['_commandFactories'][typeof key] extends CommandFactory<infer P> ? P : never): ReturnType<CommandFactory<any>> {
-    const commandFactory = this._commandFactories[key]
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never): this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> : never {
+    const command = this._commands[key]
 
-    return commandFactory(commandFactory.parameterType.parse(parameter))
+    return command(command.parameterType.parse(parameter))
   }
 
   /**
@@ -65,8 +68,8 @@ export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
    * if (device.implementsOptionalCommandFactory('setAGC')) {} // the type of the device changed here, so that 'setAGC' is not optional anymore and we can e.g. call buildCommand
    * ```
    */
-  implementsOptionalCommandFactory<K extends keyof C>(key: K): this is DeviceWithCommand<this['_commandFactories'], K> {
-    return !!this._commandFactories[key]
+  implementsOptionalCommand<K extends keyof C>(key: K): this is DeviceWithCommand<this['_commands'], K> {
+    return !!this._commands[key]
   }
 
   /**
@@ -77,14 +80,14 @@ export abstract class Device<C extends {[k: string]: CommandFactory<any>}> {
    * @returns {object} a json schema for the command that you can use to validate user input or to build forms for devices
    */
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  getCommandFactorySchema<K extends keyof C>(key: this['_commandFactories'][K] extends CommandFactory<any> ? K : never): ReturnType<typeof zodToJsonSchema> {
-    return zodToJsonSchema(this._commandFactories[key].parameterType)
+  getCommandSchema<K extends keyof C>(key: this['_commands'][K] extends Command<any, any> ? K : never): ReturnType<typeof zodToJsonSchema> {
+    return zodToJsonSchema(this._commands[key].parameterType)
   }
 
   /**
    * @returns {string[]} The command keys this class implements
    */
   getCommandKeys(): keyof C {
-    return Object.keys(this._commandFactories) as unknown as keyof C
+    return Object.keys(this._commands) as unknown as keyof C
   }
 }

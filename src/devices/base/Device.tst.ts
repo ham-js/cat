@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'tstyche'
-import { CommandFactory } from './CommandFactory'
+import { Command } from './Command'
 import { z } from 'zod'
 import { Device } from './Device'
-import { DeviceType } from '../enums/DeviceType'
-import { TransceiverDeviceVendor } from '../../transceivers/base/types/TransceiverDeviceVendor'
+import { DeviceType } from './DeviceType'
+import { TransceiverDeviceVendor } from '../transceivers/base/TransceiverDeviceVendor'
 
 type NotImplementedCommand = CommandFactory<{ notImplemented: never }>
 type TestCommand<T extends string = string> = CommandFactory<{ param: T }>
