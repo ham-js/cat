@@ -4,10 +4,6 @@ import { DeviceVendors } from "./DeviceVendors.ts"
 
 # Overview
 
-In order to send CAT commands to a device we need to implement a [command
-factory](/docs/glossary#command-factory) and a [device
-driver](/docs/glossary#driver) for it and interface a [communication driver](/docs/glossary#driver).
-
 :::tip
 
 This is a live document. Look at the source code ("Edit this page" at
@@ -23,8 +19,6 @@ The following devices are supported:
       <td>Device Type</td>
       <td>Device Vendor</td>
       <td>Device Name</td>
-      <td>Device Driver</td>
-      <td>Command Factory</td>
     </tr>
   </thead>
   <tbody>
@@ -34,8 +28,6 @@ The following devices are supported:
           <td>{DeviceTypes[deviceType]}</td>
           <td>{DeviceVendors[deviceVendor]}</td>
           <td>{deviceName}</td>
-          <td>❌</td>
-          <td>✅</td>
         </tr>
       ))
     }

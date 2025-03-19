@@ -48,6 +48,7 @@ const config: Config = {
       },
       items: [
         {to: '/docs/getting-started', label: 'Getting Started'},
+        {to: '/docs/playground', label: 'Playground'},
         {type: "docSidebar", sidebarId: 'supportedDevices', label: 'Supported Devices'},
         {to: '/docs/collaboration', label: 'Collaboration'},
         {to: '/docs/api', label: 'API'},
