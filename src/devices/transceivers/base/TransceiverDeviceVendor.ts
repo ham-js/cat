@@ -1,4 +1,5 @@
 export enum TransceiverDeviceVendor {
   ICOM,
-  Yaesu
+  Kenwood,
+  Yaesu,
 }

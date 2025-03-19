@@ -108,6 +108,7 @@ describe("Generic", () => {
   describe("setAGC", () => {
     test("implements the command correctly", () => {
       expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).toThrow("Invalid enum value")
+      expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Off })).toThrow("Invalid enum value")
       
       genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Fast })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x16, 0x12, 0x01, 0xFD]))

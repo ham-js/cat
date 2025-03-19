@@ -3,5 +3,6 @@ import { TransceiverDeviceVendor } from "../../../src/devices/transceivers/base/
 
 export const DeviceVendors: Record<DeviceVendor, string> = {
   [TransceiverDeviceVendor.ICOM]: "ICOM",
+  [TransceiverDeviceVendor.Kenwood]: "Kenwood",
   [TransceiverDeviceVendor.Yaesu]: "Yaesu"
 }
