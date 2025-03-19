@@ -3,6 +3,7 @@ import { Command } from "./Command"
 import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
 import { SerialPort } from "./SerialPort"
+import { Mutex, withTimeout } from "async-mutex"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commands: Required<{[k in K]: C[K]}>
@@ -28,6 +29,8 @@ export abstract class Device<C extends {[k: string]: Command<any, any>}> {
   /** @protected */
   abstract readonly _commands: C // we can't make this private or protected because then we can't use this in type params which are public
 
+  private mutex = new Mutex()
+
   constructor(protected serialPort: SerialPort) {}
 
   /**
@@ -41,6 +44,7 @@ export abstract class Device<C extends {[k: string]: Command<any, any>}> {
    * frequency is a `number`. However a frequency might be restricted to a
    * certain range and that is validated at runtime. You can get the schema of a
    * command by using `getCommandSchema`.
+   * @param {number} timeout An optional timeout for this command. Default is 1s
    * @returns {string} a CAT command in the form of a string
    * @example ```typescript
    * const device: TransceiverDevice = // ...
@@ -51,10 +55,16 @@ export abstract class Device<C extends {[k: string]: Command<any, any>}> {
    * ```
    */
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never): this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> : never {
-    const command = this._commands[key]
+  async sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never, timeout = 1000): Promise<this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> extends Promise<infer T> ? T : R : never> {
+    const release = await withTimeout(this.mutex, timeout).acquire()
 
-    return command(command.parameterType.parse(parameter))
+    try {
+      const command = this._commands[key]
+
+      return command(command.parameterType.parse(parameter))
+    } finally {
+      release()
+    }
   }
 
   /**
@@ -68,12 +78,12 @@ export abstract class Device<C extends {[k: string]: Command<any, any>}> {
    * if (device.implementsOptionalCommandFactory('setAGC')) {} // the type of the device changed here, so that 'setAGC' is not optional anymore and we can e.g. call buildCommand
    * ```
    */
-  implementsOptionalCommand<K extends keyof C>(key: K): this is DeviceWithCommand<this['_commands'], K> {
+  implementsCommand<K extends keyof C>(key: K): this is DeviceWithCommand<this['_commands'], K> {
     return !!this._commands[key]
   }
 
   /**
-   * This method allows you to get the JSON schema for a device.   * 
+   * This method allows you to get the JSON schema for a device.
    * @param {string} key A key that is guaranteed to be in the schema. You won't be able
    * to call this method for optional commands. In that case use `implementsOptionalCommand` as
    * a type guard.

@@ -14,11 +14,11 @@ describe("Generic", () => {
   test("device vendor", () => expect(Generic.deviceVendor).toBe(TransceiverDeviceVendor.ICOM))
 
   describe("setVFO", () => {
-    test("throws an error when the frequency or vfo are out of range", () => {
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: TransceiverVFOType.Current })).toThrow("Number must be greater than or equal to 30000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: TransceiverVFOType.Current })).toThrow("Number must be less than or equal to 56000000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: TransceiverVFOType.A })).toThrow("Invalid enum value")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.B })).toThrow("Invalid enum value")
+    test("throws an error when the frequency or vfo are out of range", async () => {
+      await expect(genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: TransceiverVFOType.Current })).rejects.toThrow("Number must be greater than or equal to 30000")
+      await expect(genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: TransceiverVFOType.Current })).rejects.toThrow("Number must be less than or equal to 56000000")
+      await expect(genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: TransceiverVFOType.A })).rejects.toThrow("Invalid enum value")
+      await expect(genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.B })).rejects.toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
@@ -56,9 +56,9 @@ describe("Generic", () => {
   })
 
   describe("getVFO", () => {
-    test("throws an error when the vfo is out of range", () => {
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.A })).toThrow("Invalid enum value")
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.B })).toThrow("Invalid enum value")
+    test("throws an error when the vfo is out of range", async () => {
+      await expect(genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.A })).rejects.toThrow("Invalid enum value")
+      await expect(genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.B })).rejects.toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
@@ -71,7 +71,7 @@ describe("Generic", () => {
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD,
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x01, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // something else
       ])))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Current })).toBe(14_250_300)
+      await expect(genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Current })).resolves.toBe(14_250_300)
 
       testSerialPort.write.mockImplementationOnce(() => testSerialPort.subject.next(new Uint8Array([
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD, // for other vfo
@@ -82,7 +82,7 @@ describe("Generic", () => {
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD,
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x01, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // something else
       ])))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Other })).toBe(7_250_000)
+      await expect(genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Other })).resolves.toBe(7_250_000)
     })
 
     test("specifies the parameter type correctly", () => {
@@ -106,17 +106,19 @@ describe("Generic", () => {
   })
 
   describe("setAGC", () => {
-    test("implements the command correctly", () => {
-      expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).toThrow("Invalid enum value")
-      expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Off })).toThrow("Invalid enum value")
-      
-      genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Fast })
+    test("throws an error when the attack is not supported", async () => {
+      await expect(genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).rejects.toThrow("Invalid enum value")
+      await expect(genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Off })).rejects.toThrow("Invalid enum value")
+    })
+    
+    test("implements the command correctly", async () => {
+      await genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Fast })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x16, 0x12, 0x01, 0xFD]))
 
-      genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Mid })
+      await genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Mid })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x16, 0x12, 0x02, 0xFD]))
 
-      genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Slow })
+      await genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Slow })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x16, 0x12, 0x03, 0xFD]))
     })
 

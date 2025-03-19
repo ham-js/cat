@@ -16,6 +16,6 @@ export abstract class SerialPort {
   }
 
   public writeString(data: string): void | Promise<void> {
-    this.write(this.textEncoder.encode(data))
+    return this.write(this.textEncoder.encode(data))
   }
 }
