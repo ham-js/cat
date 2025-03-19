@@ -4,6 +4,7 @@ import { TransceiverDeviceVendor } from "../base/TransceiverDeviceVendor";
 import { TransceiverAGCAttack } from "../base/TransceiverAGCAttack";
 import { Generic } from "./Generic"
 import { TestSerialPort } from "../../../test/utils/TestSerialPort"
+import { TransceiverVFOType } from "../base/TransceiverVFOType";
 
 describe("YaesuTransceiverDevice", () => {
   const textEncoder = new TextEncoder()
@@ -19,17 +20,17 @@ describe("YaesuTransceiverDevice", () => {
 
   describe("setVFO", () => {
     test("throws an error when the frequency or vfo are out of range", () => {
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: 0 })).toThrow("Number must be greater than or equal to 30000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: 0 })).toThrow("Number must be less than or equal to 56000000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: 2 })).toThrow("Number must be less than or equal to 1")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: -1 })).toThrow("Number must be greater than or equal to 0")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: TransceiverVFOType.A })).toThrow("Number must be greater than or equal to 30000")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: TransceiverVFOType.A })).toThrow("Number must be less than or equal to 56000000")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: TransceiverVFOType.Current })).toThrow("Invalid enum value")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.Other })).toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
-      await genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: 0 })
+      await genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: TransceiverVFOType.A })
       expect(testSerialPort.write).toHaveBeenCalledWith(textEncoder.encode("FA014250000;"))
 
-      await genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: 1 })
+      await genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.B })
       expect(testSerialPort.write).toHaveBeenCalledWith(textEncoder.encode("FB007250000;"))
     })
 
@@ -43,9 +44,11 @@ describe("YaesuTransceiverDevice", () => {
               type: "integer"
             },
             vfo: {
-              minimum: 0,
-              maximum: 1,
-              type: "integer"
+              enum: [
+                "A",
+                "B"
+              ],
+              type: "string"
             }
           },
           required: [
@@ -59,16 +62,16 @@ describe("YaesuTransceiverDevice", () => {
 
   describe("getVFO", () => {
     test("throws an error when the vfo is out of range", () => {
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: -1 })).toThrow("Number must be greater than or equal to 0")
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: 2 })).toThrow("Number must be less than or equal to 1")
+      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Current })).toThrow("Invalid enum value")
+      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Other })).toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
       testSerialPort.write.mockImplementationOnce(() => testSerialPort.subject.next(textEncoder.encode(`FB012345;FA014250000;`)))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: 0 })).toBe(14_250_000)
+      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.A })).toBe(14_250_000)
 
       testSerialPort.write.mockImplementationOnce(() => testSerialPort.subject.next(textEncoder.encode(`FA012345;FB007200000;`)))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: 1 })).toBe(7_200_000)
+      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.B })).toBe(7_200_000)
     })
 
     test("specifies the parameter type correctly", () => {
@@ -76,9 +79,11 @@ describe("YaesuTransceiverDevice", () => {
         expect.objectContaining({
           properties: {
             vfo: {
-              minimum: 0,
-              maximum: 1,
-              type: "integer"
+              enum: [
+                "A",
+                "B"
+              ],
+              type: "string"
             }
           },
           required: [

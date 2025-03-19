@@ -4,8 +4,13 @@ import { TransceiverDevice } from "../base/TransceiverDevice";
 import { TransceiverDeviceVendor } from "../base/TransceiverDeviceVendor";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
+import { TransceiverVFOType } from "../base/TransceiverVFOType";
+import { TransceiverCommands } from "../base/TransceiverCommands";
 
-const vfoType = z.number().int().min(0).max(1)
+const vfoType = z.enum([
+  TransceiverVFOType.A,
+  TransceiverVFOType.B
+])
 
 const AGCAttackNumbers: Record<TransceiverAGCAttack, number> = {
   [TransceiverAGCAttack.Off]: 0,
@@ -21,7 +26,7 @@ export class Generic extends TransceiverDevice {
 
   readonly _commands = {
     setAGC: Object.assign(
-      ({ attack }: { attack: TransceiverAGCAttack }) =>
+      ({ attack }: Parameters<NonNullable<TransceiverCommands["setAGC"]>>[0]) =>
         this.serialPort.writeString(
           `GT0${AGCAttackNumbers[attack]};`
         ),
@@ -32,9 +37,9 @@ export class Generic extends TransceiverDevice {
       }
     ),
     setVFO: Object.assign(
-      ({ frequency, vfo }: { frequency: number, vfo: number }) =>
+      ({ frequency, vfo }: Parameters<TransceiverCommands["setVFO"]>[0]) =>
         this.serialPort.writeString(
-          `F${vfo === 0 ? 'A' : 'B'}${frequency.toString(10).padStart(9, '0')};`
+          `F${vfo === TransceiverVFOType.A ? 'A' : 'B'}${frequency.toString(10).padStart(9, '0')};`
         ),
       {
         parameterType: z.object({
@@ -47,16 +52,16 @@ export class Generic extends TransceiverDevice {
         })
       }),
     getVFO: Object.assign(
-      ({ vfo }: { vfo: number }) => {
+      ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
         const value = firstValueFrom(
           delimiterParser(this.serialPort.stringObservable(), ";")
             .pipe(
-              map((command) => parseInt(command.match(new RegExp(`F${vfo === 0 ? 'A' : 'B'}(\\d+);`))?.[1] ?? "", 10)),
+              map((command) => parseInt(command.match(new RegExp(`F${vfo === TransceiverVFOType.A ? 'A' : 'B'}(\\d+);`))?.[1] ?? "", 10)),
               filter(Boolean)
             )
         )
 
-        this.serialPort.writeString(`F${vfo === 0 ? 'A' : 'B'};`) 
+        this.serialPort.writeString(`F${vfo === TransceiverVFOType.A ? 'A' : 'B'};`)
 
         return value
       },

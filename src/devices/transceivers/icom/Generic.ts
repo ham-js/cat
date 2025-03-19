@@ -8,8 +8,18 @@ import { padBytesEnd } from "../../../utils/padBytesEnd";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
 import { fromLittleEndianBCD } from "../../../utils/fromLittleEndianBCD";
+import { TransceiverCommands } from "../base/TransceiverCommands";
+import { TransceiverVFOType } from "../base/TransceiverVFOType";
 
-const vfoType = z.number().int().min(0).max(1)
+const vfoType = z.enum([
+    TransceiverVFOType.Current,
+    TransceiverVFOType.Other
+  ])
+
+const VFOMap: Record<z.infer<typeof vfoType>, number> = {
+  [TransceiverVFOType.Current]: 0,
+  [TransceiverVFOType.Other]: 1,
+}
 
 const AGCAttackNumbers: Record<TransceiverAGCAttack.Fast | TransceiverAGCAttack.Mid | TransceiverAGCAttack.Slow, number> = {
   [TransceiverAGCAttack.Fast]: 1,
@@ -27,7 +37,7 @@ export class Generic extends TransceiverDevice {
 
   readonly _commands = {
     setAGC: Object.assign(
-      ({ attack }: { attack: TransceiverAGCAttack }) =>
+      ({ attack }: Parameters<NonNullable<TransceiverCommands["setAGC"]>>[0]) =>
         this.serialPort.write(
           this.buildCommand(
             0x16,
@@ -39,14 +49,17 @@ export class Generic extends TransceiverDevice {
         ),
       {
         parameterType: z.object({
-          attack: z
-            .nativeEnum(TransceiverAGCAttack)
-            .refine((attack) => Object.keys(AGCAttackNumbers).includes(attack))
+          attack: z.enum([
+            TransceiverAGCAttack.Fast,
+            TransceiverAGCAttack.Mid,
+            TransceiverAGCAttack.Slow
+          ])
         })
       }
     ),
     setVFO: Object.assign( // 0 is current, 1 is other
-      ({ frequency, vfo }: { frequency: number, vfo: number }) => this.serialPort.write(this.buildCommand(0x25, 0x00, new Uint8Array([vfo, ...padBytesEnd(toLittleEndianBCD(frequency), 5)]))),
+      ({ frequency, vfo }: Parameters<TransceiverCommands["setVFO"]>[0]) =>
+        this.serialPort.write(this.buildCommand(0x25, 0x00, new Uint8Array([VFOMap[vfo as keyof typeof VFOMap], ...padBytesEnd(toLittleEndianBCD(frequency), 5)]))),
       {
         parameterType: z.object({
           frequency: z
@@ -58,7 +71,7 @@ export class Generic extends TransceiverDevice {
         })
       }),
     getVFO: Object.assign( // 0 is current, 1 is other
-      ({ vfo }: { vfo: number }) => {
+      ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
         const value = firstValueFrom(
           delimiterParser(this.serialPort.observable, 0xFD)
             .pipe(
@@ -66,7 +79,7 @@ export class Generic extends TransceiverDevice {
                 this.commandMatchesDevice(command)
                 && command[4] === 0x25
                 && command[5] == 0x00
-                && this.getCommandData(command)[0] === vfo
+                && this.getCommandData(command)[0] === VFOMap[vfo as keyof typeof VFOMap]
               ),
               map((command) => fromLittleEndianBCD(this.getCommandData(command).slice(1)))
             )
@@ -76,7 +89,11 @@ export class Generic extends TransceiverDevice {
 
         return value
       },
-      { parameterType: z.object({ vfo: vfoType }) }
+      {
+        parameterType: z.object({
+          vfo: vfoType
+        })
+      }
     )
   }
 

@@ -4,6 +4,7 @@ import { DeviceType } from "../../base/DeviceType";
 import { TransceiverDeviceVendor } from "../base/TransceiverDeviceVendor";
 import { TransceiverAGCAttack } from "../base/TransceiverAGCAttack";
 import { TestSerialPort } from "../../../test/utils/TestSerialPort"
+import { TransceiverVFOType } from "../base/TransceiverVFOType";
 
 describe("Generic", () => {
   const testSerialPort = new TestSerialPort()
@@ -14,17 +15,17 @@ describe("Generic", () => {
 
   describe("setVFO", () => {
     test("throws an error when the frequency or vfo are out of range", () => {
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: 0 })).toThrow("Number must be greater than or equal to 30000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: 0 })).toThrow("Number must be less than or equal to 56000000")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: 2 })).toThrow("Number must be less than or equal to 1")
-      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: -1 })).toThrow("Number must be greater than or equal to 0")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 29_999, vfo: TransceiverVFOType.Current })).toThrow("Number must be greater than or equal to 30000")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 56_000_001, vfo: TransceiverVFOType.Current })).toThrow("Number must be less than or equal to 56000000")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 14_250_000, vfo: TransceiverVFOType.A })).toThrow("Invalid enum value")
+      expect(() => genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.B })).toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
-      await genericTransceiver.sendCommand('setVFO', { frequency: 14_250_300, vfo: 0 })
+      await genericTransceiver.sendCommand('setVFO', { frequency: 14_250_300, vfo: TransceiverVFOType.Current })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD]))
 
-      await genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: 1 })
+      await genericTransceiver.sendCommand('setVFO', { frequency: 7_250_000, vfo: TransceiverVFOType.Other })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD]))
     })
 
@@ -38,9 +39,11 @@ describe("Generic", () => {
               type: "integer"
             },
             vfo: {
-              minimum: 0,
-              maximum: 1,
-              type: "integer"
+              enum: [
+                "Current",
+                "Other"
+              ],
+              type: "string"
             }
           },
           required: [
@@ -54,8 +57,8 @@ describe("Generic", () => {
 
   describe("getVFO", () => {
     test("throws an error when the vfo is out of range", () => {
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: -1 })).toThrow("Number must be greater than or equal to 0")
-      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: 2 })).toThrow("Number must be less than or equal to 1")
+      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.A })).toThrow("Invalid enum value")
+      expect(() => genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.B })).toThrow("Invalid enum value")
     })
 
     test("implements the command correctly", async () => {
@@ -68,7 +71,7 @@ describe("Generic", () => {
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD,
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x01, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // something else
       ])))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: 0 })).toBe(14_250_300)
+      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Current })).toBe(14_250_300)
 
       testSerialPort.write.mockImplementationOnce(() => testSerialPort.subject.next(new Uint8Array([
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD, // for other vfo
@@ -79,7 +82,7 @@ describe("Generic", () => {
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD,
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x01, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // something else
       ])))
-      expect(await genericTransceiver.sendCommand('getVFO', { vfo: 1 })).toBe(7_250_000)
+      expect(await genericTransceiver.sendCommand('getVFO', { vfo: TransceiverVFOType.Other })).toBe(7_250_000)
     })
 
     test("specifies the parameter type correctly", () => {
@@ -87,9 +90,11 @@ describe("Generic", () => {
         expect.objectContaining({
           properties: {
             vfo: {
-              minimum: 0,
-              maximum: 1,
-              type: "integer"
+              enum: [
+                "Current",
+                "Other"
+              ],
+              type: "string"
             }
           },
           required: [
@@ -102,7 +107,7 @@ describe("Generic", () => {
 
   describe("setAGC", () => {
     test("implements the command correctly", () => {
-      expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).toThrow("Invalid input")
+      expect(() => genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Auto })).toThrow("Invalid enum value")
       
       genericTransceiver.sendCommand('setAGC', { attack: TransceiverAGCAttack.Fast })
       expect(testSerialPort.write).toHaveBeenCalledWith(new Uint8Array([0xFE, 0xFE, 0x5E, 0xE0, 0x16, 0x12, 0x01, 0xFD]))
@@ -120,11 +125,9 @@ describe("Generic", () => {
           properties: {
             attack: {
               enum: [
-                "Off",
-                "Slow",
-                "Mid",
                 "Fast",
-                "Auto"
+                "Mid",
+                "Slow"
               ],
               type: "string"
             }

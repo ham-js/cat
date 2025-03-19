@@ -1,14 +1,7 @@
 import { DeviceType } from "../../base/DeviceType"
-import { Command } from "../../base/Command"
 import { Device } from "../../base/Device"
-import { TransceiverAGCAttack } from "./TransceiverAGCAttack"
 import { TransceiverDeviceVendor } from "./TransceiverDeviceVendor"
-
-type TransceiverCommands = {
-  getVFO: Command<{ vfo: number }, number>
-  setAGC?: Command<{ attack: TransceiverAGCAttack }, void>
-  setVFO: Command<{ frequency: number; vfo: number }, void>
-}
+import { TransceiverCommands } from "./TransceiverCommands"
 
 /**
  * A transceiver device is a device with a `deviceType` `DeviceType.Transceiver`
