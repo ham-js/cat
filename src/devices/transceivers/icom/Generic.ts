@@ -29,7 +29,7 @@ export class Generic extends TransceiverDevice {
     setAGC: Object.assign(
       ({ attack }: { attack: TransceiverAGCAttack }) =>
         this.serialPort.write(
-          this.buildCommandArray(
+          this.buildCommand(
             0x16,
             0x12,
             new Uint8Array([
@@ -46,7 +46,7 @@ export class Generic extends TransceiverDevice {
       }
     ),
     setVFO: Object.assign( // 0 is current, 1 is other
-      ({ frequency, vfo }: { frequency: number, vfo: number }) => this.serialPort.write(this.buildCommandArray(0x25, 0x00, new Uint8Array([vfo, ...padBytesEnd(toLittleEndianBCD(frequency), 5)]))),
+      ({ frequency, vfo }: { frequency: number, vfo: number }) => this.serialPort.write(this.buildCommand(0x25, 0x00, new Uint8Array([vfo, ...padBytesEnd(toLittleEndianBCD(frequency), 5)]))),
       {
         parameterType: z.object({
           frequency: z
@@ -63,17 +63,16 @@ export class Generic extends TransceiverDevice {
           delimiterParser(this.serialPort.observable, 0xFD)
             .pipe(
               filter((command) =>
-                this.commandMatchesDeviceAddress(command)
-                && this.commandMatchesControllerAddress(command)
+                this.commandMatchesDevice(command)
                 && command[4] === 0x25
                 && command[5] == 0x00
-                && this.getDataFromCommand(command)[0] === vfo
+                && this.getCommandData(command)[0] === vfo
               ),
-              map((command) => fromLittleEndianBCD(this.getDataFromCommand(command).slice(1)))
+              map((command) => fromLittleEndianBCD(this.getCommandData(command).slice(1)))
             )
         )
 
-        this.serialPort.write(this.buildCommandArray(0x25, 0x00))
+        this.serialPort.write(this.buildCommand(0x25, 0x00))
 
         return value
       },
@@ -81,19 +80,16 @@ export class Generic extends TransceiverDevice {
     )
   }
 
-  protected getDataFromCommand(command: Uint8Array): Uint8Array {
+  protected getCommandData(command: Uint8Array): Uint8Array {
     return command.slice(6, command.length - 1)
   }
 
-  protected commandMatchesDeviceAddress(command: Uint8Array): boolean {
+  protected commandMatchesDevice(command: Uint8Array): boolean {
     return command[2] == this.deviceAddress
+      && command[3] == this.controllerAddress
   }
 
-  protected commandMatchesControllerAddress(command: Uint8Array): boolean {
-    return command[3] == this.controllerAddress
-  }
-
-  protected buildCommandArray(command: number, subCommandNumber: number, data = new Uint8Array()): Uint8Array {
+  protected buildCommand(command: number, subCommandNumber: number, data = new Uint8Array()): Uint8Array {
     return new Uint8Array([
       0xFE, // delimiter
       0xFE, // delimiter
