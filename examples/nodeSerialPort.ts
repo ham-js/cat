@@ -1,5 +1,5 @@
 import { SerialPort } from "serialport"
-import { NodeSerialPort } from "../src/drivers/NodeSerialPort"
+import { NodeSerialPort } from "../src/drivers/node/NodeSerialPort"
 import { FT891 } from "../src/devices/transceivers/yaesu/FT891"
 import { TransceiverVFOType } from "../src/devices/transceivers/base/TransceiverVFOType"
 
