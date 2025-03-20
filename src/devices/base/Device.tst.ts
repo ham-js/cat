@@ -63,7 +63,7 @@ describe("Device", () => {
     expect<Parameters<typeof testTransceiverDevice.getCommandSchema<'optionalImplementedCommand'>>[0]>().type.toBe<never>()
 
     // we already know this - command is not optional
-    if (testTransceiverDevice.implementsOptionalCommand('command')) {
+    if (testTransceiverDevice.implementsCommand('command')) {
       expect<typeof testTransceiverDevice['_commands']['command']>().type.toBe<TestCommand>()
       expect<Parameters<typeof testTransceiverDevice.sendCommand<'command'>>[1]>().type.toBe<{ param: string }>()
       expect<Parameters<typeof testTransceiverDevice.getCommandSchema<'command'>>[0]>().type.toBe<'command'>()
@@ -78,7 +78,7 @@ describe("Device", () => {
     }
 
     // now we check the type guard for the optional command
-    if (testTransceiverDevice.implementsOptionalCommand('optionalImplementedCommand')) {
+    if (testTransceiverDevice.implementsCommand('optionalImplementedCommand')) {
       expect<typeof testTransceiverDevice['_commands']['optionalImplementedCommand']>().type.toBe<TestCommand<'optional'>>()
       expect<Parameters<typeof testTransceiverDevice.sendCommand<'optionalImplementedCommand'>>[1]>().type.toBe<{ param: 'optional' }>()
       expect<Parameters<typeof testTransceiverDevice.getCommandSchema<'optionalImplementedCommand'>>[0]>().type.toBe<'optionalImplementedCommand'>()

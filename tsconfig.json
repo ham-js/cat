@@ -4,12 +4,13 @@
     "module": "commonjs",
     "outDir": "dist",
     "strict": true,
-    "target": "es2017"
+    "target": "es2024"
   },
   "include": [
     "src/**/*"
   ],
   "exclude": [
+    "examples/",
     "src/**/*.test.ts",
     "src/**/*.tst.ts"
   ]
