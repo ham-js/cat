@@ -52,7 +52,7 @@ export class Generic extends TransceiverDevice {
         })
       }),
     getVFO: Object.assign(
-      ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
+      async ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
         const value = firstValueFrom(
           delimiterParser(this.serialPort.stringObservable(), ";")
             .pipe(
@@ -61,7 +61,7 @@ export class Generic extends TransceiverDevice {
             )
         )
 
-        this.serialPort.writeString(`F${vfo === TransceiverVFOType.A ? 'A' : 'B'};`)
+        await this.serialPort.writeString(`F${vfo === TransceiverVFOType.A ? 'A' : 'B'};`)
 
         return value
       },
