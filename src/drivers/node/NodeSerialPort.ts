@@ -1,5 +1,5 @@
 import { fromEventPattern, Observable, share } from "rxjs";
-import { SerialPort as BaseSerialPort } from "../devices/base/SerialPort"
+import { SerialPort as BaseSerialPort } from "../base/SerialPort"
 import { SerialPortStream } from "@serialport/stream"
 
 export class NodeSerialPort extends BaseSerialPort {

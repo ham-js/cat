@@ -2,7 +2,7 @@ import { DeviceType } from "./DeviceType"
 import { Command } from "./Command"
 import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
-import { SerialPort } from "./SerialPort"
+import { SerialPort } from "../../drivers/base/SerialPort"
 import { Mutex } from "async-mutex"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {

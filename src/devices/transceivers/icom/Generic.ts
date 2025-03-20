@@ -3,7 +3,7 @@ import { TransceiverAGCAttack } from "../base/TransceiverAGCAttack";
 import { TransceiverDeviceVendor } from "../base/TransceiverDeviceVendor";
 import { TransceiverDevice } from "../base/TransceiverDevice";
 import { toLittleEndianBCD } from "../../../utils/toLittleEndianBCD";
-import { SerialPort } from "../../base/SerialPort";
+import { SerialPort } from "../../../drivers/base/SerialPort";
 import { padBytesEnd } from "../../../utils/padBytesEnd";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";

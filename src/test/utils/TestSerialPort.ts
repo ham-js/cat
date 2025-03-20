@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals"
 import { Subject } from "rxjs"
-import { SerialPort } from "../../devices/base/SerialPort"
+import { SerialPort } from "../../drivers/base/SerialPort"
 
 export class TestSerialPort extends SerialPort {
   subject = new Subject<Uint8Array>()
