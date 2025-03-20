@@ -3,7 +3,7 @@ import { Command } from "./Command"
 import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
 import { SerialPort } from "./SerialPort"
-import { Mutex, withTimeout } from "async-mutex"
+import { Mutex } from "async-mutex"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commands: Required<{[k in K]: C[K]}>
@@ -55,8 +55,8 @@ export abstract class Device<C extends {[k: string]: Command<any, any>}> {
    * ```
    */
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  async sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never, timeout = 1000): Promise<this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> extends Promise<infer T> ? T : R : never> {
-    const release = await withTimeout(this.mutex, timeout).acquire()
+  async sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never): Promise<this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> extends Promise<infer T> ? T : R : never> {
+    const release = await this.mutex.acquire()
 
     try {
       const command = this._commands[key]

@@ -7,7 +7,7 @@ import { z } from "zod"
 import { Mutex } from "async-mutex"
 
 const testCommand = Object.assign(
-  jest.fn(({ param }) => `hi, ${param}`),
+  jest.fn(({ param }) => Promise.resolve(`hi, ${param}`)),
   {
     parameterType: z.object({
       param: z.number().max(0)
@@ -17,7 +17,7 @@ const testCommand = Object.assign(
 class TestDevice extends Device<{
   notImplementedCommand?: Command<{ param: number }, string>,
   optionalCommand?: Command<{ param: number }, string>,
-  testCommand: Command<{ param: number }, string>
+  testCommand: Command<{ param: number }, Promise<string>>
 }> {
   readonly _commands = {
     testCommand,
