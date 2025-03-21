@@ -8,12 +8,14 @@ import { TransceiverDriver } from "../../../src/device-drivers/transceivers/base
 import { GenericDriver as ICOMGenericDriver } from "../../../src/device-drivers/transceivers/icom/GenericDriver"
 import { GenericDriver as KenwoodGenericDriver } from "../../../src/device-drivers/transceivers/kenwood/GenericDriver"
 import { GenericDriver as YaesuGenericDriver } from "../../../src/device-drivers/transceivers/yaesu/GenericDriver"
+import { TransceiverVFOType } from "../../../src/device-drivers/transceivers/base/TransceiverVFOType"
 
 export const Playground = () => {
   const [deviceDriver, setDeviceDriver] = useState<TransceiverDriver>(null)
   const [connecting, setConnecting] = useState(false)
 
   const [deviceDriverConfiguration, setDeviceDriverConfiguration] = useState<DeviceDriverConfiguration>(DEFAULT_DEVICE_DRIVER_CONFIGURATIONS[DeviceDriverType.YaesuGeneric])
+  const handleDeviceDriverConfigurationChange = useCallback((configuration: DeviceDriverConfiguration) => setDeviceDriverConfiguration(configuration), [])
 
   const [communicationDriverConfiguration, setCommunicationDriverConfiguration] = useState<CommunicationDriverConfiguration>(DEFAULT_COMMUNICATION_DRIVER_CONFIGURATIONS[CommunicationDriverType.CP210x])
   const handleCommunicationDriverConfigurationChange = useCallback((configuration: CommunicationDriverConfiguration) => setCommunicationDriverConfiguration(configuration), [])
@@ -48,6 +50,8 @@ export const Playground = () => {
       await newDeviceDriver.open()
       setDeviceDriver(newDeviceDriver)
 
+      console.log(await newDeviceDriver.sendCommand("getVFO", {vfo: TransceiverVFOType.A}))
+
       setConnecting(false)
     }
 
@@ -65,7 +69,7 @@ export const Playground = () => {
         <ConfigureCommunicationDriver configuration={communicationDriverConfiguration} onChange={handleCommunicationDriverConfigurationChange} />
       </div>
       <div className="col">
-        <ConfigureDeviceDriver />
+        <ConfigureDeviceDriver configuration={deviceDriverConfiguration} onChange={handleDeviceDriverConfigurationChange} />
       </div>
     </div>
 

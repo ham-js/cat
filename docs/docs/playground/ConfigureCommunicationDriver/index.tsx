@@ -1,4 +1,3 @@
-import { CommunicationDriver } from "../../../../src/communication-drivers/base/CommunicationDriver"
 import { ChangeEvent, useCallback, useState } from "react"
 import { CP210x, CP210xConfiguration } from "./CP210x"
 
@@ -27,9 +26,7 @@ interface Props {
 }
 
 export const ConfigureCommunicationDriver = ({ configuration, onChange }: Props) => {
-  const [driverConfiguration, setDriverConfiguration] = useState<Configuration>(DEFAULT_DRIVER_CONFIGURATIONS[DriverType.CP210x])
-  const handleDriverConfigurationChange = useCallback((configuration: Configuration) => setDriverConfiguration(configuration), [])
-  const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => setDriverConfiguration(DEFAULT_DRIVER_CONFIGURATIONS[value]), [])
+  const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [])
 
   return <>
     <h2>Communication Driver</h2>
@@ -39,7 +36,7 @@ export const ConfigureCommunicationDriver = ({ configuration, onChange }: Props)
     </select>
 
     <div>
-      {driverConfiguration?.type === DriverType.CP210x && <CP210x configuration={driverConfiguration} onChange={handleDriverConfigurationChange} />}
+      {configuration?.type === DriverType.CP210x && <CP210x configuration={configuration} onChange={onChange} />}
     </div>
 
   </>
