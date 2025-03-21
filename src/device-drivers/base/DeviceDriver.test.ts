@@ -29,8 +29,28 @@ describe("DeviceDriver", () => {
   const testCommunicationDriver = new TestCommunicationDriver()
   const testDeviceDriver = new TestDeviceDriver(testCommunicationDriver)
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await testDeviceDriver.open()
+
     testCommand.mockClear()
+  })
+
+  describe("open", () => {
+    test("opens the communication driver", async () => {
+      await testDeviceDriver.open()
+
+      expect(testCommunicationDriver.open).toHaveBeenCalled()
+      expect(testDeviceDriver.isOpen).toBe(true)
+    })
+  })
+
+  describe("close", () => {
+    test("closes the communication driver", async () => {
+      await testDeviceDriver.close()
+
+      expect(testCommunicationDriver.close).toHaveBeenCalled()
+      expect(testDeviceDriver.isOpen).toBe(false)
+    })
   })
 
   describe("sendCommand", () => {

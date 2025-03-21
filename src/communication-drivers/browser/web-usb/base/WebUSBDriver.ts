@@ -9,6 +9,10 @@ export abstract class WebUSBDriver extends CommunicationDriver {
     this.validateDeviceFilters()
   }
 
+  get isOpen(): boolean {
+    return this.usbDevice.opened
+  }
+
   async open(): Promise<void> {
     await this.usbDevice.open()
   }

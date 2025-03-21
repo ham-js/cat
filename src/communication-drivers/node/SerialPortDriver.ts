@@ -14,6 +14,25 @@ export class SerialPortDriver extends BaseSerialPort {
       )
   }
 
+  get isOpen(): boolean {
+    return this.serialPort.isOpen
+  }
+
+  open(): Promise<void> {
+    if (this.isOpen) return Promise.resolve()
+
+    return new Promise((resolve, reject) => {
+      this.serialPort.open((error) => {
+        if (error) reject()
+        else resolve()
+      })
+    })
+  }
+
+  close(): void | Promise<void> {
+    this.serialPort.close()
+  }
+
   async write(data: Uint8Array): Promise<void> {
     const { promise: _promise, reject, resolve } = Promise.withResolvers<void>()
 

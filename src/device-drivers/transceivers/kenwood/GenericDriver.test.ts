@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 import { DeviceType } from "../../base/DeviceType";
 import { TransceiverVendor } from "../base/TransceiverVendor";
 import { TransceiverAGCAttack } from "../base/TransceiverAGCAttack";
@@ -11,8 +11,13 @@ describe("GenericDriver", () => {
   const testCommunicationDriver = new TestCommunicationDriver()
   const genericTransceiver = new GenericDriver(testCommunicationDriver)
 
-  beforeEach(() => {
+  beforeEach(async () => {
     testCommunicationDriver.write.mockReset()
+    await genericTransceiver.open()
+  })
+
+  afterEach(async () => {
+    await genericTransceiver.close()
   })
 
   test("device type", () => expect(GenericDriver.deviceType).toBe(DeviceType.Transceiver))

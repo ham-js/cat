@@ -33,6 +33,18 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
 
   constructor(protected communicationDriver: CommunicationDriver) {}
 
+  get isOpen(): boolean {
+    return this.communicationDriver.isOpen
+  }
+
+  async open(): Promise<void> {
+    await this.communicationDriver.open?.()
+  }
+
+  async close(): Promise<void> {
+    await this.communicationDriver.close?.()
+  }
+
   /**
    * This method allows you to build command strings.
    * @param {string} key The key of a command this device implements. You cannot build
@@ -55,6 +67,8 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
    */
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   async sendCommand<K extends keyof C>(key: K, parameter: this['_commands'][typeof key] extends Command<infer P, any> ? P : never): Promise<this['_commands'][typeof key] extends Command<any, infer R> ? ReturnType<Command<any, R>> extends Promise<infer T> ? T : R : never> {
+    if (!this.isOpen) throw new Error("Communication driver is not open for sending commands (did you forget to call `await driver.open()`?")
+
     const release = await this.mutex.acquire()
 
     try {

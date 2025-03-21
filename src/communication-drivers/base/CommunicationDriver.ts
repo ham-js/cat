@@ -6,6 +6,13 @@ export abstract class CommunicationDriver {
 
   protected textEncoder = new TextEncoder()
 
+  get isOpen(): boolean {
+    return true
+  }
+
+  open?(): Promise<void>
+  close?(): void | Promise<void>
+
   public stringObservable(encoding: string = "utf-8", options: TextDecoderOptions = {}): Observable<string> {
     const textDecoder = new TextDecoder(encoding, options)
 

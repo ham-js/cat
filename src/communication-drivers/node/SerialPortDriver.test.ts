@@ -8,6 +8,7 @@ import { firstValueFrom } from "rxjs"
 describe("SerialPortDriver", () => {
   SerialPortMock.binding.createPort("/dev/tty.MyTransceiver")
   const serialPort = new SerialPortMock({
+    autoOpen: false,
     baudRate: 9600,
     path: "/dev/tty.MyTransceiver"
   })
@@ -17,10 +18,17 @@ describe("SerialPortDriver", () => {
     jest.restoreAllMocks()
   })
 
+  describe("open", () => {
+    test("it opens the serial port", async () => {
+      await driver.open()
+
+      expect(driver.isOpen).toBe(true)
+    })
+  })
+
   describe("observable", () => {
     test("it returns data from the serial port", async () => {
-      await new Promise((resolve) => serialPort.on("open", resolve))
-
+      driver.open()
       const result = firstValueFrom(driver.observable)
 
       serialPort.port?.emitData(Buffer.from([65, 66, 67]))

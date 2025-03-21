@@ -6,6 +6,14 @@ import { firstValueFrom } from "rxjs"
 describe("CommunicationDriver", () => {
   const driver = new TestCommunicationDriver()
 
+  test("isOpen", async () => {
+    expect(driver.isOpen).toBe(false)
+    await driver.open()
+    expect(driver.isOpen).toBe(true)
+    await driver.close()
+    expect(driver.isOpen).toBe(false)
+  })
+
   test("writeString", () => {
     driver.writeString("abc")
     expect(driver.write).toHaveBeenCalledWith(new Uint8Array([97, 98, 99]))

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 import { GenericDriver } from "./GenericDriver"
 import { DeviceType } from "../../base/DeviceType";
 import { TestCommunicationDriver } from "../../../test/utils/TestCommunicationDriver"
@@ -9,6 +9,14 @@ import { TransceiverVFOType } from "../base/TransceiverVFOType";
 describe("GenericDriver", () => {
   const communicationDriver = new TestCommunicationDriver()
   const genericTransceiver = new GenericDriver(communicationDriver, 0x5E, 0xE0)
+
+  beforeEach(async () => {
+    await genericTransceiver.open()
+  })
+
+  afterEach(async () => {
+    await genericTransceiver.close()
+  })
 
   test("device type", () => expect(GenericDriver.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(GenericDriver.deviceVendor).toBe(TransceiverVendor.ICOM))
