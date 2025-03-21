@@ -1,6 +1,5 @@
-import { DeviceVendors } from "./DeviceVendors"
-import { TransceiverDeviceVendor } from "../../../src/devices/transceivers/base/TransceiverDeviceVendor"
-import { TransceiverDevices } from "../../../src/devices/transceivers/TransceiverDevices.ts"
+import { TransceiverVendor } from "../../../src/device-drivers/transceivers/base/TransceiverVendor"
+import { TransceiverDevices } from "../../../src/device-drivers/transceivers/TransceiverDevices"
 
 # Transceivers
 
@@ -9,7 +8,7 @@ The following transceivers are implemented:
 {
   TransceiverDevices.map((device) => <>
     <details>
-      <summary>{DeviceVendors[device.deviceVendor]} {device.deviceName}</summary>
+      <summary>{device.deviceVendor} {device.deviceName}</summary>
 
       This device implements the following commands:
       <ul>

@@ -1,4 +1,4 @@
-import { DeviceType } from "../../../src/devices/base/DeviceType";
+import { DeviceType } from "../../../src/device-drivers/base/DeviceType";
 
 export const DeviceTypes: Record<DeviceType, string> = {
   [DeviceType.Antenna]: "Antenna",

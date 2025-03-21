@@ -1,6 +1,5 @@
-import { Devices } from "../../../src/devices/Devices.ts"
-import { DeviceTypes } from "./DeviceTypes.ts"
-import { DeviceVendors } from "./DeviceVendors.ts"
+import { DeviceDrivers } from "../../../src/device-drivers/DeviceDrivers"
+import { DeviceTypes } from "./DeviceTypes"
 
 # Overview
 
@@ -23,10 +22,10 @@ The following devices are supported:
   </thead>
   <tbody>
     {
-      Devices.map(({deviceName, deviceType, deviceVendor}) => (
+      DeviceDrivers.map(({deviceName, deviceType, deviceVendor}) => (
         <tr>
           <td>{DeviceTypes[deviceType]}</td>
-          <td>{DeviceVendors[deviceVendor]}</td>
+          <td>{deviceVendor}</td>
           <td>{deviceName}</td>
         </tr>
       ))
