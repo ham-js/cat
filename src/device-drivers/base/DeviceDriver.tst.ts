@@ -3,7 +3,7 @@ import { Command } from './Command'
 import { z } from 'zod'
 import { DeviceDriver } from './DeviceDriver'
 import { DeviceType } from './DeviceType'
-import { TransceiverDeviceVendor } from '../transceivers/base/TransceiverDeviceVendor'
+import { TransceiverVendor } from '../transceivers/base/TransceiverVendor'
 
 type NotImplementedCommand = Command<{ notImplemented: never }, never>
 type TestCommand<T extends string = string, R extends number = number> = Command<{ param: T }, R>
@@ -17,7 +17,7 @@ type TestCommands = {
 abstract class TestTransceiverDeviceDriver extends DeviceDriver<TestCommands> {
   static deviceName = "test"
   static deviceType = DeviceType.Transceiver
-  static deviceVendor = TransceiverDeviceVendor.Yaesu
+  static deviceVendor = TransceiverVendor.Yaesu
 }
 
 const commandParameterType  = z.object({
