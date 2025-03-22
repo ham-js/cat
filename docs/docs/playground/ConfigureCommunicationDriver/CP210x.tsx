@@ -25,15 +25,17 @@ interface Props {
 
 export interface CP210xConfiguration {
   baudRate: number
+  type: DriverType.CP210x
 }
 
 export const CP210x = ({ configuration, onChange }: Props) => {
   const handleBaudRateChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => {
     onChange({
       ...configuration,
-      baudRate: parseInt(value, 10)
+      baudRate: parseInt(value, 10),
+      type: DriverType.CP210x
     })
-  }, [])
+  }, [configuration, onChange])
 
   if (configuration.type !== DriverType.CP210x) return null
 

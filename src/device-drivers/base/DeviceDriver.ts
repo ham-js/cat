@@ -4,6 +4,7 @@ import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
 import { CommunicationDriver } from "../../communication-drivers/base/CommunicationDriver"
 import { Mutex } from "async-mutex"
+import { JSONSchema7, JSONSchema7Definition } from "json-schema"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commands: Required<{[k in K]: C[K]}>
@@ -103,14 +104,14 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
    * @returns {object} a json schema for the command that you can use to validate user input or to build forms for devices
    */
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  getCommandSchema<K extends keyof C>(key: this['_commands'][K] extends Command<any, any> ? K : never): ReturnType<typeof zodToJsonSchema> {
-    return zodToJsonSchema(this._commands[key].parameterType)
+  getCommandSchema<K extends keyof C>(key: this['_commands'][K] extends Command<any, any> ? K : never): JSONSchema7 {
+    return zodToJsonSchema(this._commands[key].parameterType) as JSONSchema7 // https://github.com/StefanTerdell/zod-to-json-schema/issues/144
   }
 
   /**
    * @returns {string[]} The command keys this class implements
    */
-  getCommandKeys(): keyof C {
-    return Object.keys(this._commands) as unknown as keyof C
+  getCommandKeys(): (keyof C)[] {
+    return Object.keys(this._commands)
   }
 }

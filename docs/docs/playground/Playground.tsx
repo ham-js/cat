@@ -1,6 +1,9 @@
+import Tabs from "@theme/Tabs"
+import TabItem from "@theme/TabItem"
 import { useCallback, useState } from "react"
 import { Configuration as CommunicationDriverConfiguration, DriverType as CommunicationDriverType, ConfigureCommunicationDriver, DEFAULT_DRIVER_CONFIGURATIONS as DEFAULT_COMMUNICATION_DRIVER_CONFIGURATIONS } from "./ConfigureCommunicationDriver"
 import { CP210xDriver } from "../../../src/communication-drivers/browser/web-usb/CP210xDriver"
+import { DummyDriver } from "../../../src/communication-drivers/DummyDriver"
 import { CommunicationDriver } from "../../../src/communication-drivers/base/CommunicationDriver"
 import { ConfigureDeviceDriver } from "./ConfigureDeviceDriver"
 import { Configuration as DeviceDriverConfiguration, DEFAULT_DRIVER_CONFIGURATIONS as DEFAULT_DEVICE_DRIVER_CONFIGURATIONS, DriverType as DeviceDriverType } from "./ConfigureDeviceDriver"
@@ -8,16 +11,18 @@ import { TransceiverDriver } from "../../../src/device-drivers/transceivers/base
 import { GenericDriver as ICOMGenericDriver } from "../../../src/device-drivers/transceivers/icom/GenericDriver"
 import { GenericDriver as KenwoodGenericDriver } from "../../../src/device-drivers/transceivers/kenwood/GenericDriver"
 import { GenericDriver as YaesuGenericDriver } from "../../../src/device-drivers/transceivers/yaesu/GenericDriver"
-import { TransceiverVFOType } from "../../../src/device-drivers/transceivers/base/TransceiverVFOType"
+import { SendCommand } from "./SendCommand"
+import { ConnectButton } from "./ConnectButton"
+import { VirtualDriver } from "../../../src/device-drivers/transceivers/VirtualDriver"
 
 export const Playground = () => {
   const [deviceDriver, setDeviceDriver] = useState<TransceiverDriver>(null)
   const [connecting, setConnecting] = useState(false)
 
-  const [deviceDriverConfiguration, setDeviceDriverConfiguration] = useState<DeviceDriverConfiguration>(DEFAULT_DEVICE_DRIVER_CONFIGURATIONS[DeviceDriverType.YaesuGeneric])
+  const [deviceDriverConfiguration, setDeviceDriverConfiguration] = useState<DeviceDriverConfiguration>(DEFAULT_DEVICE_DRIVER_CONFIGURATIONS[DeviceDriverType.Virtual])
   const handleDeviceDriverConfigurationChange = useCallback((configuration: DeviceDriverConfiguration) => setDeviceDriverConfiguration(configuration), [])
 
-  const [communicationDriverConfiguration, setCommunicationDriverConfiguration] = useState<CommunicationDriverConfiguration>(DEFAULT_COMMUNICATION_DRIVER_CONFIGURATIONS[CommunicationDriverType.CP210x])
+  const [communicationDriverConfiguration, setCommunicationDriverConfiguration] = useState<CommunicationDriverConfiguration>(DEFAULT_COMMUNICATION_DRIVER_CONFIGURATIONS[CommunicationDriverType.Dummy])
   const handleCommunicationDriverConfigurationChange = useCallback((configuration: CommunicationDriverConfiguration) => setCommunicationDriverConfiguration(configuration), [])
 
   const handleConnect = useCallback(() => {
@@ -34,9 +39,9 @@ export const Playground = () => {
       if (communicationDriverConfiguration.type === CommunicationDriverType.CP210x) {
         const usbDevice = await navigator.usb.requestDevice({ filters: CP210xDriver.deviceFilters })
         communicationDriver = new CP210xDriver(usbDevice, communicationDriverConfiguration)
+      } else {
+        communicationDriver = new DummyDriver()
       }
-
-      await communicationDriver.open()
 
       let newDeviceDriver: TransceiverDriver
       if (deviceDriverConfiguration.type === DeviceDriverType.ICOMGeneric) {
@@ -45,18 +50,18 @@ export const Playground = () => {
         newDeviceDriver = new KenwoodGenericDriver(communicationDriver)
       } else if (deviceDriverConfiguration.type === DeviceDriverType.YaesuGeneric) {
         newDeviceDriver = new YaesuGenericDriver(communicationDriver)
+      } else if (deviceDriverConfiguration.type === DeviceDriverType.Virtual) {
+        newDeviceDriver = new VirtualDriver(communicationDriver)
       }
 
       await newDeviceDriver.open()
       setDeviceDriver(newDeviceDriver)
 
-      console.log(await newDeviceDriver.sendCommand("getVFO", {vfo: TransceiverVFOType.A}))
-
       setConnecting(false)
     }
 
     connect()
-  }, [deviceDriver])
+  }, [communicationDriverConfiguration, deviceDriverConfiguration, deviceDriver])
 
   const handleDisconnect = useCallback(() => {
     deviceDriver.close()
@@ -64,18 +69,21 @@ export const Playground = () => {
   }, [deviceDriver])
 
   return <>
-    <div className="row">
-      <div className="col margin-bottom--lg">
-        <ConfigureCommunicationDriver configuration={communicationDriverConfiguration} onChange={handleCommunicationDriverConfigurationChange} />
-      </div>
-      <div className="col">
-        <ConfigureDeviceDriver configuration={deviceDriverConfiguration} onChange={handleDeviceDriverConfigurationChange} />
-      </div>
-    </div>
+    <Tabs>
+      <TabItem value="configuration" label={deviceDriver ? "Driver (connected)" : "Driver (disconnected)"}>
+        <div className="margin-bottom--md">
+          <ConfigureCommunicationDriver configuration={communicationDriverConfiguration} onChange={handleCommunicationDriverConfigurationChange} />
+        </div>
+        <div className="margin-bottom--md">
+          <ConfigureDeviceDriver configuration={deviceDriverConfiguration} onChange={handleDeviceDriverConfigurationChange} />
+        </div>
 
-    <hr />
-
-    {!deviceDriver && <button className="button button--primary" disabled={connecting} onClick={handleConnect} type="button">Connect</button>}
-    {deviceDriver && <button className="button button--primary" disabled={connecting} onClick={handleDisconnect} type="button">Disconnect</button>}
+        <ConnectButton connected={!!deviceDriver} connecting={connecting} onConnect={handleConnect} onDisconnect={handleDisconnect} />
+      </TabItem>
+      <TabItem value="commands" label={deviceDriver ? "Commands *" : "Commands"}>
+        {!deviceDriver && <p>You need to connect to a device first</p>}
+        {deviceDriver && <SendCommand deviceDriver={deviceDriver} />}
+      </TabItem>
+    </Tabs>
   </>
 }
