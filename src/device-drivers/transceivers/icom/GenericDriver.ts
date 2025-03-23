@@ -8,8 +8,8 @@ import { padBytesEnd } from "../../../utils/padBytesEnd";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
 import { fromLittleEndianBCD } from "../../../utils/fromLittleEndianBCD";
-import { TransceiverCommands } from "../base/TransceiverCommands";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
+import { DeviceDriverCommandParameterType } from "../../base/DeviceCommandParameterType";
 
 const vfoType = z.enum([
     TransceiverVFOType.Current,
@@ -37,7 +37,7 @@ export class GenericDriver extends TransceiverDriver {
 
   readonly _commands = {
     setAGC: Object.assign(
-      ({ attack }: Parameters<NonNullable<TransceiverCommands["setAGC"]>>[0]) =>
+      ({ attack }: DeviceDriverCommandParameterType<TransceiverDriver, "setAGC">) =>
         this.communicationDriver.write(
           this.buildCommand(
             0x16,
@@ -57,8 +57,8 @@ export class GenericDriver extends TransceiverDriver {
         })
       }
     ),
-    setVFO: Object.assign( // 0 is current, 1 is other
-      ({ frequency, vfo }: Parameters<TransceiverCommands["setVFO"]>[0]) =>
+    setVFO: Object.assign(
+      ({ frequency, vfo }: DeviceDriverCommandParameterType<TransceiverDriver, "setVFO">) =>
         this.communicationDriver.write(this.buildCommand(0x25, 0x00, new Uint8Array([VFOMap[vfo as keyof typeof VFOMap], ...padBytesEnd(toLittleEndianBCD(frequency), 5)]))),
       {
         parameterType: z.object({
@@ -70,8 +70,8 @@ export class GenericDriver extends TransceiverDriver {
           vfo: vfoType
         })
       }),
-    getVFO: Object.assign( // 0 is current, 1 is other
-      async ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
+    getVFO: Object.assign(
+      async ({ vfo }: DeviceDriverCommandParameterType<TransceiverDriver, "getVFO">) => {
         const value = firstValueFrom(
           delimiterParser(this.communicationDriver.observable, 0xFD)
             .pipe(

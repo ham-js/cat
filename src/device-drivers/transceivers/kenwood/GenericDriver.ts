@@ -5,7 +5,7 @@ import { TransceiverVendor } from "../base/TransceiverVendor";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
-import { TransceiverCommands } from "../base/TransceiverCommands";
+import { DeviceDriverCommandParameterType } from "../../base/DeviceCommandParameterType";
 
 const vfoType = z.enum([
   TransceiverVFOType.A,
@@ -25,7 +25,7 @@ export class GenericDriver extends TransceiverDriver {
 
   readonly _commands = {
     setAGC: Object.assign(
-      ({ attack }: Parameters<NonNullable<TransceiverCommands["setAGC"]>>[0]) =>
+      ({ attack }: DeviceDriverCommandParameterType<TransceiverDriver, "setAGC">) =>
         this.communicationDriver.writeString(
           `GC0${AGCAttackNumbers[attack as keyof typeof AGCAttackNumbers]};`
         ),
@@ -41,7 +41,7 @@ export class GenericDriver extends TransceiverDriver {
       }
     ),
     setVFO: Object.assign(
-      ({ frequency, vfo }: Parameters<TransceiverCommands["setVFO"]>[0]) =>
+      ({ frequency, vfo }: DeviceDriverCommandParameterType<TransceiverDriver, "setVFO">) =>
         this.communicationDriver.writeString(
           `F${vfo === TransceiverVFOType.A ? 'A' : 'B'}${frequency.toString(10).padStart(11, '0')};`
         ),
@@ -56,7 +56,7 @@ export class GenericDriver extends TransceiverDriver {
         })
       }),
     getVFO: Object.assign(
-      async ({ vfo }: Parameters<TransceiverCommands["getVFO"]>[0]) => {
+      async ({ vfo }: DeviceDriverCommandParameterType<TransceiverDriver, "getVFO">) => {
         const value = firstValueFrom(
           delimiterParser(this.communicationDriver.stringObservable(), ";")
             .pipe(
