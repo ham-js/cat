@@ -6,9 +6,13 @@ import { TransceiverVendor } from "../base/TransceiverVendor";
 import { TransceiverAGCAttack } from "../base/TransceiverAGCAttack";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 
+class TestGenericDriver extends GenericDriver {
+  static readonly supportedCommunicationDrivers = [TestCommunicationDriver]
+}
+
 describe("GenericDriver", () => {
   const communicationDriver = new TestCommunicationDriver()
-  const genericTransceiver = new GenericDriver(communicationDriver, 0x5E, 0xE0)
+  const genericTransceiver = new TestGenericDriver(communicationDriver, 0x5E, 0xE0)
 
   beforeEach(async () => {
     await genericTransceiver.open()

@@ -10,6 +10,7 @@ import { delimiterParser } from "../../../parsers/delimiterParser";
 import { fromLittleEndianBCD } from "../../../utils/fromLittleEndianBCD";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 import { DeviceDriverCommandParameterType } from "../../base/DeviceCommandParameterType";
+import { DeviceAgnosticDrivers } from "../../../communication-drivers/DeviceAgnosticDrivers";
 
 const vfoType = z.enum([
     TransceiverVFOType.Current,
@@ -30,6 +31,9 @@ const AGCAttackNumbers: Record<TransceiverAGCAttack.Fast | TransceiverAGCAttack.
 export class GenericDriver extends TransceiverDriver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.ICOM
+  static readonly supportedCommunicationDrivers = [
+    ...DeviceAgnosticDrivers
+  ]
 
   constructor(protected communicationDriver: CommunicationDriver, protected deviceAddress: number, protected controllerAddress: number = 0x01) {
     super(communicationDriver)

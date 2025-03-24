@@ -6,6 +6,7 @@ import { CommunicationDriver } from "../../communication-drivers/base/Communicat
 import { Mutex } from "async-mutex"
 import { JSONSchema7 } from "json-schema"
 import { LogDriver } from "../../communication-drivers/LogDriver"
+import { NotInstantiable } from "../../utils/types/NotInstantiable"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commands: Required<{[k in K]: C[K]}>
@@ -27,6 +28,7 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
+  static readonly supportedCommunicationDrivers: NotInstantiable<typeof CommunicationDriver>[] = []
 
   /** @protected */
   abstract readonly _commands: C // we can't make this private or protected because then we can't use this in type params which are public
@@ -37,7 +39,17 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
     return this.communicationDriver instanceof LogDriver ? this.communicationDriver.log : undefined
   }
 
-  constructor(protected communicationDriver: CommunicationDriver) {}
+  constructor(protected communicationDriver: CommunicationDriver) {
+    if (!this.isSupportedCommunicationDriver()) throw new Error("This communication driver is not supported by this device driver")
+  }
+
+  protected isSupportedCommunicationDriver(): boolean {
+    return (this.constructor as typeof DeviceDriver<never>).supportedCommunicationDrivers.some((driver) =>
+      // typescript needs to be convinced here that instanceof can be called on a
+      // class which has a constructor that is not callable, but still has a
+      // prototype property (which is how instanceof works)
+      this.communicationDriver instanceof (driver as typeof CommunicationDriver))
+  }
 
   get isOpen(): boolean {
     return this.communicationDriver.isOpen

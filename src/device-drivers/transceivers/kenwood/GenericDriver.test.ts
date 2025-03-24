@@ -6,10 +6,14 @@ import { GenericDriver } from "./GenericDriver"
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 import { TestCommunicationDriver } from "../../../test/utils/TestCommunicationDriver"
 
+class TestGenericDriver extends GenericDriver {
+  static readonly supportedCommunicationDrivers = [TestCommunicationDriver]
+}
+
 describe("GenericDriver", () => {
   const textEncoder = new TextEncoder()
   const testCommunicationDriver = new TestCommunicationDriver()
-  const genericTransceiver = new GenericDriver(testCommunicationDriver)
+  const genericTransceiver = new TestGenericDriver(testCommunicationDriver)
 
   beforeEach(async () => {
     testCommunicationDriver.write.mockReset()

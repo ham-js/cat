@@ -6,6 +6,7 @@ import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 import { DeviceDriverCommandParameterType } from "../../base/DeviceCommandParameterType";
+import { DeviceAgnosticDrivers } from "../../../communication-drivers/DeviceAgnosticDrivers";
 
 const vfoType = z.enum([
   TransceiverVFOType.A,
@@ -22,6 +23,9 @@ const AGCAttackNumbers: Record<TransceiverAGCAttack.Off | TransceiverAGCAttack.S
 export class GenericDriver extends TransceiverDriver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood
+  static readonly supportedCommunicationDrivers = [
+    ...DeviceAgnosticDrivers
+  ]
 
   readonly _commands = {
     setAGC: Object.assign(

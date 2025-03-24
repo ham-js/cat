@@ -6,6 +6,8 @@ import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "../../../parsers/delimiterParser";
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 import { DeviceDriverCommandParameterType } from "../../base/DeviceCommandParameterType";
+import { CP210xDriver } from "../../../communication-drivers/browser/web-usb/CP210xDriver";
+import { DeviceAgnosticDrivers } from "../../../communication-drivers/DeviceAgnosticDrivers";
 
 const vfoType = z.enum([
   TransceiverVFOType.A,
@@ -23,6 +25,10 @@ const AGCAttackNumbers: Record<TransceiverAGCAttack, number> = {
 export class GenericDriver extends TransceiverDriver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu
+  static readonly supportedCommunicationDrivers = [
+    CP210xDriver,
+    ...DeviceAgnosticDrivers
+  ]
 
   readonly _commands = {
     setAGC: Object.assign(

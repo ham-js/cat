@@ -6,6 +6,7 @@ import { TestCommunicationDriver } from "../../test/utils/TestCommunicationDrive
 import { z } from "zod"
 import { Mutex } from "async-mutex"
 import { LogDriver } from "../../communication-drivers/LogDriver"
+import { DummyDriver } from "../../communication-drivers/DummyDriver"
 
 const testCommand = Object.assign(
   jest.fn(({ param }) => Promise.resolve(`hi, ${param}`)),
@@ -20,6 +21,8 @@ class TestDeviceDriver extends DeviceDriver<{
   optionalCommand?: Command<{ param: number }, string>,
   testCommand: Command<{ param: number }, Promise<string>>
 }> {
+  static readonly supportedCommunicationDrivers = [TestCommunicationDriver]
+
   readonly _commands = {
     testCommand,
     optionalCommand: testCommand
@@ -36,6 +39,12 @@ describe("DeviceDriver", () => {
     await testDeviceDriver.open()
 
     testCommand.mockClear()
+  })
+
+  describe("constructor", () => {
+    test("checks that the communication driver is supported", () => {
+      expect(() => new TestDeviceDriver(new DummyDriver())).toThrow("This communication driver is not supported by this device driver")
+    })
   })
 
   describe("startLogging", () => {

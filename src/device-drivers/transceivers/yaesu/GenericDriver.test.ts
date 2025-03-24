@@ -6,10 +6,14 @@ import { GenericDriver } from "./GenericDriver"
 import { TestCommunicationDriver } from "../../../test/utils/TestCommunicationDriver"
 import { TransceiverVFOType } from "../base/TransceiverVFOType";
 
+class TestGenericDriver extends GenericDriver {
+  static readonly supportedCommunicationDrivers = [TestCommunicationDriver]
+}
+
 describe("GenericDriver", () => {
   const textEncoder = new TextEncoder()
   const testCommunicationDriver = new TestCommunicationDriver()
-  const genericTransceiver = new GenericDriver(testCommunicationDriver)
+  const genericTransceiver = new TestGenericDriver(testCommunicationDriver)
 
   beforeEach(async () => {
     await genericTransceiver.open()

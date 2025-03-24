@@ -1,4 +1,4 @@
-import { map, Observable } from "rxjs";
+import { map, Observable } from "rxjs"
 
 export abstract class CommunicationDriver {
   abstract readonly observable: Observable<Uint8Array>

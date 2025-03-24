@@ -4,6 +4,7 @@ import { TransceiverVendor } from "./base/TransceiverVendor";
 import { TransceiverVFOType } from "./base/TransceiverVFOType";
 import { DeviceDriverCommandParameterType } from "../base/DeviceCommandParameterType";
 import { TransceiverAGCAttack } from "./base/TransceiverAGCAttack";
+import { DummyDriver } from "../../communication-drivers/DummyDriver";
 
 interface State {
   agcAttack: TransceiverAGCAttack
@@ -14,6 +15,7 @@ interface State {
 export class VirtualDriver extends TransceiverDriver {
   static deviceName = "Transceiver"
   static deviceVendor = TransceiverVendor.Virtual
+  static readonly supportedCommunicationDrivers = [DummyDriver]
 
   state: State = {
     agcAttack: TransceiverAGCAttack.Auto,
