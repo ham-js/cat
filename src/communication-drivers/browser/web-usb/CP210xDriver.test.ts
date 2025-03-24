@@ -20,6 +20,18 @@ describe("CP210xDriver", () => {
 
       await expect(firstValueFrom(cp210x.observable)).resolves.toEqual(new Uint8Array([0xFE, 0xFE]))
     })
+
+    test("it completes upon error", async () => {
+      const usbDevice = {
+        productId: 0xEA60,
+        transferIn: jest.fn(() => Promise.reject(new Error("The transfer was cancelled"))),
+        vendorId: 0x10C4
+      }
+
+      const cp210x = new CP210xDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
+
+      await expect(firstValueFrom(cp210x.observable)).rejects.toBeTruthy()
+    })
   })
 
   describe("write", () => {
@@ -35,7 +47,7 @@ describe("CP210xDriver", () => {
       const data = new Uint8Array([0xFE, 0xFE, 0x01, 0xFD])
       cp210x.write(data)
 
-      await expect(usbDevice.transferOut).toHaveBeenCalledWith(1, data)
+      expect(usbDevice.transferOut).toHaveBeenCalledWith(1, data)
     })
   })
 

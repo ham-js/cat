@@ -17,6 +17,7 @@ import { VirtualDriver } from "../../../src/device-drivers/transceivers/VirtualD
 
 export const Playground = () => {
   const [deviceDriver, setDeviceDriver] = useState<TransceiverDriver>(null)
+
   const [connecting, setConnecting] = useState(false)
 
   const [deviceDriverConfiguration, setDeviceDriverConfiguration] = useState<DeviceDriverConfiguration>(DEFAULT_DEVICE_DRIVER_CONFIGURATIONS[DeviceDriverType.Virtual])
@@ -54,7 +55,7 @@ export const Playground = () => {
         newDeviceDriver = new VirtualDriver(communicationDriver)
       }
 
-      await newDeviceDriver.open()
+      await newDeviceDriver.open({ log: true })
       setDeviceDriver(newDeviceDriver)
 
       setConnecting(false)

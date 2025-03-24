@@ -28,7 +28,20 @@ export class CP210xDriver extends WebUSBDriver {
 
     this.observable = new Observable<USBInTransferResult>((subscriber) => {
       const startReading = async () => {
-        while (!subscriber.closed) subscriber.next(await this.usbDevice.transferIn(1, 64))
+        while (!subscriber.closed) {
+          try {
+            subscriber.next(await this.usbDevice.transferIn(1, 64))
+          } catch(error) {
+            // the spec doesn't really say anything about cancelled transferIn errors,
+            // though chrome sets the message to "The transfer was cancelled" (https://wicg.github.io/webusb/#dom-usbdevice-transferin)
+            // it would be better to complete when cancelled and in other cases subscriber.error() instead as
+            // a "real" error might have happened instead of just a read timeout
+            subscriber.complete()
+            console.warn(error)
+
+            break
+          }
+        }
       }
 
       startReading()

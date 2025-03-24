@@ -5,6 +5,7 @@ import { Command } from "./Command"
 import { TestCommunicationDriver } from "../../test/utils/TestCommunicationDriver"
 import { z } from "zod"
 import { Mutex } from "async-mutex"
+import { LogDriver } from "../../communication-drivers/LogDriver"
 
 const testCommand = Object.assign(
   jest.fn(({ param }) => Promise.resolve(`hi, ${param}`)),
@@ -27,12 +28,47 @@ class TestDeviceDriver extends DeviceDriver<{
 
 describe("DeviceDriver", () => {
   const testCommunicationDriver = new TestCommunicationDriver()
-  const testDeviceDriver = new TestDeviceDriver(testCommunicationDriver)
+  let testDeviceDriver = new TestDeviceDriver(testCommunicationDriver)
 
   beforeEach(async () => {
+    testDeviceDriver = new TestDeviceDriver(testCommunicationDriver)
+
     await testDeviceDriver.open()
 
     testCommand.mockClear()
+  })
+
+  describe("startLogging", () => {
+    test("starts logging", () => {
+      expect(testDeviceDriver.log).toBeFalsy()
+
+      testDeviceDriver["startLogging"]()
+
+      expect(testDeviceDriver.log).toBeTruthy()
+    })
+
+    test("is idempotent", () => {
+      testDeviceDriver["startLogging"]()
+
+      const log = testDeviceDriver.log
+
+      testDeviceDriver["startLogging"]()
+
+      expect(testDeviceDriver.log).toEqual(log)
+    })
+  })
+
+  describe("stopLogging", () => {
+    test("stops logging", () => {
+      testDeviceDriver["startLogging"]()
+
+      expect(testDeviceDriver.log).toBeTruthy()
+
+      testDeviceDriver["stopLogging"]()
+
+      expect(testDeviceDriver.log).toBeFalsy()
+      expect(testDeviceDriver["communicationDriver"] instanceof LogDriver).toBe(false)
+    })
   })
 
   describe("open", () => {
@@ -41,6 +77,12 @@ describe("DeviceDriver", () => {
 
       expect(testCommunicationDriver.open).toHaveBeenCalled()
       expect(testDeviceDriver.isOpen).toBe(true)
+    })
+
+    test("allows to log", async () => {
+      await testDeviceDriver.open({ log: true })
+
+      expect(testDeviceDriver.log).toBeTruthy()
     })
   })
 

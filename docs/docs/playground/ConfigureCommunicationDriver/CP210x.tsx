@@ -40,7 +40,7 @@ export const CP210x = ({ configuration, onChange }: Props) => {
   if (configuration.type !== DriverType.CP210x) return null
 
   return <div>
-    <div><label className="text--bold" htmlFor="baudRate">Baud Rate</label></div>
+    <div><label htmlFor="baudRate">Baud Rate</label></div>
     <select id="baudRate" onChange={handleBaudRateChange} value={configuration.baudRate.toString()}>
       {BAUD_RATES.map((baudRate) => <option key={baudRate}>{baudRate}</option>)}
     </select>

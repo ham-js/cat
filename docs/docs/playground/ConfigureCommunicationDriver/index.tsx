@@ -34,7 +34,7 @@ export const ConfigureCommunicationDriver = ({ configuration, onChange }: Props)
   const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [onChange])
 
   return <>
-    <h2>Communication Driver</h2>
+    <div><label htmlFor="communicationDriverType">Communication Driver</label></div>
 
     <select className="margin-bottom--md" id="communicationDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
       {Object.values(DriverType).map((type) => <option key={type} value={type}>{DriverTypeLabels[type]}</option>)}

@@ -41,9 +41,9 @@ export const ConfigureDeviceDriver = ({ configuration, onChange }: Props) => {
   const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [onChange])
 
   return <>
-    <h2>Device Driver</h2>
+    <div><label htmlFor="deviceDriverType">Device Driver</label></div>
 
-    <select className="margin-bottom--md" onChange={handleDriverTypeChange} value={configuration.type}>
+    <select className="margin-bottom--md" id="deviceDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
       {Object.values(DriverType).map((driverType) => <option key={driverType} value={driverType}>{DriverMap[driverType].deviceVendor} {DriverMap[driverType].deviceName}</option>)}
     </select>
   </>

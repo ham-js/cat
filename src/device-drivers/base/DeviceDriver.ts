@@ -4,7 +4,8 @@ import zodToJsonSchema from "zod-to-json-schema"
 import { DeviceVendor } from "./DeviceVendor"
 import { CommunicationDriver } from "../../communication-drivers/base/CommunicationDriver"
 import { Mutex } from "async-mutex"
-import { JSONSchema7, JSONSchema7Definition } from "json-schema"
+import { JSONSchema7 } from "json-schema"
+import { LogDriver } from "../../communication-drivers/LogDriver"
 
 interface DeviceWithCommand<C extends object, K extends keyof C> {
   _commands: Required<{[k in K]: C[K]}>
@@ -32,18 +33,37 @@ export abstract class DeviceDriver<C extends {[k: string]: Command<any, any>}> {
 
   private mutex = new Mutex()
 
+  public get log(): LogDriver["log"] | undefined {
+    return this.communicationDriver instanceof LogDriver ? this.communicationDriver.log : undefined
+  }
+
   constructor(protected communicationDriver: CommunicationDriver) {}
 
   get isOpen(): boolean {
     return this.communicationDriver.isOpen
   }
 
-  async open(): Promise<void> {
+  async open({ log }: { log: boolean } = { log: false }): Promise<void> {
+    if (log) this.startLogging()
+
     await this.communicationDriver.open?.()
   }
 
   async close(): Promise<void> {
     await this.communicationDriver.close?.()
+  }
+
+  protected startLogging() {
+    if (this.log) return
+
+    this.communicationDriver = new LogDriver(this.communicationDriver)
+  }
+
+  protected stopLogging() {
+    if (this.communicationDriver instanceof LogDriver) {
+      this.communicationDriver.stopLogging()
+      this.communicationDriver = this.communicationDriver.driver
+    }
   }
 
   /**
