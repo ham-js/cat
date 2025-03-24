@@ -23,9 +23,9 @@ const getFormattedLogData = (log: Log, format: Format): string => {
   }
 
   const plainData = [...log.data]
-  if (format === Format.Binary) return plainData.map((byte) => `0b${byte.toString(2)}`).join(" ")
+  if (format === Format.Binary) return plainData.map((byte) => `0b${byte.toString(2).padStart(8, "0")}`).join(" ")
   if (format === Format.Decimal) return plainData.join(" ")
-  if (format === Format.Hex) return plainData.map((byte) => `0x${byte.toString(16)}`).join(" ")
+  if (format === Format.Hex) return plainData.map((byte) => `0x${byte.toString(16).padStart(2, "0")}`).join(" ")
 }
 
 enum Format {
@@ -36,7 +36,7 @@ enum Format {
 }
 
 interface Props {
-  deviceDriver: TransceiverDriver
+  deviceDriver: TransceiverDriver | null
 }
 
 export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
@@ -44,16 +44,17 @@ export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
   const [log, setLog] = useState<Log[]>([])
 
   useEffect(() => {
-    if (!deviceDriver.log) return
+    if(deviceDriver) setLog([])
+  }, [deviceDriver])
+
+  useEffect(() => {
+    if (!deviceDriver?.log) return
 
     const subscription = deviceDriver.log.subscribe((newLog) => {
       setLog((log) => [...log, newLog])
     })
 
-    return () => {
-      subscription.unsubscribe()
-      setLog([])
-    }
+    return () => subscription.unsubscribe()
   }, [deviceDriver])
 
   const handleFormatChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => setFormat(value as Format), [])
@@ -66,7 +67,16 @@ export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
     })
   }, [log])
 
+  const handleClear = useCallback(() => setLog([]), [])
+
   return <>
+    <div><label htmlFor="format">Format</label></div>
+    <select className="margin-bottom--md" value={format} onChange={handleFormatChange}>
+      <option value={Format.Binary}>Binary</option>
+      <option value={Format.Decimal}>Decimal</option>
+      <option value={Format.Hex}>Hexadecimal</option>
+      <option value={Format.Utf8}>Text (UTF-8)</option>
+    </select>
     <ul className={clsx("margin-bottom--md padding--md", Styles.output)} ref={outputRef}>
       {
         log.map((log) => <li key={log.timestamp.toISOString()}>
@@ -75,12 +85,6 @@ export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
         </li>)
       }
     </ul>
-    <div><label htmlFor="format">Format</label></div>
-    <select value={format} onChange={handleFormatChange}>
-      <option value={Format.Binary}>Binary</option>
-      <option value={Format.Decimal}>Decimal</option>
-      <option value={Format.Hex}>Hexadecimal</option>
-      <option value={Format.Utf8}>Text (UTF-8)</option>
-    </select>
+    <button className="button button--secondary" onClick={handleClear} type="button">Clear</button>
   </>
 }

@@ -27,21 +27,22 @@ export const DEFAULT_DRIVER_CONFIGURATIONS = {
 
 interface Props {
   configuration: Configuration
+  disabled?: boolean
   onChange: (configuration: Configuration) => void
 }
 
-export const ConfigureCommunicationDriver = ({ configuration, onChange }: Props) => {
+export const ConfigureCommunicationDriver = ({ configuration, disabled, onChange }: Props) => {
   const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [onChange])
 
   return <>
     <div><label htmlFor="communicationDriverType">Communication Driver</label></div>
 
-    <select className="margin-bottom--md" id="communicationDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
+    <select className="margin-bottom--md" disabled={disabled} id="communicationDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
       {Object.values(DriverType).map((type) => <option key={type} value={type}>{DriverTypeLabels[type]}</option>)}
     </select>
 
     <div>
-      {configuration?.type === DriverType.CP210x && <CP210x configuration={configuration} onChange={onChange} />}
+      {configuration?.type === DriverType.CP210x && <CP210x configuration={configuration} disabled={disabled} onChange={onChange} />}
     </div>
 
   </>

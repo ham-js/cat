@@ -73,17 +73,16 @@ export const Playground = () => {
     <Tabs>
       <TabItem value="configuration" label={deviceDriver ? "Driver (connected)" : "Driver (disconnected)"}>
         <div className="margin-bottom--md">
-          <ConfigureCommunicationDriver configuration={communicationDriverConfiguration} onChange={handleCommunicationDriverConfigurationChange} />
+          <ConfigureCommunicationDriver configuration={communicationDriverConfiguration} disabled={!!deviceDriver} onChange={handleCommunicationDriverConfigurationChange} />
         </div>
         <div className="margin-bottom--md">
-          <ConfigureDeviceDriver configuration={deviceDriverConfiguration} onChange={handleDeviceDriverConfigurationChange} />
+          <ConfigureDeviceDriver configuration={deviceDriverConfiguration} disabled={!!deviceDriver} onChange={handleDeviceDriverConfigurationChange} />
         </div>
 
         <ConnectButton connected={!!deviceDriver} connecting={connecting} onConnect={handleConnect} onDisconnect={handleDisconnect} />
       </TabItem>
       <TabItem value="commands" label={deviceDriver ? "Commands *" : "Commands"}>
-        {!deviceDriver && <p>You need to connect to a device first</p>}
-        {deviceDriver && <SendCommand deviceDriver={deviceDriver} />}
+        <SendCommand deviceDriver={deviceDriver} />
       </TabItem>
     </Tabs>
   </>

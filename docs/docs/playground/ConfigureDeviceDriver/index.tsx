@@ -34,16 +34,17 @@ export const DEFAULT_DRIVER_CONFIGURATIONS = {
 
 interface Props {
   configuration: Configuration
+  disabled?: boolean
   onChange: (configuration: Configuration) => void
 }
 
-export const ConfigureDeviceDriver = ({ configuration, onChange }: Props) => {
+export const ConfigureDeviceDriver = ({ configuration, disabled, onChange }: Props) => {
   const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [onChange])
 
   return <>
     <div><label htmlFor="deviceDriverType">Device Driver</label></div>
 
-    <select className="margin-bottom--md" id="deviceDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
+    <select className="margin-bottom--md" disabled={disabled} id="deviceDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
       {Object.values(DriverType).map((driverType) => <option key={driverType} value={driverType}>{DriverMap[driverType].deviceVendor} {DriverMap[driverType].deviceName}</option>)}
     </select>
   </>

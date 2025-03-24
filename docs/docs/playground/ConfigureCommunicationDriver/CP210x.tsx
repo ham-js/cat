@@ -18,17 +18,18 @@ export const BAUD_RATES = [
   256000
 ]
 
-interface Props {
-  configuration: Configuration
-  onChange: (configuration: CP210xConfiguration) => void
-}
-
 export interface CP210xConfiguration {
   baudRate: number
   type: DriverType.CP210x
 }
 
-export const CP210x = ({ configuration, onChange }: Props) => {
+interface Props {
+  configuration: Configuration
+  disabled?: boolean
+  onChange: (configuration: CP210xConfiguration) => void
+}
+
+export const CP210x = ({ configuration, disabled, onChange }: Props) => {
   const handleBaudRateChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => {
     onChange({
       ...configuration,
@@ -41,7 +42,7 @@ export const CP210x = ({ configuration, onChange }: Props) => {
 
   return <div>
     <div><label htmlFor="baudRate">Baud Rate</label></div>
-    <select id="baudRate" onChange={handleBaudRateChange} value={configuration.baudRate.toString()}>
+    <select disabled={disabled} id="baudRate" onChange={handleBaudRateChange} value={configuration.baudRate.toString()}>
       {BAUD_RATES.map((baudRate) => <option key={baudRate}>{baudRate}</option>)}
     </select>
   </div>
