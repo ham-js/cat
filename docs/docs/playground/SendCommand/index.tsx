@@ -10,6 +10,7 @@ import Styles from "./bootstrap.module.scss"
 import clsx from 'clsx'
 import { CommandLogOutput, CommandLog } from './CommandLogOutput'
 import { CommunicationLogOutput } from './CommunicationLogOutput'
+import { TransceiverVFOType } from '../../../../src/device-drivers/transceivers/base/TransceiverVFOType'
 
 interface Props {
   deviceDriver: TransceiverDriver | null

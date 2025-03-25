@@ -1,6 +1,6 @@
 import c from "ansi-colors"
 import { TransceiverDevice } from "../../devices/transceivers/base/types/TransceiverDevice"
-import { TransceiverDevices } from "../../devices/transceivers/TransceiverDevices"
+import { TransceiverDevices } from "../../devices/transceivers/Transceivers"
 import { beforeAll, describe, expect, test } from "@jest/globals"
 import { clear, log } from "console"
 import { prompt } from 'enquirer'

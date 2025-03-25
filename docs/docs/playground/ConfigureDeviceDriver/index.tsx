@@ -1,9 +1,11 @@
-import { ChangeEvent, useCallback } from "react"
+import { ChangeEvent, useCallback, useState } from "react"
 import { TransceiverDriver } from "../../../../src/device-drivers/transceivers/base/TransceiverDriver"
 import { GenericDriver as ICOMGenericDriver } from "../../../../src/device-drivers/transceivers/icom/GenericDriver"
 import { GenericDriver as KenwoodGenericDriver } from "../../../../src/device-drivers/transceivers/kenwood/GenericDriver"
 import { GenericDriver as YaesuGenericDriver } from "../../../../src/device-drivers/transceivers/yaesu/GenericDriver"
 import { VirtualDriver } from "../../../../src/device-drivers/transceivers/VirtualDriver"
+import { TransceiverDevices } from "../../../../src/device-drivers/transceivers/TransceiverDevices"
+import { DeviceDriverInfo } from "../../../../src/device-drivers/base/DeviceDriverInfo"
 
 export enum DriverType {
   ICOMGeneric = 'ICOMGeneric',
@@ -32,6 +34,10 @@ export const DEFAULT_DRIVER_CONFIGURATIONS = {
   [DriverType.YaesuGeneric]: {type: DriverType.YaesuGeneric},
 } as const
 
+const getKey = ({ deviceName }: DeviceDriverInfo): string => {
+  return deviceName
+}
+
 interface Props {
   configuration: Configuration
   disabled?: boolean
@@ -39,13 +45,18 @@ interface Props {
 }
 
 export const ConfigureDeviceDriver = ({ configuration, disabled, onChange }: Props) => {
-  const handleDriverTypeChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => onChange(DEFAULT_DRIVER_CONFIGURATIONS[value]), [onChange])
+  const [selectedDevice, setSelectedDevice] = useState<typeof TransceiverDevices[number]>()
+  const handleSelectDeviceDriver = useCallback((device: typeof TransceiverDevices[number]) => () => {
+    setSelectedDevice(device)
+
+    new selectedDevice(null as any, 1, 2)
+  }, [])
 
   return <>
     <div><label htmlFor="deviceDriverType">Device Driver</label></div>
 
-    <select className="margin-bottom--md" disabled={disabled} id="deviceDriverType" onChange={handleDriverTypeChange} value={configuration.type}>
-      {Object.values(DriverType).map((driverType) => <option key={driverType} value={driverType}>{DriverMap[driverType].deviceVendor} {DriverMap[driverType].deviceName}</option>)}
+    <select className="margin-bottom--md" disabled={disabled} id="deviceDriverType">
+      {TransceiverDevices.map((device) => <option key={getKey(device)} onSelect={handleSelectDeviceDriver(device)} selected={selectedDevice === device}>{device.deviceVendor} {device.deviceName}</option>)}
     </select>
   </>
 }
