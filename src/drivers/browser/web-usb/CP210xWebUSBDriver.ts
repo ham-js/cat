@@ -1,5 +1,6 @@
 import { Observable, map, share } from "rxjs";
 import { WebUSBDriver } from "./base/WebUSBDriver";
+import { DriverType } from "drivers/base/DriverType";
 
 enum ControlCommands {
   InterfaceEnable = 0x00,
@@ -12,7 +13,9 @@ enum ModemHandshakeStateBitMask {
   RTS = 0b1000000010
 }
 
-export class CP210xDriver extends WebUSBDriver {
+export class CP210xWebUSBDriver extends WebUSBDriver {
+  readonly type = DriverType.CP210xWebUSBDriver
+
   static deviceFilters = [
     0xEA60,
     0xEA61,

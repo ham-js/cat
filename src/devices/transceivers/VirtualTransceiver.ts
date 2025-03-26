@@ -1,8 +1,10 @@
 import { command } from "devices/base/decorators/command";
+import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
 import { AGCAttack } from "devices/transceivers/base/AGCAttack";
 import { Transceiver } from "devices/transceivers/base/Transceiver";
 import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
 import { VFOType } from "devices/transceivers/base/VFOType";
+import { DriverType } from "drivers/base/DriverType";
 import { z } from "zod";
 
 interface State {
@@ -11,6 +13,9 @@ interface State {
   vfo: Record<VFOType.A | VFOType.B, number>
 }
 
+@supportedDrivers([
+  DriverType.DummyDriver
+])
 export class VirtualTransceiver extends Transceiver {
   static deviceName = "Transceiver"
   static deviceVendor = TransceiverVendor.Virtual

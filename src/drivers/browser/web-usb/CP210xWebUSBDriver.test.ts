@@ -1,9 +1,9 @@
 import { describe, expect, jest, test } from "@jest/globals"
 
-import { CP210xDriver } from "./CP210xDriver"
+import { CP210xWebUSBDriver } from "./CP210xWebUSBDriver"
 import { firstValueFrom } from "rxjs"
 
-describe("CP210xDriver", () => {
+describe("CP210xWebUSBDriver", () => {
   describe("observable", () => {
     test("it reads data from the usb device", async () => {
       const data = new DataView(new ArrayBuffer(2))
@@ -16,7 +16,7 @@ describe("CP210xDriver", () => {
         vendorId: 0x10C4
       }
 
-      const cp210x = new CP210xDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
+      const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
 
       await expect(firstValueFrom(cp210x.observable)).resolves.toEqual(new Uint8Array([0xFE, 0xFE]))
     })
@@ -28,7 +28,7 @@ describe("CP210xDriver", () => {
         vendorId: 0x10C4
       }
 
-      const cp210x = new CP210xDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
+      const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
 
       await expect(firstValueFrom(cp210x.observable)).rejects.toBeTruthy()
     })
@@ -42,7 +42,7 @@ describe("CP210xDriver", () => {
         vendorId: 0x10C4
       }
 
-      const cp210x = new CP210xDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
+      const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
 
       const data = new Uint8Array([0xFE, 0xFE, 0x01, 0xFD])
       cp210x.write(data)
@@ -69,7 +69,7 @@ describe("CP210xDriver", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any
 
-      const cp210x = new CP210xDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
+      const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
       await cp210x.open()
 
       const openOrder = usbDevice.open.mock.invocationCallOrder[0]

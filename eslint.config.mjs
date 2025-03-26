@@ -11,6 +11,12 @@ export default tseslint.config(
   pluginJest.configs["flat/recommended"],
   jsdoc.configs['flat/recommended'],
   {
-    ignores: ['**/*.tst.ts']
+    ignores: ['**/*.tst.ts'],
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error", {
+          "args": "none",
+        }]
+    }
   }
 )

@@ -6,6 +6,7 @@ import { DeviceType } from "devices/base/DeviceType";
 import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
 import { VFOType } from "devices/transceivers/base/VFOType";
 import { AGCAttack } from "devices/transceivers/base/AGCAttack";
+import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
@@ -21,6 +22,7 @@ describe("GenericTransceiver", () => {
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.ICOM))
+  test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
   describe("setVFO", () => {
     test("implements the command correctly", async () => {

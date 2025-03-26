@@ -7,6 +7,9 @@ import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
 import { filter, firstValueFrom, map } from "rxjs";
 import { delimiterParser } from "devices/base/parsers/delimiterParser";
 import { command } from "devices/base/decorators/command";
+import { DriverType } from "drivers/base/DriverType";
+import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
+import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
 
 const vfoType = z.enum([
   VFOType.A,
@@ -21,6 +24,10 @@ const AGCAttackNumbers: Record<AGCAttack, number> = {
   [AGCAttack.Auto]: 4,
 }
 
+@supportedDrivers([
+  DriverType.CP210xWebUSBDriver,
+  ...DeviceAgnosticDriverTypes
+])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu

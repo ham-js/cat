@@ -1,10 +1,17 @@
 import { describe, expect, test } from "@jest/globals"
+import { DeviceType } from "devices/base/DeviceType"
 import { AGCAttack } from "devices/transceivers/base/AGCAttack"
+import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor"
 import { VFOType } from "devices/transceivers/base/VFOType"
 import { VirtualTransceiver } from "devices/transceivers/VirtualTransceiver"
+import { DriverType } from "drivers/base/DriverType"
 import { DummyDriver } from "drivers/DummyDriver"
 
 describe("Virtual Transceiver", () => {
+  test("device type", () => expect(VirtualTransceiver.deviceType).toBe(DeviceType.Transceiver))
+  test("device vendor", () => expect(VirtualTransceiver.deviceVendor).toBe(TransceiverVendor.Virtual))
+  test("supportedDrivers", () => expect(VirtualTransceiver.supportedDrivers).toEqual([DriverType.DummyDriver]))
+
   describe("setAGC", () => {
     test("it sets the AGC", async () => {
       const virtualTransceiver = new VirtualTransceiver(new DummyDriver())

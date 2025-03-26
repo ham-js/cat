@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import { z } from "zod";
 import { Device } from "../Device";
 import zodToJsonSchema from "zod-to-json-schema";

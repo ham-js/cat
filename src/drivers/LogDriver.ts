@@ -1,6 +1,7 @@
 import { Observable, share, Subject, Subscription } from "rxjs";
 
 import { Driver } from "drivers/base/Driver";
+import { DriverType } from "drivers/base/DriverType";
 
 type Log = ({
   data: Uint8Array,
@@ -14,6 +15,7 @@ type Log = ({
 }
 
 export class LogDriver extends Driver {
+  readonly type: DriverType;
   protected _log = new Subject<Log>()
   log = this._log.asObservable()
     .pipe(
@@ -26,6 +28,7 @@ export class LogDriver extends Driver {
     super()
 
     this.observable = this.driver.observable
+    this.type = driver.type
   }
 
   get isOpen(): boolean {

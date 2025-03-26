@@ -5,11 +5,16 @@ import { DeviceType } from "devices/base/DeviceType"
 import { DeviceVendor } from "devices/base/DeviceVendor"
 import { Driver } from "drivers/base/Driver"
 import { LogDriver } from "drivers/LogDriver"
+import { DriverType } from "drivers/base/DriverType"
 
 export abstract class Device {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
+
+  static get supportedDrivers(): DriverType[] {
+    return Object.values(DriverType)
+  }
 
   private mutex = new Mutex()
   private commandSchemas = new Map<string, JSONSchema7>()
@@ -18,17 +23,7 @@ export abstract class Device {
     return this.driver instanceof LogDriver ? this.driver.log : undefined
   }
 
-  constructor(protected driver: Driver) {
-    // if (!this.isSupportedCommunicationDriver()) throw new Error("This communication driver is not supported by this device driver")
-  }
-
-  // protected isSupportedCommunicationDriver(): boolean {
-    // return (this.constructor as typeof DeviceDriver).supportedCommunicationDrivers.some((driver) =>
-    //   // typescript needs to be convinced here that instanceof can be called on a
-    //   // class which has a constructor that is not callable, but still has a
-    //   // prototype property (which is how instanceof works)
-    //   this.driver instanceof (driver as typeof CommunicationDriver))
-  // }
+  constructor(protected driver: Driver) {}
 
   get isOpen(): boolean {
     return this.driver.isOpen

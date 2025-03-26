@@ -2,8 +2,11 @@ import { describe, expect, jest, test } from "@jest/globals";
 
 import { Subject } from "rxjs";
 import { WebUSBDriver } from "./WebUSBDriver"
+import { DriverType } from "drivers/base/DriverType";
 
 class TestWebUSBDriver extends WebUSBDriver {
+  readonly type = DriverType.DummyDriver
+
   static readonly deviceFilters = [
     {vendorId: 0x1234, productId: 0x5678}
   ]

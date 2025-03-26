@@ -1,6 +1,8 @@
+import { DriverType } from "drivers/base/DriverType"
 import { map, Observable } from "rxjs"
 
 export abstract class Driver {
+  abstract readonly type: DriverType
   abstract readonly observable: Observable<Uint8Array>
   abstract write(data: Uint8Array): void | Promise<void>
 

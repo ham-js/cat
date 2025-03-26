@@ -7,6 +7,8 @@ import { Transceiver } from "devices/transceivers/base/Transceiver";
 import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
 import { delimiterParser } from "devices/base/parsers/delimiterParser";
 import { command } from "devices/base/decorators/command";
+import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
+import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
 
 const vfoType = z.enum([
   VFOType.A,
@@ -20,6 +22,9 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
   [AGCAttack.Fast]: 3,
 }
 
+@supportedDrivers([
+  ...DeviceAgnosticDriverTypes
+])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood

@@ -1,10 +1,12 @@
 import { Driver } from "drivers/base/Driver";
+import { DriverType } from "drivers/base/DriverType";
 import { firstValueFrom, filter, fromEvent, interval, map, Observable, timeout } from "rxjs";
 
 const OPEN_POLLING_INTERVAL = 100
 const OPEN_TIMEOUT = 5000
 
 export class WebSocketDriver extends Driver {
+  readonly type = DriverType.WebSocketDriver
   readonly observable: Observable<Uint8Array>
 
   constructor(protected webSocket: WebSocket) {

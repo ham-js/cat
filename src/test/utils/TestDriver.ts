@@ -2,8 +2,11 @@ import { jest } from "@jest/globals"
 import { Subject } from "rxjs"
 
 import { Driver } from "drivers/base/Driver"
+import { DriverType } from "drivers/base/DriverType"
 
 export class TestDriver extends Driver {
+  readonly type = DriverType.DummyDriver
+
   private _open = false
   subject = new Subject<Uint8Array>()
   readonly observable = this.subject.asObservable()
