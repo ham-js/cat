@@ -1,5 +1,5 @@
-import { DriverType } from "drivers/base/DriverType"
-import { LogDriver } from "drivers/LogDriver"
+import { DriverType } from "../../../drivers"
+import { LogDriver } from "../../../drivers/LogDriver"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const supportedDrivers = <This extends new (...parameters: any[]) => any>(supportedDrivers: DriverType[]) => (target: This, context: ClassDecoratorContext<This>) => {

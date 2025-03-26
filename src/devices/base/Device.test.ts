@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
 import { z } from "zod"
-
-import { command } from "devices/base/decorators/command"
-import { Device } from "devices/base/Device"
-import { DummyDriver } from "drivers/DummyDriver"
-import { LogDriver } from "drivers/LogDriver"
-import { TestDriver } from "test/utils/TestDriver"
+import { Device } from "./Device"
+import { command } from "./decorators/command"
+import { TestDriver } from "../../test/utils/TestDriver"
+import { DummyDriver } from "../../drivers/DummyDriver"
 
 class TestDevice extends Device {
   @command({

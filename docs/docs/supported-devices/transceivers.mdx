@@ -1,21 +1,20 @@
-import { TransceiverVendor } from "../../../src/device-drivers/transceivers/base/TransceiverVendor"
-import { TransceiverDevices } from "../../../src/device-drivers/transceivers/TransceiverDevices"
+import { Transceivers } from "@ham-js/cat"
 
 # Transceivers
 
 The following transceivers are implemented:
 
-{
-  TransceiverDevices.map((device) => <>
+{/* {
+  Transceivers.map((device) => <>
     <details>
       <summary>{device.deviceVendor} {device.deviceName}</summary>
 
       This device implements the following commands:
       <ul>
       {
-        new device().getCommandKeys().map((key) => <li>{key}</li>)
+        new device(null).getCommandKeys().map((key) => <li>{key}</li>)
       }
       </ul>
     </details>
   </>)
-}
+} */}

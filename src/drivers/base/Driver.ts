@@ -1,5 +1,5 @@
-import { DriverType } from "drivers/base/DriverType"
 import { map, Observable } from "rxjs"
+import { DriverType } from "./DriverType"
 
 export abstract class Driver {
   abstract readonly type: DriverType

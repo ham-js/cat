@@ -1,4 +1,4 @@
-import { Driver } from "drivers/base/Driver"
+import { Driver } from "../../../base/Driver"
 
 export abstract class WebUSBDriver extends Driver {
   static readonly deviceFilters: USBDeviceFilter[] = []

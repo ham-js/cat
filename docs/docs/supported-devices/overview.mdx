@@ -1,4 +1,4 @@
-import { DeviceDrivers } from "../../../src/device-drivers/DeviceDrivers"
+import { Devices } from "@ham-js/cat"
 import { DeviceTypes } from "./DeviceTypes"
 
 # Overview
@@ -22,7 +22,7 @@ The following devices are supported:
   </thead>
   <tbody>
     {
-      DeviceDrivers.map(({deviceName, deviceType, deviceVendor}) => (
+      Devices.map(({deviceName, deviceType, deviceVendor}) => (
         <tr>
           <td>{DeviceTypes[deviceType]}</td>
           <td>{deviceVendor}</td>

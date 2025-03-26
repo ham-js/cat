@@ -19,6 +19,7 @@
   "dependencies": {
     "@docusaurus/core": "3.7.0",
     "@docusaurus/preset-classic": "3.7.0",
+    "@ham-js/cat": "file:..",
     "@mdx-js/react": "^3.0.0",
     "@rjsf/core": "^5.24.8",
     "@rjsf/utils": "^5.24.8",

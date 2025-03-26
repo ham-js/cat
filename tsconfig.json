@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "outDir": "dist",

@@ -1,6 +1,6 @@
 import { Observable, map, share } from "rxjs";
 import { WebUSBDriver } from "./base/WebUSBDriver";
-import { DriverType } from "drivers/base/DriverType";
+import { DriverType } from "../../base/DriverType";
 
 enum ControlCommands {
   InterfaceEnable = 0x00,

@@ -1,14 +1,13 @@
 import { z } from "zod";
 import { filter, firstValueFrom, map } from "rxjs";
-
-import { AGCAttack } from "devices/transceivers/base/AGCAttack";
-import { VFOType } from "devices/transceivers/base/VFOType";
-import { Transceiver } from "devices/transceivers/base/Transceiver";
-import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
-import { delimiterParser } from "devices/base/parsers/delimiterParser";
-import { command } from "devices/base/decorators/command";
-import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
-import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
+import { command } from "../../base/decorators/command";
+import { supportedDrivers } from "../../base/decorators/supportedDrivers";
+import { delimiterParser } from "../../base/parsers/delimiterParser";
+import { AGCAttack } from "../base/AGCAttack";
+import { Transceiver } from "../base/Transceiver";
+import { TransceiverVendor } from "../base/TransceiverVendor";
+import { VFOType } from "../base/VFOType";
+import { PlatformAgnosticDriverTypes } from "../../../drivers";
 
 const vfoType = z.enum([
   VFOType.A,
@@ -23,7 +22,7 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 }
 
 @supportedDrivers([
-  ...DeviceAgnosticDriverTypes
+  ...PlatformAgnosticDriverTypes
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"

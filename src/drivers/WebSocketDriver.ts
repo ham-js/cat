@@ -1,6 +1,6 @@
-import { Driver } from "drivers/base/Driver";
-import { DriverType } from "drivers/base/DriverType";
-import { firstValueFrom, filter, fromEvent, interval, map, Observable, timeout } from "rxjs";
+import { firstValueFrom, filter, fromEvent, interval, map, Observable, timeout, share, mergeMap } from "rxjs";
+import { Driver } from "./base/Driver";
+import { DriverType } from "./base/DriverType";
 
 const OPEN_POLLING_INTERVAL = 100
 const OPEN_TIMEOUT = 5000
@@ -12,13 +12,16 @@ export class WebSocketDriver extends Driver {
   constructor(protected webSocket: WebSocket) {
     super()
 
+    // https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/message_event
     this.observable = fromEvent<MessageEvent>(webSocket, "message")
       .pipe(
-        map((event) => {
-          if (typeof event.data === "string") return this.textEncoder.encode(event.data)
+        mergeMap((event) => {
+          if (typeof event.data === "string") return Promise.resolve(this.textEncoder.encode(event.data))
+          if (event.data instanceof Blob) return event.data.arrayBuffer().then((arrayBuffer) => new Uint8Array(arrayBuffer))
 
-          return event.data // blob or arraybuffer
-        })
+          return Promise.resolve(new Uint8Array(event.data))
+        }),
+        share()
       )
   }
 

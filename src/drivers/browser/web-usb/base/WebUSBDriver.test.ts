@@ -2,7 +2,7 @@ import { describe, expect, jest, test } from "@jest/globals";
 
 import { Subject } from "rxjs";
 import { WebUSBDriver } from "./WebUSBDriver"
-import { DriverType } from "drivers/base/DriverType";
+import { DriverType } from "../../../base/DriverType";
 
 class TestWebUSBDriver extends WebUSBDriver {
   readonly type = DriverType.DummyDriver

@@ -1,7 +1,7 @@
 import { fromEventPattern, Observable, share } from "rxjs";
 import { Driver } from "../base/Driver"
 import { SerialPortStream } from "@serialport/stream"
-import { DriverType } from "drivers/base/DriverType";
+import { DriverType } from "../base/DriverType";
 
 export class SerialPortDriver extends Driver {
   readonly type = DriverType.SerialPortDriver

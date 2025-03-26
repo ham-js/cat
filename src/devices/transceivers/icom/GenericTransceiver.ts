@@ -7,12 +7,13 @@ import { delimiterParser } from "../../base/parsers/delimiterParser"
 import { fromLittleEndianBCD } from "../../base/utils/fromLittleEndianBCD"
 import { padBytesEnd } from "../../base/utils/padBytesEnd"
 import { toLittleEndianBCD } from "../../base/utils/toLittleEndianBCD"
-import { VFOType } from "devices/transceivers/base/VFOType"
-import { Transceiver } from "devices/transceivers/base/Transceiver"
-import { Driver } from "drivers/base/Driver"
-import { command } from "devices/base/decorators/command"
-import { supportedDrivers } from "devices/base/decorators/supportedDrivers"
-import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes"
+import { VFOType } from "../base/VFOType"
+import { supportedDrivers } from "../../base/decorators/supportedDrivers"
+import { Transceiver } from "../base/Transceiver"
+import { Driver } from "../../../drivers/base/Driver"
+import { command } from "../../base/decorators/command"
+import { device } from "../../base/decorators/device"
+import { PlatformAgnosticDriverTypes } from "../../../drivers"
 
 const vfoType = z.enum([
     VFOType.Current,
@@ -31,14 +32,20 @@ const AGCAttackNumbers: Record<AGCAttack.Fast | AGCAttack.Mid | AGCAttack.Slow, 
 }
 
 @supportedDrivers([
-  ...DeviceAgnosticDriverTypes
+  ...PlatformAgnosticDriverTypes
 ])
+@device({
+  deviceAddress: z
+    .number(),
+  controllerAddress: z
+    .number()
+})
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.ICOM
 
-  constructor(protected driver: Driver, protected deviceAddress: number, protected controllerAddress: number = 0x01) {
-    super(driver)
+  constructor(protected driver: Driver, protected parameter: { deviceAddress: number, controllerAddress: number }) {
+    super(driver, parameter)
   }
 
   @command({
@@ -108,16 +115,16 @@ export class GenericTransceiver extends Transceiver {
   }
 
   protected commandMatchesDevice(command: Uint8Array): boolean {
-    return command[2] == this.deviceAddress
-      && command[3] == this.controllerAddress
+    return command[2] == this.parameter.deviceAddress
+      && command[3] == this.parameter.controllerAddress
   }
 
   protected buildCommand(command: number, subCommandNumber: number, data = new Uint8Array()): Uint8Array {
     return new Uint8Array([
       0xFE, // delimiter
       0xFE, // delimiter
-      this.deviceAddress,
-      this.controllerAddress,
+      this.parameter.deviceAddress,
+      this.parameter.controllerAddress,
       command,
       subCommandNumber,
       ...data,

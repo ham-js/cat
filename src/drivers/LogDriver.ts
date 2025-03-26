@@ -1,9 +1,8 @@
 import { Observable, share, Subject, Subscription } from "rxjs";
+import { Driver } from "./base/Driver";
+import { DriverType } from "./base/DriverType";
 
-import { Driver } from "drivers/base/Driver";
-import { DriverType } from "drivers/base/DriverType";
-
-export type Log = ({
+export type DriverLog = ({
   data: Uint8Array,
   type: "read" | "write"
 } | {
@@ -16,7 +15,7 @@ export type Log = ({
 
 export class LogDriver extends Driver {
   readonly type: DriverType;
-  protected _log = new Subject<Log>()
+  protected _log = new Subject<DriverLog>()
   log = this._log.asObservable()
     .pipe(
       share()

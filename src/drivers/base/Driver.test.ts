@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals"
 import { firstValueFrom } from "rxjs"
-import { TestDriver } from "test/utils/TestDriver"
+import { TestDriver } from "../../test/utils/TestDriver"
 
 describe("Driver", () => {
   const driver = new TestDriver()

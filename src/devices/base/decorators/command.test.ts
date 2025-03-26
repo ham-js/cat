@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals"
 import { z } from "zod"
 
 import { command } from "./command"
-import { Device } from "devices/base/Device"
-import { TestDriver } from "test/utils/TestDriver"
 import { firstValueFrom } from "rxjs"
+import { Device } from "../Device"
+import { TestDriver } from "../../../test/utils/TestDriver"
 
 class TestDevice extends Device {
   myCommandCount = 0
@@ -83,6 +83,23 @@ describe("command", () => {
         someString: "ho"
       },
       result: "1 ho",
+      timestamp: expect.any(Date)
+    })
+  })
+
+  test("it logs errors", async () => {
+    await device.open({ logDevice: true })
+
+    const log = firstValueFrom(device.deviceLog!)
+
+    await expect(device.myErrorCommand({ message: "Whoopsie" })).rejects.toBeTruthy()
+
+    await expect(log).resolves.toEqual({
+      command: "myErrorCommand",
+      error: "Whoopsie",
+      parameter: {
+        message: "Whoopsie"
+      },
       timestamp: expect.any(Date)
     })
   })

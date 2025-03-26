@@ -42,16 +42,24 @@ describe("WebSocketDriver", () => {
   describe("observable", () => {
     test("reads strings from the websocket", async () => {
       const server = new Server("ws://test.com:3000")
-      server.on("connection", (socket) => {
-        socket.send("ABC")
-      })
-
       const webSocket = new WebSocket("ws://test.com:3000")
       const driver = new WebSocketDriver(webSocket)
-      const result = firstValueFrom(driver.observable)
       await driver.open()
 
-      await expect(result).resolves.toEqual(new Uint8Array([65, 66, 67]))
+      const stringResult = firstValueFrom(driver.observable)
+      server.clients()[0].send("ABC")
+      await expect(stringResult).resolves.toEqual(new Uint8Array([65, 66, 67]))
+
+      const blobResult = firstValueFrom(driver.observable)
+      server.clients()[0].send(new Blob([new Uint8Array([68, 69, 70])]))
+      await expect(blobResult).resolves.toEqual(new Uint8Array([68, 69, 70]))
+
+      const arrayBufferResult = firstValueFrom(driver.observable)
+      const data = new ArrayBuffer(3)
+      const view = new Uint8Array(data)
+      view.set([71, 72, 73])
+      server.clients()[0].send(data)
+      await expect(arrayBufferResult).resolves.toEqual(new Uint8Array([71, 72, 73]))
 
       server.close()
     })

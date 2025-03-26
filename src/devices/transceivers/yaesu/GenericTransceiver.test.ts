@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
-import { DeviceType } from "devices/base/DeviceType";
-import { AGCAttack } from "devices/transceivers/base/AGCAttack";
-import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
-import { VFOType } from "devices/transceivers/base/VFOType";
-import { GenericTransceiver } from "devices/transceivers/yaesu/GenericTransceiver";
-import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
-import { DriverType } from "drivers/base/DriverType";
-import { TestDriver } from "test/utils/TestDriver";
+import { DeviceType } from "../../base/DeviceType";
+import { DriverType } from "../../../drivers/base/DriverType";
+import { TestDriver } from "../../../test/utils/TestDriver";
+import { AGCAttack } from "../base/AGCAttack";
+import { TransceiverVendor } from "../base/TransceiverVendor";
+import { VFOType } from "../base/VFOType";
+import { GenericTransceiver } from "./GenericTransceiver";
+import { PlatformAgnosticDriverTypes } from "../../../drivers";
 
 describe("GenericTransceiver", () => {
   const textEncoder = new TextEncoder()
@@ -24,7 +24,7 @@ describe("GenericTransceiver", () => {
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Yaesu))
-  test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([DriverType.CP210xWebUSBDriver, ...DeviceAgnosticDriverTypes]))
+  test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([DriverType.CP210xWebUSBDriver, ...PlatformAgnosticDriverTypes]))
 
   describe("setVFO", () => {
     test("implements the command correctly", async () => {

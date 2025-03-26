@@ -1,7 +1,6 @@
 import { EMPTY } from "rxjs";
-
-import { Driver } from "drivers/base/Driver";
-import { DriverType } from "drivers/base/DriverType";
+import { Driver } from "./base/Driver";
+import { DriverType } from "./base/DriverType";
 
 export class DummyDriver extends Driver {
   readonly type = DriverType.DummyDriver

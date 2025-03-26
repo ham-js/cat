@@ -1,20 +1,16 @@
-import { ObservedValueOf } from "rxjs"
-import { TransceiverDriver } from "../../../../src/device-drivers/transceivers/base/TransceiverDriver"
-import { LogDriver } from "../../../../src/communication-drivers/LogDriver"
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import Styles from "./output.module.scss"
 import clsx from "clsx"
+import { Device, DriverLog as DriverLogType } from "@ham-js/cat"
 
-type Log = ObservedValueOf<LogDriver["log"]>
-
-const getLogPrefix = (type: Log["type"]): string => {
+const getLogPrefix = (type: DriverLogType["type"]): string => {
   if (type === "read") return ">"
   if (type === "write") return "<"
   if (type === "open") return "+ open"
   if (type === "close") return "- close"
 }
 
-const getFormattedLogData = (log: Log, format: Format): string => {
+const getFormattedLogData = (log: DriverLogType, format: Format): string => {
   if (!("data" in log)) return ""
 
   if (format === Format.Utf8) {
@@ -36,26 +32,26 @@ enum Format {
 }
 
 interface Props {
-  deviceDriver: TransceiverDriver | null
+  device: Device | null
 }
 
-export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
+export const DriverLog = ({ device }: Props) => {
   const [format, setFormat] = useState<Format>(Format.Utf8)
-  const [log, setLog] = useState<Log[]>([])
+  const [logs, setLogs] = useState<DriverLogType[]>([])
 
   useEffect(() => {
-    if(deviceDriver) setLog([])
-  }, [deviceDriver])
+    if(device) setLogs([])
+  }, [device])
 
   useEffect(() => {
-    if (!deviceDriver?.log) return
+    if (!device?.driverLog) return
 
-    const subscription = deviceDriver.log.subscribe((newLog) => {
-      setLog((log) => [...log, newLog])
+    const subscription = device.driverLog.subscribe((log) => {
+      setLogs((logs) => [...logs, log])
     })
 
     return () => subscription.unsubscribe()
-  }, [deviceDriver])
+  }, [device])
 
   const handleFormatChange = useCallback(({ target: { value }}: ChangeEvent<HTMLSelectElement>) => setFormat(value as Format), [])
 
@@ -65,9 +61,9 @@ export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
     outputRef.current?.scrollTo({
       top: outputRef.current?.scrollHeight
     })
-  }, [log])
+  }, [logs])
 
-  const handleClear = useCallback(() => setLog([]), [])
+  const handleClear = useCallback(() => setLogs([]), [])
 
   return <>
     <div><label htmlFor="format">Format</label></div>
@@ -79,7 +75,7 @@ export const CommunicationLogOutput = ({ deviceDriver }: Props) => {
     </select>
     <ul className={clsx("margin-bottom--md padding--md", Styles.output)} ref={outputRef}>
       {
-        log.map((log) => <li key={log.timestamp.toISOString()}>
+        logs.map((log) => <li key={log.timestamp.toISOString()}>
           <span className={Styles.timestamp}>{log.timestamp.toISOString()}</span>{' '}
           {getLogPrefix(log.type)} {getFormattedLogData(log, format)}
         </li>)

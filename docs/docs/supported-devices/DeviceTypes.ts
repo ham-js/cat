@@ -1,4 +1,4 @@
-import { DeviceType } from "../../../src/device-drivers/base/DeviceType";
+import { DeviceType } from "@ham-js/cat"
 
 export const DeviceTypes: Record<DeviceType, string> = {
   [DeviceType.Antenna]: "Antenna",

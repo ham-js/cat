@@ -1,11 +1,11 @@
-import { command } from "devices/base/decorators/command";
-import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
-import { AGCAttack } from "devices/transceivers/base/AGCAttack";
-import { Transceiver } from "devices/transceivers/base/Transceiver";
-import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
-import { VFOType } from "devices/transceivers/base/VFOType";
-import { DriverType } from "drivers/base/DriverType";
 import { z } from "zod";
+import { DriverType } from "../../drivers";
+import { command } from "../base/decorators/command";
+import { supportedDrivers } from "../base/decorators/supportedDrivers";
+import { AGCAttack } from "./base/AGCAttack";
+import { Transceiver } from "./base/Transceiver";
+import { TransceiverVendor } from "./base/TransceiverVendor";
+import { VFOType } from "./base/VFOType";
 
 interface State {
   agcAttack: AGCAttack

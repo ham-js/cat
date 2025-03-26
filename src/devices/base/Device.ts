@@ -1,26 +1,35 @@
 import { Mutex } from "async-mutex"
 import { JSONSchema7 } from "json-schema"
 
-import { DeviceType } from "devices/base/DeviceType"
-import { DeviceVendor } from "devices/base/DeviceVendor"
-import { Driver } from "drivers/base/Driver"
-import { LogDriver } from "drivers/LogDriver"
-import { DriverType } from "drivers/base/DriverType"
 import { Observable, share, Subject } from "rxjs"
+import { DeviceType } from "./DeviceType"
+import { DeviceVendor } from "./DeviceVendor"
+import { DriverType } from "../../drivers/base/DriverType"
+import { LogDriver } from "../../drivers/LogDriver"
+import { Driver } from "../../drivers/base/Driver"
 
-export type Log = {
+export type DeviceLog = ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: any,
+} | {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error: any
+}) & {
   command: string,
   parameter: object,
-  result: any,
   timestamp: Date
 }
 
-export abstract class Device {
+export class Device {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
 
-  protected _deviceLog: Subject<Log> | undefined
+  protected _deviceLog: Subject<DeviceLog> | undefined
+
+  static get deviceSchema(): JSONSchema7 {
+    return {}
+  }
 
   static get supportedDrivers(): DriverType[] {
     return Object.values(DriverType)
@@ -33,17 +42,17 @@ export abstract class Device {
     return this.driver instanceof LogDriver ? this.driver.log : undefined
   }
 
-  public get deviceLog(): Observable<Log> | undefined {
+  public get deviceLog(): Observable<DeviceLog> | undefined {
     return this._deviceLog?.asObservable().pipe(share())
   }
 
-  constructor(protected driver: Driver) {}
+  constructor(protected driver: Driver, protected parameter: object = {}) {}
 
   get isOpen(): boolean {
     return this.driver.isOpen
   }
 
-  protected log(log: Log) {
+  protected log(log: DeviceLog) {
     this._deviceLog?.next(log)
   }
 
@@ -62,7 +71,7 @@ export abstract class Device {
   protected startLoggingDevice() {
     if (this._deviceLog) return
 
-    this._deviceLog = new Subject<Log>()
+    this._deviceLog = new Subject<DeviceLog>()
   }
 
   protected startLoggingDriver() {

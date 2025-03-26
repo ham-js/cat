@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from "@jest/globals";
 import { LogDriver } from "./LogDriver";
 import { firstValueFrom } from "rxjs";
-import { Driver } from "drivers/base/Driver";
-import { TestDriver } from "test/utils/TestDriver";
+import { Driver } from "./base/Driver";
+import { TestDriver } from "../test/utils/TestDriver";
 
 describe("LogDriver", () => {
   let wrappedDriver: Driver

@@ -1,15 +1,13 @@
+import { firstValueFrom, filter, map } from "rxjs";
 import { z } from "zod";
-
-import { VFOType } from "devices/transceivers/base/VFOType";
-import { AGCAttack } from "devices/transceivers/base/AGCAttack";
-import { Transceiver } from "devices/transceivers/base/Transceiver";
-import { TransceiverVendor } from "devices/transceivers/base/TransceiverVendor";
-import { filter, firstValueFrom, map } from "rxjs";
-import { delimiterParser } from "devices/base/parsers/delimiterParser";
-import { command } from "devices/base/decorators/command";
-import { DriverType } from "drivers/base/DriverType";
-import { DeviceAgnosticDriverTypes } from "drivers/base/DeviceAgnosticDriverTypes";
-import { supportedDrivers } from "devices/base/decorators/supportedDrivers";
+import { DriverType, PlatformAgnosticDriverTypes } from "../../../drivers";
+import { command } from "../../base/decorators/command";
+import { supportedDrivers } from "../../base/decorators/supportedDrivers";
+import { delimiterParser } from "../../base/parsers/delimiterParser";
+import { AGCAttack } from "../base/AGCAttack";
+import { Transceiver } from "../base/Transceiver";
+import { TransceiverVendor } from "../base/TransceiverVendor";
+import { VFOType } from "../base/VFOType";
 
 const vfoType = z.enum([
   VFOType.A,
@@ -26,7 +24,7 @@ const AGCAttackNumbers: Record<AGCAttack, number> = {
 
 @supportedDrivers([
   DriverType.CP210xWebUSBDriver,
-  ...DeviceAgnosticDriverTypes
+  ...PlatformAgnosticDriverTypes
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"

@@ -2,6 +2,7 @@
 
 module.exports = {
   modulePaths: ["./src"],
+  rootDir: "./src",
   testEnvironment: "node",
   testPathIgnorePatterns: ["node_modules/*", "test/e2e/*"],
   transform: {

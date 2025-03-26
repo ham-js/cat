@@ -1,8 +1,7 @@
 import { jest } from "@jest/globals"
 import { Subject } from "rxjs"
-
-import { Driver } from "drivers/base/Driver"
-import { DriverType } from "drivers/base/DriverType"
+import { Driver } from "../../drivers/base/Driver"
+import { DriverType } from "../../drivers/base/DriverType"
 
 export class TestDriver extends Driver {
   readonly type = DriverType.DummyDriver
