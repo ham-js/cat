@@ -14,7 +14,16 @@ export const command = <This extends Device, ParameterType extends z.ZodRawShape
       const release = await this["mutex"].acquire()
 
       try {
-        return await target.call(this, z.object(parameterType).parse(parameter))
+        const result = await target.call(this, z.object(parameterType).parse(parameter))
+
+        this.log({
+          command: String(context.name),
+          parameter,
+          result,
+          timestamp: new Date()
+        })
+
+        return result
       } finally {
         release()
       }

@@ -3,7 +3,7 @@ import { Observable, share, Subject, Subscription } from "rxjs";
 import { Driver } from "drivers/base/Driver";
 import { DriverType } from "drivers/base/DriverType";
 
-type Log = ({
+export type Log = ({
   data: Uint8Array,
   type: "read" | "write"
 } | {

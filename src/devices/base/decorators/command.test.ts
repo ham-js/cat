@@ -4,6 +4,7 @@ import { z } from "zod"
 import { command } from "./command"
 import { Device } from "devices/base/Device"
 import { TestDriver } from "test/utils/TestDriver"
+import { firstValueFrom } from "rxjs"
 
 class TestDevice extends Device {
   myCommandCount = 0
@@ -62,6 +63,27 @@ describe("command", () => {
         "someString",
       ],
       type: "object",
+    })
+  })
+
+  test("it logs the command", async () => {
+    jest.useFakeTimers()
+
+    await device.open({ logDevice: true })
+
+    const log = firstValueFrom(device.deviceLog!)
+
+    device.myCommand({ count: 1, someString: "ho" })
+    await jest.advanceTimersToNextTimerAsync(1000)
+
+    await expect(log).resolves.toEqual({
+      command: "myCommand",
+      parameter: {
+        count: 1,
+        someString: "ho"
+      },
+      result: "1 ho",
+      timestamp: expect.any(Date)
     })
   })
 

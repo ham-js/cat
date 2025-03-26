@@ -31,46 +31,11 @@ describe("DeviceDriver", () => {
 
   beforeEach(async () => {
     device = new TestDevice(driver)
-
-    await device.open()
   })
 
   describe.skip("constructor", () => {
     test("checks that the communication driver is supported", () => {
       expect(() => new TestDevice(new DummyDriver())).toThrow("This communication driver is not supported by this device driver")
-    })
-  })
-
-  describe("startLogging", () => {
-    test("starts logging", () => {
-      expect(device.log).toBeFalsy()
-
-      device["startLogging"]()
-
-      expect(device.log).toBeTruthy()
-    })
-
-    test("is idempotent", () => {
-      device["startLogging"]()
-
-      const log = device.log
-
-      device["startLogging"]()
-
-      expect(device.log).toEqual(log)
-    })
-  })
-
-  describe("stopLogging", () => {
-    test("stops logging", () => {
-      device["startLogging"]()
-
-      expect(device.log).toBeTruthy()
-
-      device["stopLogging"]()
-
-      expect(device.log).toBeFalsy()
-      expect(device["driver"] instanceof LogDriver).toBe(false)
     })
   })
 
@@ -85,7 +50,22 @@ describe("DeviceDriver", () => {
     test("allows to log", async () => {
       await device.open({ log: true })
 
-      expect(device.log).toBeTruthy()
+      expect(device.driverLog).toBeTruthy()
+      expect(device.deviceLog).toBeTruthy()
+    })
+
+    test("allows to log device", async () => {
+      await device.open({ logDevice: true })
+
+      expect(device.driverLog).toBeFalsy()
+      expect(device.deviceLog).toBeTruthy()
+    })
+
+    test("allows to log driver", async () => {
+      await device.open({ logDriver: true })
+
+      expect(device.driverLog).toBeTruthy()
+      expect(device.deviceLog).toBeFalsy()
     })
   })
 
@@ -95,6 +75,13 @@ describe("DeviceDriver", () => {
 
       expect(driver.close).toHaveBeenCalled()
       expect(device.isOpen).toBe(false)
+    })
+
+    test("stops logging", async () => {
+      await device.open({ logDevice: true })
+      await device.close()
+
+      expect(device.deviceLog).toBeFalsy()
     })
   })
 

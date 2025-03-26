@@ -6,11 +6,21 @@ import { DeviceVendor } from "devices/base/DeviceVendor"
 import { Driver } from "drivers/base/Driver"
 import { LogDriver } from "drivers/LogDriver"
 import { DriverType } from "drivers/base/DriverType"
+import { Observable, share, Subject } from "rxjs"
+
+export type Log = {
+  command: string,
+  parameter: object,
+  result: any,
+  timestamp: Date
+}
 
 export abstract class Device {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
+
+  protected _deviceLog: Subject<Log> | undefined
 
   static get supportedDrivers(): DriverType[] {
     return Object.values(DriverType)
@@ -19,8 +29,12 @@ export abstract class Device {
   private mutex = new Mutex()
   private commandSchemas = new Map<string, JSONSchema7>()
 
-  public get log(): LogDriver["log"] | undefined {
+  public get driverLog(): LogDriver["log"] | undefined {
     return this.driver instanceof LogDriver ? this.driver.log : undefined
+  }
+
+  public get deviceLog(): Observable<Log> | undefined {
+    return this._deviceLog?.asObservable().pipe(share())
   }
 
   constructor(protected driver: Driver) {}
@@ -29,27 +43,37 @@ export abstract class Device {
     return this.driver.isOpen
   }
 
-  async open({ log }: { log: boolean } = { log: false }): Promise<void> {
-    if (log) this.startLogging()
+  protected log(log: Log) {
+    this._deviceLog?.next(log)
+  }
+
+  async open({ log, logDriver, logDevice }: { log?: boolean, logDriver?: boolean, logDevice?: boolean } = {}): Promise<void> {
+    if (log || logDriver) this.startLoggingDriver()
+    if (log || logDevice) this.startLoggingDevice()
 
     await this.driver.open?.()
   }
 
   async close(): Promise<void> {
     await this.driver.close?.()
+    this.stopLoggingDevice()
   }
 
-  protected startLogging() {
-    if (this.log) return
+  protected startLoggingDevice() {
+    if (this._deviceLog) return
+
+    this._deviceLog = new Subject<Log>()
+  }
+
+  protected startLoggingDriver() {
+    if (this.driverLog) return
 
     this.driver = new LogDriver(this.driver)
   }
 
-  protected stopLogging() {
-    if (this.driver instanceof LogDriver) {
-      this.driver.stopLogging()
-      this.driver = this.driver.driver
-    }
+  protected stopLoggingDevice() {
+    this._deviceLog?.complete()
+    this._deviceLog = undefined
   }
 
   displayName(): string {
