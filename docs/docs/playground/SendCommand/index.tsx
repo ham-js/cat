@@ -4,7 +4,6 @@ import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
 import validator from '@rjsf/validator-ajv8'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react"
-import clsx from 'clsx'
 import { DeviceLog } from './DeviceLog'
 import { Device } from "@ham-js/cat"
 import { DriverLog } from './DriverLog'

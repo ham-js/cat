@@ -31,6 +31,10 @@ export class Device {
     return {}
   }
 
+  static get displayName(): string {
+    return `${this.deviceVendor} ${this.deviceName}`
+  }
+
   static get supportedDrivers(): DriverType[] {
     return Object.values(DriverType)
   }
@@ -83,10 +87,6 @@ export class Device {
   protected stopLoggingDevice() {
     this._deviceLog?.complete()
     this._deviceLog = undefined
-  }
-
-  displayName(): string {
-    return "hihi"
   }
 
   getCommandSchema(command: string): JSONSchema7 {

@@ -3,9 +3,12 @@ import { z } from "zod"
 import { Device } from "./Device"
 import { command } from "./decorators/command"
 import { TestDriver } from "../../test/utils/TestDriver"
-import { DummyDriver } from "../../drivers/DummyDriver"
+import { TransceiverVendor } from "../transceivers"
 
 class TestDevice extends Device {
+  static deviceVendor = TransceiverVendor.Kenwood
+  static deviceName = "Test"
+
   @command({
     param: z.number().min(0)
   })
@@ -31,11 +34,7 @@ describe("DeviceDriver", () => {
     device = new TestDevice(driver)
   })
 
-  describe.skip("constructor", () => {
-    test("checks that the communication driver is supported", () => {
-      expect(() => new TestDevice(new DummyDriver())).toThrow("This communication driver is not supported by this device driver")
-    })
-  })
+  test("displayName", () => expect(TestDevice.displayName).toEqual("Kenwood Test"))
 
   describe("open", () => {
     test("opens the communication driver", async () => {

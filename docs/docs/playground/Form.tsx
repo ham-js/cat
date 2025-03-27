@@ -23,4 +23,5 @@ const FieldTemplate = <T, S extends StrictRJSFSchema, F extends FormContextType>
   </div>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Form = <T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(props: FormProps<T, S, F>) => <BaseForm<T, S, F> {...props} templates={{ FieldTemplate: FieldTemplate<T, S, F> }} />

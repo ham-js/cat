@@ -64,9 +64,7 @@ export const ConnectDevice = ({ device, onChange }: Props) => {
     <select className="margin-bottom--md" disabled={device?.isOpen} id="device" onChange={handleSelectedDeviceIndexChange} value={selectedDeviceIndex}>
       {
         Devices.map((DeviceConstructor, i) =>
-          <option key={getDeviceKey(DeviceConstructor)} value={i}>
-            {DeviceConstructor.deviceVendor} {DeviceConstructor.deviceName}
-          </option>
+          <option key={getDeviceKey(DeviceConstructor)} value={i}>{DeviceConstructor.displayName}</option>
         )
       }
     </select>

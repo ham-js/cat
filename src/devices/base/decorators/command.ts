@@ -10,6 +10,7 @@ export const command = <This extends Device, SchemaShape extends z.ZodRawShape, 
       this["commandSchemas"].set(String(context.name), zodToJsonSchema(z.object(schemaShape)) as JSONSchema7)
     })
 
+    // eslint-disable-next-line jsdoc/require-jsdoc
     async function decoratedFunction(this: This, parameter: Parameters<typeof target>[0]): Promise<Awaited<ReturnType>> {
       const release = await this["mutex"].acquire()
 
