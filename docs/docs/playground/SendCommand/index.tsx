@@ -1,14 +1,14 @@
-import Form, { IChangeEvent } from '@rjsf/core'
+import { IChangeEvent } from '@rjsf/core'
 import Admonition from "@theme/Admonition"
 import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
 import validator from '@rjsf/validator-ajv8'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react"
-import BootstrapStyles from "../bootstrap.module.scss"
 import clsx from 'clsx'
 import { DeviceLog } from './DeviceLog'
 import { Device } from "@ham-js/cat"
 import { DriverLog } from './DriverLog'
+import { Form } from '../Form'
 
 interface Props {
   device: Device | null
@@ -47,7 +47,7 @@ export const SendCommand = ({ device }: Props) => {
 
     <h3>Parameters</h3>
 
-    <div className={clsx("margin-bottom--md", BootstrapStyles.bootstrap)}>
+    <div className="margin-bottom--md">
       <Form
         onSubmit={handleSendCommand}
         schema={commandSchema}

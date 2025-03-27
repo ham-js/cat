@@ -1,9 +1,9 @@
-import Form, { IChangeEvent } from "@rjsf/core"
+import { IChangeEvent } from "@rjsf/core"
 import { customizeValidator } from '@rjsf/validator-ajv8'
 import { Device, Devices } from "@ham-js/cat"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { ChooseDriver, DriverFactory } from "./ChooseDriver"
-import BootstrapStyles from "../bootstrap.module.scss"
+import { Form } from "../Form"
 
 const getDeviceKey = ({ deviceType, deviceName, deviceVendor }: typeof Device): string => deviceType + deviceVendor + deviceName
 
@@ -71,17 +71,15 @@ export const ConnectDevice = ({ device, onChange }: Props) => {
       }
     </select>
 
-    <div className={BootstrapStyles.bootstrap}>
-      <Form<ConstructorParameters<typeof DeviceConstructor>[1]>
-        onSubmit={handleConnect}
-        schema={deviceSchema}
-        validator={validator}
-      >
-        <div className="margin-vert--md"><ChooseDriver disabled={!!device} driverTypes={DeviceConstructor.supportedDrivers} onDriverFactoryChange={handleDriverFactoryChange} /></div>
-        {!device && <div><button className="button button--primary margin-right--md" disabled={connecting} type="submit">Connect</button></div>}
-      </Form>
+    <Form<ConstructorParameters<typeof DeviceConstructor>[1]>
+      onSubmit={handleConnect}
+      schema={deviceSchema}
+      validator={validator}
+    >
+      <div className="margin-bottom--md"><ChooseDriver disabled={!!device} driverTypes={DeviceConstructor.supportedDrivers} onDriverFactoryChange={handleDriverFactoryChange} /></div>
+      {!device && <div><button className="button button--primary margin-right--md" disabled={connecting} type="submit">Connect</button></div>}
+    </Form>
 
-    </div>
     {
       !!device && <>
         <button className="button button--primary margin-right--md" disabled={connecting} onClick={handleDisconnect} type="button">Disconnect</button>
