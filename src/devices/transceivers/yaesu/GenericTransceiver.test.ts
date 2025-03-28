@@ -6,7 +6,7 @@ import { AGCAttack } from "../base/AGCAttack";
 import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { GenericTransceiver } from "./GenericTransceiver";
-import { PlatformAgnosticDriverTypes } from "../../../drivers";
+import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { getTestDevice } from "../../../test/utils/getTestDevice";
 
 describe("GenericTransceiver", () => {
@@ -25,7 +25,7 @@ describe("GenericTransceiver", () => {
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Yaesu))
-  test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([DriverType.CP210xWebUSBDriver, ...PlatformAgnosticDriverTypes]))
+  test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([DriverType.CP210xWebUSBDriver, ...DeviceAgnosticDriverTypes]))
 
   describe("setVFO", () => {
     test("implements the command correctly", async () => {

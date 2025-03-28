@@ -13,7 +13,7 @@ import { Transceiver } from "../base/Transceiver"
 import { Driver } from "../../../drivers/base/Driver"
 import { command } from "../../base/decorators/command"
 import { device } from "../../base/decorators/device"
-import { PlatformAgnosticDriverTypes } from "../../../drivers"
+import { DeviceAgnosticDriverTypes } from "../../../drivers"
 
 const vfoType = z.enum([
     VFOType.Current,
@@ -32,7 +32,7 @@ const AGCAttackNumbers: Record<AGCAttack.Fast | AGCAttack.Mid | AGCAttack.Slow, 
 }
 
 @supportedDrivers([
-  ...PlatformAgnosticDriverTypes
+  ...DeviceAgnosticDriverTypes
 ])
 @device({
   deviceAddress: z

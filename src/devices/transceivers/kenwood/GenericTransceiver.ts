@@ -7,7 +7,7 @@ import { AGCAttack } from "../base/AGCAttack";
 import { Transceiver } from "../base/Transceiver";
 import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
-import { PlatformAgnosticDriverTypes } from "../../../drivers";
+import { DeviceAgnosticDriverTypes } from "../../../drivers";
 
 const vfoType = z.enum([
   VFOType.A,
@@ -22,7 +22,7 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 }
 
 @supportedDrivers([
-  ...PlatformAgnosticDriverTypes
+  ...DeviceAgnosticDriverTypes
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"

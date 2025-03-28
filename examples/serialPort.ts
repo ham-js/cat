@@ -1,7 +1,7 @@
-import { VFOType } from "devices/transceivers/base/VFOType";
-import { FT891 } from "devices/transceivers/yaesu/FT891";
-import { SerialPortDriver } from "drivers/node/SerialPortDriver";
 import { SerialPort } from "serialport"
+import { SerialPortDriver } from "../src/drivers";
+import { FT891 } from "../src/devices/transceivers/yaesu/FT891";
+import { VFOType } from "../src/devices";
 
 const serialPort = new SerialPort({
   autoOpen: false,

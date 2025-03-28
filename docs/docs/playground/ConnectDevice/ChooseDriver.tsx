@@ -2,18 +2,21 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react"
 import { Driver, DriverType, DummyDriver } from "@ham-js/cat"
 import { ConfigureCP210xDriver } from "./ConfigureCP210xDriver"
 import { ConfigureWebSocketDriver } from "./ConfigureWebSocketDriver"
+import { ConfigureWebSerialDriver } from "./ConfigureWebSerialDriver"
 
 export type DriverFactory = () => Driver | Promise<Driver | undefined> | undefined
 
 const SUPPORTED_DRIVER_TYPES = [
   DriverType.CP210xWebUSBDriver,
   DriverType.DummyDriver,
+  DriverType.WebSerialDriver,
   DriverType.WebSocketDriver
 ] as const
 
 const DriverTypeLabels: Record<typeof SUPPORTED_DRIVER_TYPES[number], string> = {
   [DriverType.CP210xWebUSBDriver]: "Silicon Labs CP210x (WebUSB)",
   [DriverType.DummyDriver]: "Dummy Driver",
+  [DriverType.WebSerialDriver]: "WebSerial",
   [DriverType.WebSocketDriver]: "WebSocket",
 }
 
@@ -57,6 +60,7 @@ export const ChooseDriver = ({ disabled, driverTypes, onDriverFactoryChange }: P
     </select>
 
     {selectedDriverType === DriverType.CP210xWebUSBDriver && <ConfigureCP210xDriver disabled={disabled} onDriverFactoryChange={onDriverFactoryChange} />}
+    {selectedDriverType === DriverType.WebSerialDriver && <ConfigureWebSerialDriver disabled={disabled} onDriverFactoryChange={onDriverFactoryChange} />}
     {selectedDriverType === DriverType.WebSocketDriver && <ConfigureWebSocketDriver disabled={disabled} onDriverFactoryChange={onDriverFactoryChange} />}
   </>
 }

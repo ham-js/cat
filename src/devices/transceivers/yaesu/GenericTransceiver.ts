@@ -1,6 +1,6 @@
 import { firstValueFrom, filter, map } from "rxjs";
 import { z } from "zod";
-import { DriverType, PlatformAgnosticDriverTypes } from "../../../drivers";
+import { DeviceAgnosticDriverTypes, DriverType } from "../../../drivers";
 import { command } from "../../base/decorators/command";
 import { supportedDrivers } from "../../base/decorators/supportedDrivers";
 import { delimiterParser } from "../../base/parsers/delimiterParser";
@@ -24,7 +24,7 @@ const AGCAttackNumbers: Record<AGCAttack, number> = {
 
 @supportedDrivers([
   DriverType.CP210xWebUSBDriver,
-  ...PlatformAgnosticDriverTypes
+  ...DeviceAgnosticDriverTypes
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
