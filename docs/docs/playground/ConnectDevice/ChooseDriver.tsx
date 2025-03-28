@@ -3,7 +3,7 @@ import { Driver, DriverType, DummyDriver } from "@ham-js/cat"
 import { ConfigureCP210xDriver } from "./ConfigureCP210xDriver"
 import { ConfigureWebSocketDriver } from "./ConfigureWebSocketDriver"
 
-export type DriverFactory = () => Driver | Promise<Driver> | undefined
+export type DriverFactory = () => Driver | Promise<Driver | undefined> | undefined
 
 const SUPPORTED_DRIVER_TYPES = [
   DriverType.CP210xWebUSBDriver,

@@ -33,11 +33,17 @@ export const ConfigureCP210xDriver = ({ disabled, onDriverFactoryChange }: Props
     onDriverFactoryChange(async () => {
       const options = { baudRate }
 
-      const usbDevice = await navigator.usb.requestDevice({
-        filters: CP210xWebUSBDriver.deviceFilters
-      })
+      try {
+        const usbDevice = await navigator.usb.requestDevice({
+          filters: CP210xWebUSBDriver.deviceFilters
+        })
 
-      return new CP210xWebUSBDriver(usbDevice, options)
+        return new CP210xWebUSBDriver(usbDevice, options)
+      } catch(error) {
+        console.error(error)
+
+        return
+      }
     })
   }, [baudRate, onDriverFactoryChange])
 

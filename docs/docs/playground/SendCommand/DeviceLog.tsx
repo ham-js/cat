@@ -27,7 +27,7 @@ export const DeviceLog = ({ device }: Props) => {
     outputRef.current?.scrollTo({
       top: outputRef.current?.scrollHeight
     })
-  }, [])
+  }, [logs])
 
   useEffect(() => {
     if (device) clear()
