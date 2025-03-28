@@ -36,9 +36,13 @@ const AGCAttackNumbers: Record<AGCAttack.Fast | AGCAttack.Mid | AGCAttack.Slow, 
 ])
 @device({
   deviceAddress: z
-    .number(),
+    .number()
+    .int()
+    .gt(0),
   controllerAddress: z
     .number()
+    .int()
+    .gt(0),
 })
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"

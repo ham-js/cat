@@ -7,10 +7,11 @@ import { DeviceType } from "../../base/DeviceType";
 import { VFOType } from "../base/VFOType";
 import { AGCAttack } from "../base/AGCAttack";
 import { PlatformAgnosticDriverTypes } from "../../../drivers";
+import { getTestDevice } from "../../../test/utils/getTestDevice";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
-  const genericTransceiver = new GenericTransceiver(driver, { deviceAddress: 0x5E, controllerAddress: 0xE0 })
+  const genericTransceiver = new (getTestDevice(GenericTransceiver))(driver, { deviceAddress: 0x5E, controllerAddress: 0xE0 })
 
   beforeEach(async () => {
     await genericTransceiver.open()

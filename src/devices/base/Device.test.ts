@@ -2,9 +2,14 @@ import { beforeEach, describe, expect, test } from "@jest/globals"
 import { z } from "zod"
 import { Device } from "./Device"
 import { command } from "./decorators/command"
-import { TestDriver } from "../../test/utils/TestDriver"
+import { TEST_DRIVER_TYPE, TestDriver } from "../../test/utils/TestDriver"
 import { TransceiverVendor } from "../transceivers"
+import { DriverType } from "../../drivers"
+import { supportedDrivers } from "./decorators/supportedDrivers"
 
+@supportedDrivers([
+  TEST_DRIVER_TYPE
+])
 class TestDevice extends Device {
   static deviceVendor = TransceiverVendor.Kenwood
   static deviceName = "Test"
@@ -35,6 +40,8 @@ describe("DeviceDriver", () => {
   })
 
   test("displayName", () => expect(TestDevice.displayName).toEqual("Kenwood Test"))
+  test("deviceSchema", () => expect(Device.deviceSchema).toEqual({}))
+  test("supportedDrivers", () => expect(Device.supportedDrivers).toEqual(Object.values(DriverType)))
 
   describe("open", () => {
     test("opens the communication driver", async () => {

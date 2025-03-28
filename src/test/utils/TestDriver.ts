@@ -3,8 +3,10 @@ import { Subject } from "rxjs"
 import { Driver } from "../../drivers/base/Driver"
 import { DriverType } from "../../drivers/base/DriverType"
 
+export const TEST_DRIVER_TYPE = "TEST_DRIVER" as DriverType
+
 export class TestDriver extends Driver {
-  readonly type = DriverType.DummyDriver
+  readonly type = TEST_DRIVER_TYPE
 
   private _open = false
   subject = new Subject<Uint8Array>()

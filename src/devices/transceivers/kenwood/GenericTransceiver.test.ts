@@ -6,11 +6,12 @@ import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { AGCAttack } from "../base/AGCAttack";
 import { PlatformAgnosticDriverTypes } from "../../../drivers";
+import { getTestDevice } from "../../../test/utils/getTestDevice";
 
 describe("GenericTransceiver", () => {
   const textEncoder = new TextEncoder()
   const driver = new TestDriver()
-  const genericTransceiver = new GenericTransceiver(driver)
+  const genericTransceiver = new (getTestDevice(GenericTransceiver))(driver)
 
   beforeEach(async () => {
     driver.write.mockReset()

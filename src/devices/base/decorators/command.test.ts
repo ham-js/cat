@@ -4,8 +4,10 @@ import { z } from "zod"
 import { command } from "./command"
 import { firstValueFrom } from "rxjs"
 import { Device } from "../Device"
-import { TestDriver } from "../../../test/utils/TestDriver"
+import { TEST_DRIVER_TYPE, TestDriver } from "../../../test/utils/TestDriver"
+import { supportedDrivers } from "./supportedDrivers"
 
+@supportedDrivers([TEST_DRIVER_TYPE])
 class TestDevice extends Device {
   myCommandCount = 0
 
