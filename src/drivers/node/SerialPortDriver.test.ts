@@ -29,7 +29,7 @@ describe("SerialPortDriver", () => {
   describe("observable", () => {
     test("it returns data from the serial port", async () => {
       driver.open()
-      const result = firstValueFrom(driver.observable)
+      const result = firstValueFrom(driver.data)
 
       serialPort.port?.emitData(Buffer.from([65, 66, 67]))
       await expect(result).resolves.toEqual(Buffer.from([65, 66, 67]))

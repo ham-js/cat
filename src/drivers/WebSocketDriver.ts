@@ -7,13 +7,13 @@ const OPEN_TIMEOUT = 5000
 
 export class WebSocketDriver extends Driver {
   readonly type = DriverType.WebSocketDriver
-  readonly observable: Observable<Uint8Array>
+  readonly data: Observable<Uint8Array>
 
   constructor(protected webSocket: WebSocket) {
     super()
 
     // https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/message_event
-    this.observable = fromEvent<MessageEvent>(webSocket, "message")
+    this.data = fromEvent<MessageEvent>(webSocket, "message")
       .pipe(
         mergeMap((event) => {
           if (typeof event.data === "string") return Promise.resolve(this.textEncoder.encode(event.data))

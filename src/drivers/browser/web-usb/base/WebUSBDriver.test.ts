@@ -11,7 +11,7 @@ class TestWebUSBDriver extends WebUSBDriver {
     {vendorId: 0x1234, productId: 0x5678}
   ]
   subject = new Subject<Uint8Array>()
-  observable = this.subject.asObservable()
+  data = this.subject.asObservable()
 
   write = jest.fn(() => Promise.resolve())
 }

@@ -97,7 +97,7 @@ export class GenericTransceiver extends Transceiver {
   })
   async getVFO({ vfo }: { vfo: VFOType }): Promise<number> {
     const value = firstValueFrom(
-      delimiterParser(this.driver.observable, 0xFD)
+      delimiterParser(this.driver.data, 0xFD)
         .pipe(
           filter((command) =>
             this.commandMatchesDevice(command)

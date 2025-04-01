@@ -10,8 +10,8 @@ import { VFOType } from "../base/VFOType";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 
 const vfoType = z.enum([
-  VFOType.A,
-  VFOType.B
+  VFOType.Current,
+  VFOType.Other
 ])
 
 const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | AGCAttack.Fast, number> = {
@@ -35,12 +35,12 @@ export class GenericTransceiver extends Transceiver {
     const value = firstValueFrom(
       delimiterParser(this.driver.stringObservable(), ";")
         .pipe(
-          map((command) => parseInt(command.match(new RegExp(`F${vfo === VFOType.A ? 'A' : 'B'}(\\d+);`))?.[1] ?? "", 10)),
+          map((command) => parseInt(command.match(new RegExp(`F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);`))?.[1] ?? "", 10)),
           filter(Boolean)
         )
     )
 
-    await this.driver.writeString(`F${vfo === VFOType.A ? 'A' : 'B'};`)
+    await this.driver.writeString(`F${vfo === VFOType.Current ? 'A' : 'B'};`)
 
     return value
   }
@@ -55,7 +55,7 @@ export class GenericTransceiver extends Transceiver {
   })
   async setVFO({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
     await this.driver.writeString(
-      `F${vfo === VFOType.A ? 'A' : 'B'}${frequency.toString(10).padStart(11, '0')};`
+      `F${vfo === VFOType.Current ? 'A' : 'B'}${frequency.toString(10).padStart(11, '0')};`
     )
   }
 

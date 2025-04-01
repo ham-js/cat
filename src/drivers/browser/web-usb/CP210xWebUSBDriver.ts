@@ -24,12 +24,12 @@ export class CP210xWebUSBDriver extends WebUSBDriver {
     0xEA71
   ].map((productId) => ({ productId, vendorId: 0x10C4 }))
 
-  readonly observable: Observable<Uint8Array>
+  readonly data: Observable<Uint8Array>
 
   constructor(protected usbDevice: USBDevice, protected options: { baudRate: number }) {
     super(usbDevice)
 
-    this.observable = new Observable<USBInTransferResult>((subscriber) => {
+    this.data = new Observable<USBInTransferResult>((subscriber) => {
       const startReading = async () => {
         while (!subscriber.closed) {
           try {

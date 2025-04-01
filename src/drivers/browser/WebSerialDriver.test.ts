@@ -51,7 +51,7 @@ describe("WebSerialDriver", () => {
 
   describe("observable", () => {
     test("it reads from the serial port", async () => {
-      await expect(firstValueFrom(driver.observable)).resolves.toEqual(new Uint8Array([1, 2, 3]))
+      await expect(firstValueFrom(driver.data)).resolves.toEqual(new Uint8Array([1, 2, 3]))
     })
   })
 
@@ -80,7 +80,7 @@ describe("WebSerialDriver", () => {
     })
 
     test("when a reader is locked", async () => {
-      driver.observable.subscribe(() => { })
+      driver.data.subscribe(() => { })
 
       await driver.close()
 

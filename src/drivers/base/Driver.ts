@@ -3,7 +3,7 @@ import { DriverType } from "./DriverType"
 
 export abstract class Driver {
   abstract readonly type: DriverType
-  abstract readonly observable: Observable<Uint8Array>
+  abstract readonly data: Observable<Uint8Array>
   abstract write(data: Uint8Array): void | Promise<void>
 
   protected textEncoder = new TextEncoder()
@@ -18,7 +18,7 @@ export abstract class Driver {
   public stringObservable(encoding: string = "utf-8", options: TextDecoderOptions = {}): Observable<string> {
     const textDecoder = new TextDecoder(encoding, options)
 
-    return this.observable
+    return this.data
       .pipe(
         map((byteArray) => textDecoder.decode(byteArray))
       )

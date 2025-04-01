@@ -18,7 +18,7 @@ describe("CP210xWebUSBDriver", () => {
 
       const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
 
-      await expect(firstValueFrom(cp210x.observable)).resolves.toEqual(new Uint8Array([0xFE, 0xFE]))
+      await expect(firstValueFrom(cp210x.data)).resolves.toEqual(new Uint8Array([0xFE, 0xFE]))
     })
 
     test("it completes upon error", async () => {
@@ -30,7 +30,7 @@ describe("CP210xWebUSBDriver", () => {
 
       const cp210x = new CP210xWebUSBDriver(usbDevice as unknown as USBDevice, {baudRate: 9600})
 
-      await expect(firstValueFrom(cp210x.observable)).rejects.toBeTruthy()
+      await expect(firstValueFrom(cp210x.data)).rejects.toBeTruthy()
     })
   })
 

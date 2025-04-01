@@ -46,15 +46,15 @@ describe("WebSocketDriver", () => {
       const driver = new WebSocketDriver(webSocket)
       await driver.open()
 
-      const stringResult = firstValueFrom(driver.observable)
+      const stringResult = firstValueFrom(driver.data)
       server.clients()[0].send("ABC")
       await expect(stringResult).resolves.toEqual(new Uint8Array([65, 66, 67]))
 
-      const blobResult = firstValueFrom(driver.observable)
+      const blobResult = firstValueFrom(driver.data)
       server.clients()[0].send(new Blob([new Uint8Array([68, 69, 70])]))
       await expect(blobResult).resolves.toEqual(new Uint8Array([68, 69, 70]))
 
-      const arrayBufferResult = firstValueFrom(driver.observable)
+      const arrayBufferResult = firstValueFrom(driver.data)
       const data = new ArrayBuffer(3)
       const view = new Uint8Array(data)
       view.set([71, 72, 73])

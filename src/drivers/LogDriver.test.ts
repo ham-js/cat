@@ -15,7 +15,7 @@ describe("LogDriver", () => {
 
   describe("observable", () => {
     test("proxies the wrapped driver observable", () => {
-      expect(logDriver.observable).toEqual(wrappedDriver.observable)
+      expect(logDriver.data).toEqual(wrappedDriver.data)
     })
   })
 

@@ -20,13 +20,13 @@ export class LogDriver extends Driver {
     .pipe(
       share()
     )
-  observable: Observable<Uint8Array>
+  data: Observable<Uint8Array>
   protected _observableSubscription?: Subscription
 
   constructor(public readonly driver: Driver) {
     super()
 
-    this.observable = this.driver.observable
+    this.data = this.driver.data
     this.type = driver.type
   }
 
@@ -42,7 +42,7 @@ export class LogDriver extends Driver {
 
     await this.driver.open?.()
 
-    this._observableSubscription = this.observable.subscribe((data) => this._log.next({
+    this._observableSubscription = this.data.subscribe((data) => this._log.next({
       data,
       timestamp: new Date(),
       type: "read"

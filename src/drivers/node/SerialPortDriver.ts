@@ -6,12 +6,12 @@ import { DriverType } from "../base/DriverType";
 export class SerialPortDriver extends Driver {
   readonly type = DriverType.SerialPortDriver
 
-  readonly observable: Observable<Uint8Array>
+  readonly data: Observable<Uint8Array>
 
   constructor(protected serialPort: SerialPortStream, protected timeout = 1000) {
     super()
 
-    this.observable = fromEventPattern<Uint8Array>((handler) => this.serialPort.on("data", handler))
+    this.data = fromEventPattern<Uint8Array>((handler) => this.serialPort.on("data", handler))
       .pipe(
         share()
       )

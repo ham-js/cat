@@ -5,7 +5,7 @@ import { DriverType } from "./base/DriverType";
 export class DummyDriver extends Driver {
   readonly type = DriverType.DummyDriver
 
-  observable = EMPTY
+  data = EMPTY
 
   write(data: Uint8Array): void | Promise<void> {}
 }

@@ -5,7 +5,7 @@ import { DriverType } from "../base/DriverType";
 export class WebSerialDriver extends Driver {
   private reader: ReadableStreamDefaultReader | null = null
 
-  observable: Observable<Uint8Array<ArrayBufferLike>>
+  data: Observable<Uint8Array<ArrayBufferLike>>
   type = DriverType.WebSerialDriver
 
   get isOpen(): boolean {
@@ -15,7 +15,7 @@ export class WebSerialDriver extends Driver {
   constructor(protected serialPort: SerialPort, protected options: SerialOptions) {
     super()
 
-    this.observable = new Observable<Uint8Array>((subscriber) => {
+    this.data = new Observable<Uint8Array>((subscriber) => {
       const startReading = async () => {
         while (!subscriber.closed && serialPort.readable) {
           this.reader = serialPort.readable.getReader()

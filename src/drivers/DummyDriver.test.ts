@@ -8,7 +8,7 @@ describe("DummyDriver", () => {
 
   describe("observable", () => {
     test("it is empty", () => {
-      expect(dummyDriver.observable).toEqual(EMPTY)
+      expect(dummyDriver.data).toEqual(EMPTY)
     })
   })
 

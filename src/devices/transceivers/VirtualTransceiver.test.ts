@@ -35,44 +35,24 @@ describe("Virtual Transceiver", () => {
   describe("setVFO", () => {
     test("it sets the VFO", async () => {
       const virtualTransceiver = new VirtualTransceiver(new DummyDriver())
-      virtualTransceiver.state.currentVFO = VFOType.A
 
-      await virtualTransceiver.setVFO({ frequency: 1, vfo: VFOType.A })
-      expect(virtualTransceiver.state.vfo[VFOType.A]).toBe(1)
+      await virtualTransceiver.setVFO({ frequency: 1, vfo: VFOType.Current })
+      expect(virtualTransceiver.state.vfo[VFOType.Current]).toBe(1)
 
-      await virtualTransceiver.setVFO({ frequency: 2, vfo: VFOType.B })
-      expect(virtualTransceiver.state.vfo[VFOType.B]).toBe(2)
-
-      await virtualTransceiver.setVFO({ frequency: 3, vfo: VFOType.Current })
-      expect(virtualTransceiver.state.vfo[VFOType.A]).toBe(3)
-
-      await virtualTransceiver.setVFO({ frequency: 4, vfo: VFOType.Other })
-      expect(virtualTransceiver.state.vfo[VFOType.B]).toBe(4)
-
-      virtualTransceiver.state.currentVFO = VFOType.B
-      await virtualTransceiver.setVFO({ frequency: 5, vfo: VFOType.Current })
-      expect(virtualTransceiver.state.vfo[VFOType.B]).toBe(5)
-      await virtualTransceiver.setVFO({ frequency: 6, vfo: VFOType.Other })
-      expect(virtualTransceiver.state.vfo[VFOType.A]).toBe(6)
-     })
+      await virtualTransceiver.setVFO({ frequency: 2, vfo: VFOType.Other })
+      expect(virtualTransceiver.state.vfo[VFOType.Other]).toBe(2)
+    })
   })
 
   describe("getVFO", () => {
     test("reads the VFO", async () => {
       const virtualTransceiver = new VirtualTransceiver(new DummyDriver())
 
-      virtualTransceiver.state.vfo[VFOType.A] = 1
-      virtualTransceiver.state.vfo[VFOType.B] = 2
-      virtualTransceiver.state.currentVFO = VFOType.A
+      virtualTransceiver.state.vfo[VFOType.Current] = 1
+      virtualTransceiver.state.vfo[VFOType.Other] = 2
 
-      await expect(virtualTransceiver.getVFO({ vfo: VFOType.A })).resolves.toBe(1)
-      await expect(virtualTransceiver.getVFO({ vfo: VFOType.B })).resolves.toBe(2)
       await expect(virtualTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(1)
       await expect(virtualTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(2)
-
-      virtualTransceiver.state.currentVFO = VFOType.B
-      await expect(virtualTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(2)
-      await expect(virtualTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(1)
     })
   })
 })

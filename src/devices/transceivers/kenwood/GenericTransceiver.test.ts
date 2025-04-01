@@ -28,10 +28,10 @@ describe("GenericTransceiver", () => {
 
   describe("setVFO", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setVFO({ frequency: 14_250_000, vfo: VFOType.A })
+      await genericTransceiver.setVFO({ frequency: 14_250_000, vfo: VFOType.Current })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("FA00014250000;"))
 
-      await genericTransceiver.setVFO({ frequency: 7_250_000, vfo: VFOType.B })
+      await genericTransceiver.setVFO({ frequency: 7_250_000, vfo: VFOType.Other })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("FB00007250000;"))
     })
 
@@ -46,8 +46,8 @@ describe("GenericTransceiver", () => {
             },
             vfo: {
               enum: [
-                "A",
-                "B"
+                "Current",
+                "Other"
               ],
               type: "string"
             }
@@ -64,10 +64,10 @@ describe("GenericTransceiver", () => {
   describe("getVFO", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce(() => driver.subject.next(textEncoder.encode(`FB00012345;FA00014250000;`)))
-      await expect(genericTransceiver.getVFO({ vfo: VFOType.A })).resolves.toBe(14_250_000)
+      await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
       driver.write.mockImplementationOnce(() => driver.subject.next(textEncoder.encode(`FA00012345;FB00007200000;`)))
-      await expect( genericTransceiver.getVFO({ vfo: VFOType.B })).resolves.toBe(7_200_000)
+      await expect( genericTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
 
     test("specifies the parameter type correctly", () => {
@@ -76,8 +76,8 @@ describe("GenericTransceiver", () => {
           properties: {
             vfo: {
               enum: [
-                "A",
-                "B"
+                "Current",
+                "Other"
               ],
               type: "string"
             }

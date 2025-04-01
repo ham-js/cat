@@ -9,8 +9,7 @@ import { VFOType } from "./base/VFOType";
 
 interface State {
   agcAttack: AGCAttack
-  currentVFO: VFOType.A | VFOType.B
-  vfo: Record<VFOType.A | VFOType.B, number>
+  vfo: Record<VFOType, number>
 }
 
 @supportedDrivers([
@@ -22,10 +21,9 @@ export class VirtualTransceiver extends Transceiver {
 
   state: State = {
     agcAttack: AGCAttack.Auto,
-    currentVFO: VFOType.A,
     vfo: {
-      [VFOType.A]: 14_250_300,
-      [VFOType.B]: 7_200_000,
+      [VFOType.Current]: 14_250_300,
+      [VFOType.Other]: 7_200_000,
     }
   }
 
@@ -33,7 +31,7 @@ export class VirtualTransceiver extends Transceiver {
     vfo: z.nativeEnum(VFOType)
   })
   async getVFO({ vfo }: { vfo: VFOType; }): Promise<number> {
-    return Promise.resolve(this.state.vfo[this.getVFOType(vfo)])
+    return Promise.resolve(this.state.vfo[vfo])
   }
 
   @command({
@@ -41,7 +39,7 @@ export class VirtualTransceiver extends Transceiver {
     vfo: z.nativeEnum(VFOType)
   })
   async setVFO({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
-    this.state.vfo[this.getVFOType(vfo)] = frequency 
+    this.state.vfo[vfo] = frequency 
   }
 
   @command({
@@ -49,12 +47,5 @@ export class VirtualTransceiver extends Transceiver {
   })
   async setAGC({ attack }: { attack: AGCAttack; }): Promise<void> {
     this.state.agcAttack = attack 
-  }
-
-  protected getVFOType(vfo: VFOType): State['currentVFO'] {
-    if (vfo === VFOType.A || vfo === VFOType.B) return vfo
-    if (vfo === VFOType.Current) return this.state.currentVFO
-
-    return this.state.currentVFO === VFOType.A ? VFOType.B : VFOType.A
   }
 }

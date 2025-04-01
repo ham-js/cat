@@ -10,7 +10,7 @@ export class TestDriver extends Driver {
 
   private _open = false
   subject = new Subject<Uint8Array>()
-  readonly observable = this.subject.asObservable()
+  readonly data = this.subject.asObservable()
 
   write = jest.fn<(data: Uint8Array) => void>((data) => this.subject.next(data))
 
