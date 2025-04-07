@@ -11,7 +11,7 @@ const getLogPrefix = (type: DriverLogType["type"]): string => {
 }
 
 const getFormattedLogData = (log: DriverLogType, format: Format): string => {
-  if (!("data" in log)) return ""
+  if (log.type !== "read") return ""
 
   if (format === Format.Utf8) {
     const textDecoder = new TextDecoder("utf-8")
