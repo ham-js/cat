@@ -33,7 +33,7 @@ export class GenericTransceiver extends Transceiver {
   static readonly deviceVendor = TransceiverVendor.Yaesu
 
   readonly events = defer(() => {
-    this.enableAutoInformation({})
+    this.enableAutoInformation()
 
     return delimiterParser(this.driver.stringObservable(), ";")
       .pipe(
@@ -94,8 +94,8 @@ export class GenericTransceiver extends Transceiver {
     )
   }
 
-  @command({})
-  async enableAutoInformation(_: {}) {
+  @command()
+  async enableAutoInformation(): Promise<void> {
     await this.driver.writeString("AI1;")
   }
 

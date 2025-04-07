@@ -72,7 +72,7 @@ describe("GenericTransceiver", () => {
 
   describe("enableAutoInformation", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.enableAutoInformation({})
+      await genericTransceiver.enableAutoInformation()
 
       expect(driver.writeString).toHaveBeenCalledWith("AI1;")
     })
