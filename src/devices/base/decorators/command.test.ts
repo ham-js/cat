@@ -76,7 +76,7 @@ describe("command", () => {
     const log = firstValueFrom(device.deviceLog!)
 
     device.myCommand({ count: 1, someString: "ho" })
-    await jest.advanceTimersToNextTimerAsync(1000)
+    await jest.advanceTimersToNextTimerAsync(2)
 
     await expect(log).resolves.toEqual({
       command: "myCommand",

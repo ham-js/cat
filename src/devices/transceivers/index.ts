@@ -8,6 +8,7 @@ import { Transceiver } from "./base/Transceiver"
 import { AGCAttack } from "./base/AGCAttack"
 import { TransceiverVendor } from "./base/TransceiverVendor"
 import { VFOType } from "./base/VFOType"
+import { TransceiverEvent } from "./base/TransceiverEvent"
 
 export const ICOMTransceivers: typeof Transceiver[] = [
   ICOMGenericTransceiver
@@ -35,6 +36,7 @@ export {
   ICOMGenericTransceiver,
   KenwoodGenericTransceiver,
   Transceiver,
+  TransceiverEvent,
   TransceiverVendor,
   VFOType,
   VirtualTransceiver,

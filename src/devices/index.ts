@@ -1,4 +1,5 @@
-import { Device, DeviceLog } from "./base/Device"
+import { Device } from "./base/Device"
+import { DeviceLog } from "./base/DeviceLog"
 import { DeviceType } from "./base/DeviceType"
 import { DeviceVendor } from "./base/DeviceVendor"
 import { Transceivers } from "./transceivers"

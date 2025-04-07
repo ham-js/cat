@@ -11,7 +11,11 @@ export class SerialPortDriver extends Driver {
   constructor(protected serialPort: SerialPortStream, protected timeout = 1000) {
     super()
 
-    this.data = fromEventPattern<Uint8Array>((handler) => this.serialPort.on("data", handler))
+    this.data = fromEventPattern<Uint8Array>((handler) => {
+      this.serialPort.on("data", handler)
+    }, (handler) => {
+      this.serialPort.removeListener("data", handler)
+    })
       .pipe(
         share()
       )

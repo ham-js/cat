@@ -7,23 +7,14 @@ import { DeviceVendor } from "./DeviceVendor"
 import { DriverType } from "../../drivers/base/DriverType"
 import { LogDriver } from "../../drivers/LogDriver"
 import { Driver } from "../../drivers/base/Driver"
-
-export type DeviceLog = ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result: any,
-} | {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any
-}) & {
-  command: string,
-  parameter: object,
-  timestamp: Date
-}
+import { DeviceLog } from "./DeviceLog"
 
 export class Device {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
+
+  readonly events?: Observable<{ timestamp: Date }>
 
   protected _deviceLog: Subject<DeviceLog> | undefined
 
