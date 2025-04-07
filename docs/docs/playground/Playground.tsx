@@ -4,6 +4,7 @@ import { useState } from "react"
 import { SendCommand } from "./SendCommand"
 import { Device } from "@ham-js/cat"
 import { ConnectDevice } from "./ConnectDevice"
+import { Events } from "./Events"
 
 export const Playground = () => {
   const [device, setDevice] = useState<Device | null>(null)
@@ -15,6 +16,9 @@ export const Playground = () => {
       </TabItem>
       <TabItem value="commands" label={device ? "Commands *" : "Commands"}>
         <SendCommand device={device} />
+      </TabItem>
+      <TabItem value="events" label={device ? "Events *" : "Events"}>
+        <Events device={device} />
       </TabItem>
     </Tabs>
   </>

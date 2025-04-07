@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import Styles from "./output.module.scss"
+import Styles from "../output.module.scss"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Device, DeviceLog as DeviceLogType } from "@ham-js/cat"
 

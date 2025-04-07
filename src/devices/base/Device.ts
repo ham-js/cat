@@ -8,13 +8,14 @@ import { DriverType } from "../../drivers/base/DriverType"
 import { LogDriver } from "../../drivers/LogDriver"
 import { Driver } from "../../drivers/base/Driver"
 import { DeviceLog } from "./DeviceLog"
+import { DeviceEvent } from "./DeviceEvent"
 
 export class Device {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
 
-  readonly events?: Observable<{ timestamp: Date }>
+  readonly events?: Observable<DeviceEvent>
 
   protected _deviceLog: Subject<DeviceLog> | undefined
 

@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
-import Styles from "./output.module.scss"
+import Styles from "../output.module.scss"
 import clsx from "clsx"
 import { Device, DriverLog as DriverLogType } from "@ham-js/cat"
 
