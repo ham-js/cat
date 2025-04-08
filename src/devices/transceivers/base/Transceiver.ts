@@ -6,6 +6,7 @@ import { VFOType } from "./VFOType"
 import { merge, Observable, share, Subject, takeUntil } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
+import { AntennaTunerState } from "./AntennaTunerState"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
@@ -18,12 +19,12 @@ export class Transceiver extends Device {
     merge(
       poll(async () => ({
         frequency: await this.getVFO({ vfo: VFOType.Current }),
-        type: TransceiverEventType.VFO,
+        type: TransceiverEventType.VFO as const,
         vfo: VFOType.Current
       }), "frequency"),
       poll(async () => ({
         frequency: await this.getVFO({ vfo: VFOType.Other }),
-        type: TransceiverEventType.VFO,
+        type: TransceiverEventType.VFO as const,
         vfo: VFOType.Other
       }), "frequency"),
     ).pipe(
@@ -39,10 +40,19 @@ export class Transceiver extends Device {
   getVFO(parameter: { vfo: VFOType }): Promise<number> {
     throw new Error("Not implemented")
   }
-
   setVFO(parameter: { frequency: number, vfo: VFOType }): Promise<void> {
     throw new Error("Not implemented")
   }
 
+  matchVFOs?(): Promise<void>
+
   setAGC?(parameter: { attack: AGCAttack }): Promise<void>
+
+  getAntennaTuner?(): Promise<AntennaTunerState>
+  setAntennaTuner?(parameter: { state: AntennaTunerState }): Promise<void>
+
+  // convention: gain is between 0-1 so consumers don't need to map to the
+  // supported range of the device themselves
+  getAFGain?(): Promise<number>
+  setAFGain?(parameter: { gain: number }): Promise<void>
 }

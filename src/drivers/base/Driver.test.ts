@@ -21,7 +21,7 @@ describe("Driver", () => {
   test("stringObservable", async () => {
     const result = firstValueFrom(driver.stringObservable())
 
-    driver.write(new Uint8Array([65, 66, 67]))
+    driver.send(new Uint8Array([65, 66, 67]))
 
     await expect(result).resolves.toBe("ABC")
   })

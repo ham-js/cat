@@ -12,7 +12,11 @@ export class TestDriver extends Driver {
   subject = new Subject<Uint8Array>()
   readonly data = this.subject.asObservable()
 
-  write = jest.fn<(data: Uint8Array) => void>((data) => this.subject.next(data))
+  write = jest.fn<(data: Uint8Array) => void>()
+
+  send(data: Uint8Array | string) {
+    this.subject.next(typeof data === "string" ? this.textEncoder.encode(data) : data)
+  }
 
   get isOpen(): boolean {
     return this._open
