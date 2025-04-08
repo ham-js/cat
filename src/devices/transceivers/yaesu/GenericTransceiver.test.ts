@@ -11,6 +11,7 @@ import { getTestDevice } from "../../../test/utils/getTestDevice";
 import { firstValueFrom, take, toArray } from "rxjs";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { AntennaTunerState } from "../base/AntennaTunerState";
+import { BandDirection } from "../base/BandDirection";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
@@ -57,6 +58,33 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses auto notch responses into AutoNotch events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(2),
+          toArray()
+        )
+      )
+
+      driver.send("BC00;")
+      driver.send("BC01;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          enabled: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AutoNotch,
+        },
+        {
+          enabled: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AutoNotch,
+        }
+      ])
+    })
+
     test("it parses information responses into VFO events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
@@ -67,8 +95,8 @@ describe("GenericTransceiver", () => {
         )
       )
 
-      await driver.send("IF001014250390+001000300000;")
-      await driver.send("OI001007200120+001000300000;")
+      driver.send("IF001014250390+001000300000;")
+      driver.send("OI001007200120+001000300000;")
       
       await expect(result).resolves.toEqual([
         {
@@ -96,9 +124,9 @@ describe("GenericTransceiver", () => {
         )
       )
 
-      await driver.send("AC000;")
-      await driver.send("AC001;")
-      await driver.send("AC002;")
+      driver.send("AC000;")
+      driver.send("AC001;")
+      driver.send("AC002;")
       
       await expect(result).resolves.toEqual([
         {
@@ -129,10 +157,10 @@ describe("GenericTransceiver", () => {
         )
       )
 
-      await driver.send("AG0255;")
-      await driver.send("AG0128;")
-      await driver.send("AG0051;")
-      await driver.send("AG0000;")
+      driver.send("AG0255;")
+      driver.send("AG0128;")
+      driver.send("AG0051;")
+      driver.send("AG0000;")
       
       await expect(result).resolves.toEqual([
         {
@@ -159,16 +187,42 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("matchVFOs", () => {
+  describe("copy", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.matchVFOs()
-
+      await genericTransceiver.copy({ source: VFOType.Current, target: VFOType.Other })
       expect(driver.writeString).toHaveBeenCalledWith("AB;")
+
+      await genericTransceiver.copy({ source: VFOType.Current, target: "memory" })
+      expect(driver.writeString).toHaveBeenCalledWith("AM;")
+
+      await genericTransceiver.copy({ source: VFOType.Other, target: VFOType.Current })
+      expect(driver.writeString).toHaveBeenCalledWith("BA;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('matchVFOs')).toEqual(expect.objectContaining({
-        properties: {}
+      expect(genericTransceiver.getCommandSchema('copy')).toEqual(expect.objectContaining({
+        properties: {
+          source: {
+            enum: [
+              "Current",
+              "Other",
+              "memory"
+            ],
+            type: "string"
+          },
+          target: {
+            enum: [
+              "Current",
+              "Other",
+              "memory"
+            ],
+            type: "string"
+          }
+        },
+        required: [
+          "source",
+          "target"
+        ]
       }))
     })
   })
@@ -224,7 +278,10 @@ describe("GenericTransceiver", () => {
             maximum: 1,
             type: "number"
           }
-        }
+        },
+        required: [
+          "gain"
+        ]
       }))
     })
   })
@@ -283,7 +340,81 @@ describe("GenericTransceiver", () => {
             ],
             type: "string"
           }
-        }
+        },
+        required: [
+          "state"
+        ]
+      }))
+    })
+  })
+
+  describe("setAutoNotch", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setAutoNotch({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BC00;")
+
+      await genericTransceiver.setAutoNotch({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BC01;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setAutoNotch')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
+  describe("getAutoNotch", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BC0;"))
+
+        driver.subject.next(textEncoder.encode("BC00;"))
+      })
+      await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BC0;"))
+
+        driver.subject.next(textEncoder.encode("BC01;"))
+      })
+      await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getAutoInformation')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("getAutoInformation", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AI;"))
+
+        driver.subject.next(textEncoder.encode("AI0;"))
+      })
+      await expect(genericTransceiver.getAutoInformation()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AI;"))
+
+        driver.subject.next(textEncoder.encode("AI1;"))
+      })
+      await expect(genericTransceiver.getAutoInformation()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getAutoInformation')).toEqual(expect.objectContaining({
+        properties: {}
       }))
     })
   })
@@ -303,7 +434,10 @@ describe("GenericTransceiver", () => {
           enabled: {
             type: "boolean"
           }
-        }
+        },
+        required: [
+          "enabled"
+        ]
       }))
     })
   })
@@ -380,8 +514,37 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("changeBand", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.changeBand({ direction: BandDirection.Down })
+      expect(driver.writeString).toHaveBeenCalledWith("BD0;")
+
+      await genericTransceiver.changeBand({ direction: BandDirection.Up })
+      expect(driver.writeString).toHaveBeenCalledWith("BU0;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('changeBand')).toEqual(
+        expect.objectContaining({
+          properties: {
+            direction: {
+              enum: [
+                "Up",
+                "Down"
+              ],
+              type: "string"
+            }
+          },
+          required: [
+            "direction"
+          ]
+        })
+      )
+    })
+  })
+
   describe("setAGC", () => {
-    test("implements the command factory correctly", async () => {
+    test("implements the command correctly", async () => {
       await genericTransceiver.setAGC({ attack: AGCAttack.Auto })
       expect(driver.writeString).toHaveBeenCalledWith("GT04;")
 
@@ -488,7 +651,7 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver["parseAFGainResponse"]("ABC;")).toEqual(null)
       expect(genericTransceiver["parseAFGainResponse"]("AG0000;")).toEqual(0)
       expect(genericTransceiver["parseAFGainResponse"]("AG0255;")).toEqual(1)
-      expect(genericTransceiver["parseAFGainResponse"]("AG0128;")).toEqual(128/255)
+      expect(genericTransceiver["parseAFGainResponse"]("AG0128;")).toEqual(128 / 255)
       expect(genericTransceiver["parseAFGainResponse"]("AG0051;")).toEqual(0.2)
     })
   })

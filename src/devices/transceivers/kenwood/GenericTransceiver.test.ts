@@ -91,7 +91,7 @@ describe("GenericTransceiver", () => {
   })
 
   describe("setAGC", () => {
-    test("implements the command factory correctly", async () => {
+    test("implements the command correctly", async () => {
       await genericTransceiver.setAGC({ attack: AGCAttack.Off })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC00;"))
 

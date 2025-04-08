@@ -4,6 +4,7 @@ import { VFOType } from "./VFOType"
 export enum TransceiverEventType {
   AFGain = "AFGain",
   AntennaTuner = "AntennaTuner",
+  AutoNotch = "AutoNotch",
   VFO = "VFO"
 }
 
@@ -17,4 +18,7 @@ export type TransceiverEvent = ({
 } | {
   gain: number,
   type: TransceiverEventType.AFGain
+} | {
+  enabled: boolean,
+  type: TransceiverEventType.AutoNotch
 }) & {timestamp: Date}

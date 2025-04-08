@@ -38,7 +38,7 @@ export const DeviceLog = ({ device }: Props) => {
       {
         logs.map((log, i) => <li key={getLogKey(log, i)}>
           <span className={Styles.timestamp}>{log.timestamp.toISOString()}</span>{" "}
-          {log.command}({JSON.stringify(log.parameter)}): {'result' in log && log.result} {"error" in log && <span className="text--danger">{JSON.stringify(log.error)}</span>}
+          {log.command}({JSON.stringify(log.parameter)}): {'result' in log && JSON.stringify(log.result)} {"error" in log && <span className="text--danger">{JSON.stringify(log.error)}</span>}
         </li>)
       }
     </ul>

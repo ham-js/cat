@@ -10,6 +10,7 @@ import { TransceiverVendor } from "./base/TransceiverVendor"
 import { VFOType } from "./base/VFOType"
 import { TransceiverEvent } from "./base/TransceiverEvent"
 import { AntennaTunerState } from "./base/AntennaTunerState"
+import { BandDirection } from "./base/BandDirection"
 
 export const ICOMTransceivers: typeof Transceiver[] = [
   ICOMGenericTransceiver
@@ -35,6 +36,7 @@ export const Transceivers: typeof Transceiver[] = [
 export {
   AGCAttack,
   AntennaTunerState,
+  BandDirection,
   ICOMGenericTransceiver,
   KenwoodGenericTransceiver,
   Transceiver,

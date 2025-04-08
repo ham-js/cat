@@ -7,6 +7,7 @@ import { merge, Observable, share, Subject, takeUntil } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { AntennaTunerState } from "./AntennaTunerState"
+import { BandDirection } from "./BandDirection"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
@@ -44,9 +45,12 @@ export class Transceiver extends Device {
     throw new Error("Not implemented")
   }
 
-  matchVFOs?(): Promise<void>
+  copy?(parameter: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void>
 
   setAGC?(parameter: { attack: AGCAttack }): Promise<void>
+
+  getAutoNotch?(): Promise<boolean>
+  setAutoNotch?(parameter: { enabled: boolean }): Promise<void>
 
   getAntennaTuner?(): Promise<AntennaTunerState>
   setAntennaTuner?(parameter: { state: AntennaTunerState }): Promise<void>
@@ -55,4 +59,6 @@ export class Transceiver extends Device {
   // supported range of the device themselves
   getAFGain?(): Promise<number>
   setAFGain?(parameter: { gain: number }): Promise<void>
+
+  changeBand?(parameter: { direction: BandDirection }): Promise<void>
 }

@@ -11,6 +11,7 @@ import { VFOType } from "../base/VFOType";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
 import { AntennaTunerState } from "../base/AntennaTunerState";
+import { BandDirection } from "../base/BandDirection";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -65,6 +66,12 @@ export class GenericTransceiver extends Transceiver {
             (gain) => ({ gain, type: TransceiverEventType.AFGain as const }),
             "gain"
           ),
+          parseResponse(
+            response$,
+            this.parseAutoNotchResponse,
+            (enabled) => ({ enabled, type: TransceiverEventType.AutoNotch as const }),
+            "enabled"
+          ),
         ))
       )
   }).pipe(
@@ -72,9 +79,33 @@ export class GenericTransceiver extends Transceiver {
     share()
   )
 
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setAutoNotch({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(enabled ? "BC01;" : "BC00;")
+  }
+
+  @command()
+  getAutoNotch(): Promise<boolean> {
+    return this.readResponse("BC0;", this.parseAutoNotchResponse)
+  }
+
+  protected parseAutoNotchResponse(response: string): boolean | null {
+    return response.match(/^BC0(0|1);$/) && response === "BC01;"
+  }
+
   @command()
   getAFGain(): Promise<number> {
     return this.readResponse("AG0;", this.parseAFGainResponse)
+  }
+
+  protected parseAFGainResponse(response: string): number | null {
+    const gainMatch = response.match(/^AG0(\d{3});$/)
+    if (!gainMatch) return null
+
+    return parseInt(gainMatch[1], 10) / 255
   }
 
   @command({
@@ -91,7 +122,7 @@ export class GenericTransceiver extends Transceiver {
     vfo: vfoType
   })
   async getVFO({ vfo }: { vfo: VFOType }): Promise<number> {
-    const responseRegex = new RegExp(`F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);`)
+    const responseRegex = new RegExp(`^F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);$`)
     const response = await this.readResponse(`F${vfo === VFOType.Current ? 'A' : 'B'};`, (value) => value.match(responseRegex))
 
     return parseInt(response[1], 10)
@@ -134,9 +165,43 @@ export class GenericTransceiver extends Transceiver {
     return this.readResponse("AC;", this.parseAntennaTunerResponse)
   }
 
-  @command()
-  async matchVFOs(): Promise<void> {
-    await this.driver.writeString("AB;")
+  protected parseAntennaTunerResponse(response: string): AntennaTunerState | null {
+    const stateMatch = response.match(/^AC00(\d);$/)
+    if (!stateMatch) return null
+
+    if (stateMatch[1] === "1") return AntennaTunerState.On
+    if (stateMatch[1] === "2") return AntennaTunerState.StartTuning
+    else return AntennaTunerState.Off
+  }
+
+  @command({
+    source: z
+      .enum([
+        VFOType.Current,
+        VFOType.Other,
+        "memory"
+      ]),
+    target: z
+      .enum([
+        VFOType.Current,
+        VFOType.Other,
+        "memory"
+      ]),
+  })
+  async copy({ source, target }: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void> {
+    if (source === target) return
+
+    if (source === VFOType.Current) {
+      if (target === VFOType.Other) {
+        await this.driver.writeString("AB;")
+      } else if (target === "memory") {
+        await this.driver.writeString("AM;")
+      }
+    } else if (source === VFOType.Other) {
+      if (target === VFOType.Current) {
+        await this.driver.writeString("BA;")
+      }
+    }
   }
 
   @command({
@@ -145,6 +210,19 @@ export class GenericTransceiver extends Transceiver {
   })
   async setAutoInformation({ enabled }: { enabled: boolean }): Promise<void> {
     await this.driver.writeString(`AI${enabled ? "1" : "0"};`)
+  }
+
+  @command()
+  getAutoInformation(): Promise<boolean> {
+    return this.readResponse("AI;", (response) => /^AI(0|1);$/.test(response) && response === "AI1;")
+  }
+
+  @command({
+    direction: z
+      .nativeEnum(BandDirection)
+  })
+  async changeBand({ direction }: { direction: BandDirection }): Promise<void> {
+    await this.driver.writeString(direction === BandDirection.Up ? "BU0;" : "BD0;")
   }
 
   protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
@@ -160,22 +238,6 @@ export class GenericTransceiver extends Transceiver {
     await this.driver.writeString(command)
 
     return value
-  }
-
-  protected parseAFGainResponse(response: string): number | null {
-    const gainMatch = response.match(/AG0(\d{3})/)
-    if (!gainMatch) return null
-
-    return parseInt(gainMatch[1], 10) / 255
-  }
-
-  protected parseAntennaTunerResponse(response: string): AntennaTunerState | null {
-    const stateMatch = response.match(/AC00(\d);/)
-    if (!stateMatch) return null
-
-    if (stateMatch[1] === "1") return AntennaTunerState.On
-    if (stateMatch[1] === "2") return AntennaTunerState.StartTuning
-    else return AntennaTunerState.Off
   }
 
   protected parseInformationResponse(
@@ -195,7 +257,7 @@ export class GenericTransceiver extends Transceiver {
   } | null {
     const prefix = band === "opposite" ? "OI" : "IF"
 
-    if (!new RegExp(`${prefix}.{25};`).test(response)) return null
+    if (!new RegExp(`^${prefix}.{25};$`).test(response)) return null
 
     const {
       memoryChannel,
@@ -209,7 +271,7 @@ export class GenericTransceiver extends Transceiver {
       ctcss,
       duplex
     } = response.match(
-      new RegExp(`${prefix}(?<memoryChannel>\\d{3})(?<frequency>\\d{9})(?<clarifierDirection>\\+|-)(?<clarifierOffset>\\d{4})(?<rxClarifierEnabled>0|1)(?<txClarifierEnabled>0|1)(?<mode>\\d)(?<p7>\\d)(?<ctcss>\\d)00(?<duplex>\\d);`)
+      new RegExp(`^${prefix}(?<memoryChannel>\\d{3})(?<frequency>\\d{9})(?<clarifierDirection>\\+|-)(?<clarifierOffset>\\d{4})(?<rxClarifierEnabled>0|1)(?<txClarifierEnabled>0|1)(?<mode>\\d)(?<p7>\\d)(?<ctcss>\\d)00(?<duplex>\\d);$`)
     )!.groups!
 
     return {
