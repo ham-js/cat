@@ -265,6 +265,22 @@ export class GenericTransceiver extends Transceiver {
     }
   }
 
+  @command({
+    enabled: z
+      .boolean()
+      .optional(),
+    frequency: z
+      .number()
+      .min(10)
+      .step(10)
+      .max(3200)
+      .optional()
+  })
+  async setManualNotch({ enabled, frequency }: { enabled?: boolean; frequency?: number; }): Promise<void> {
+    if (enabled !== undefined) await this.driver.writeString(enabled ? "BP00001;" : "BP00000;")
+    if (frequency !== undefined) await this.driver.writeString(`BP01${(frequency / 10).toString().padStart(3, "0")};`)
+  }
+
   protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
     const value = firstValueFrom(
       delimiterParser(this.driver.stringObservable(), ";")

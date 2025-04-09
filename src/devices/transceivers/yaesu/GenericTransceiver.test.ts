@@ -586,6 +586,54 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setManualNotch", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setManualNotch({})
+      expect(driver.writeString).not.toHaveBeenCalledWith()
+
+      await genericTransceiver.setManualNotch({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00000;")
+
+      await genericTransceiver.setManualNotch({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00001;")
+
+      await genericTransceiver.setManualNotch({ frequency: 1230 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01123;")
+
+      await genericTransceiver.setManualNotch({ frequency: 10 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01001;")
+
+      await genericTransceiver.setManualNotch({ frequency: 100 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01010;")
+
+      await genericTransceiver.setManualNotch({ enabled: true, frequency: 100 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00001;")
+      expect(driver.writeString).toHaveBeenCalledWith("BP01010;")
+
+      await genericTransceiver.setManualNotch({ enabled: false, frequency: 90 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00000;")
+      expect(driver.writeString).toHaveBeenCalledWith("BP01009;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setManualNotch')).toEqual(
+        expect.objectContaining({
+          properties: {
+            enabled: {
+              type: "boolean"
+            },
+            frequency: {
+              maximum: 3200,
+              minimum: 10,
+              multipleOf: 10,
+              type: "number"
+            },
+          },
+        })
+      )
+    })
+  })
+
   describe("getVFO", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
