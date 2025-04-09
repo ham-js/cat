@@ -72,6 +72,12 @@ export class GenericTransceiver extends Transceiver {
             (enabled) => ({ enabled, type: TransceiverEventType.AutoNotch as const }),
             "enabled"
           ),
+          parseResponse(
+            response$,
+            this.parseBreakInResponse,
+            (enabled) => ({ enabled, type: TransceiverEventType.BreakIn as const }),
+            "enabled"
+          ),
         ))
       )
   }).pipe(
@@ -227,7 +233,11 @@ export class GenericTransceiver extends Transceiver {
 
   @command()
   getBreakIn(): Promise<boolean> {
-    return this.readResponse("BI;", (response) => response.match(/^BI(0|1);$/) && response === "BI1;")
+    return this.readResponse("BI;", this.parseBreakInResponse)
+  }
+
+  protected parseBreakInResponse(response: string): boolean | null {
+    return response.match(/^BI(0|1);$/) && response === "BI1;"
   }
 
   @command({

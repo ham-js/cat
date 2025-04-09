@@ -114,6 +114,33 @@ describe("GenericTransceiver", () => {
       ])
     })
 
+    test("it parses break in responses into BreakIn events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(2),
+          toArray()
+        )
+      )
+
+      driver.send("BI0;")
+      driver.send("BI1;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          enabled: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.BreakIn,
+        },
+        {
+          enabled: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.BreakIn,
+        },
+      ])
+    })
+
     test("it parses antenna tuner responses into AntennaTuner events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
@@ -701,6 +728,14 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver["parseAFGainResponse"]("AG0255;")).toEqual(1)
       expect(genericTransceiver["parseAFGainResponse"]("AG0128;")).toEqual(128 / 255)
       expect(genericTransceiver["parseAFGainResponse"]("AG0051;")).toEqual(0.2)
+    })
+  })
+
+  describe("parseBreakIn", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseBreakInResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseBreakInResponse"]("BI0;")).toEqual(false)
+      expect(genericTransceiver["parseBreakInResponse"]("BI1;")).toEqual(true)
     })
   })
 })

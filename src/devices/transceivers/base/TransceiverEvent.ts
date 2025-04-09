@@ -5,6 +5,7 @@ export enum TransceiverEventType {
   AFGain = "AFGain",
   AntennaTuner = "AntennaTuner",
   AutoNotch = "AutoNotch",
+  BreakIn = "BreakIn",
   VFO = "VFO"
 }
 
@@ -20,5 +21,5 @@ export type TransceiverEvent = ({
   type: TransceiverEventType.AFGain
 } | {
   enabled: boolean,
-  type: TransceiverEventType.AutoNotch
+  type: TransceiverEventType.AutoNotch | TransceiverEventType.BreakIn
 }) & {timestamp: Date}
