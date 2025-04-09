@@ -58,6 +58,66 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses manual notch frequency responses into ManualNotchFrequency events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(3),
+          toArray()
+        )
+      )
+
+      driver.send("BP01001;")
+      driver.send("BP01045;")
+      driver.send("BP01320;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          frequency: 10,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.ManualNotchFrequency,
+        },
+        {
+          frequency: 450,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.ManualNotchFrequency,
+        },
+        {
+          frequency: 3200,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.ManualNotchFrequency,
+        }
+      ])
+    })
+
+    test("it parses manual notch enabled responses into ManualNotchEnabled events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(2),
+          toArray()
+        )
+      )
+
+      driver.send("BP00000;")
+      driver.send("BP00001;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          enabled: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.ManualNotchEnabled,
+        },
+        {
+          enabled: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.ManualNotchEnabled,
+        }
+      ])
+    })
+
     test("it parses auto notch responses into AutoNotch events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 

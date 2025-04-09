@@ -6,6 +6,8 @@ export enum TransceiverEventType {
   AntennaTuner = "AntennaTuner",
   AutoNotch = "AutoNotch",
   BreakIn = "BreakIn",
+  ManualNotchEnabled = "ManualNotchEnabled",
+  ManualNotchFrequency = "ManualNotchFrequency",
   VFO = "VFO"
 }
 
@@ -22,4 +24,10 @@ export type TransceiverEvent = ({
 } | {
   enabled: boolean,
   type: TransceiverEventType.AutoNotch | TransceiverEventType.BreakIn
+} | {
+  enabled: boolean,
+  type: TransceiverEventType.ManualNotchEnabled
+} | {
+  frequency: number,
+  type: TransceiverEventType.ManualNotchFrequency
 }) & {timestamp: Date}

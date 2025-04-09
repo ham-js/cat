@@ -78,6 +78,18 @@ export class GenericTransceiver extends Transceiver {
             (enabled) => ({ enabled, type: TransceiverEventType.BreakIn as const }),
             "enabled"
           ),
+          parseResponse(
+            response$,
+            this.parseManualNotchEnabledResponse,
+            (enabled) => ({ enabled, type: TransceiverEventType.ManualNotchEnabled as const }),
+            "enabled"
+          ),
+          parseResponse(
+            response$,
+            this.parseManualNotchFrequencyResponse,
+            (frequency) => ({ frequency, type: TransceiverEventType.ManualNotchFrequency as const }),
+            "frequency"
+          ),
         ))
       )
   }).pipe(
@@ -121,7 +133,7 @@ export class GenericTransceiver extends Transceiver {
       .max(1)
   })
   async setAFGain({ gain }: { gain: number; }): Promise<void> {
-    await this.driver.writeString(`AG0${Math.round(gain * 255).toString().padStart(3, "0")};`) 
+    await this.driver.writeString(`AG0${Math.round(gain * 255).toString().padStart(3, "0")};`)
   }
 
   @command({
@@ -250,19 +262,24 @@ export class GenericTransceiver extends Transceiver {
 
   @command()
   async getManualNotch(): Promise<{ enabled: boolean; frequency: number; }> {
-    const enabled = await this.readResponse("BP00;", (response) => response.match(/^BP0000(0|1);$/) && response === "BP00001;")
-    const frequency = await this.readResponse("BP01;", (response) => {
-      const deciHzString = response.match(/^BP01(\d{3});$/)?.[1]
-
-      if (!deciHzString) return null
-
-      return parseInt(deciHzString, 10) * 10
-    })
+    const enabled = await this.readResponse("BP00;", this.parseManualNotchEnabledResponse)
+    const frequency = await this.readResponse("BP01;", this.parseManualNotchFrequencyResponse)
 
     return {
       enabled,
       frequency
     }
+  }
+
+  protected parseManualNotchEnabledResponse(response: string): boolean | null {
+    return response.match(/^BP0000(0|1);$/) && response === "BP00001;"
+  }
+
+  protected parseManualNotchFrequencyResponse(response: string): number | null {
+    const deciHzMatch = response.match(/^BP01(\d{3});$/)
+    if (!deciHzMatch) return null
+
+    return parseInt(deciHzMatch[1], 10) * 10
   }
 
   @command({
