@@ -188,7 +188,7 @@ export class GenericTransceiver extends Transceiver {
         "memory"
       ]),
   })
-  async copy({ source, target }: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void> {
+  async copyBandSettings({ source, target }: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void> {
     if (source === target) return
 
     if (source === VFOType.Current) {
@@ -214,7 +214,7 @@ export class GenericTransceiver extends Transceiver {
 
   @command()
   getAutoInformation(): Promise<boolean> {
-    return this.readResponse("AI;", (response) => /^AI(0|1);$/.test(response) && response === "AI1;")
+    return this.readResponse("AI;", (response) => response.match(/^AI(0|1);$/) && response === "AI1;")
   }
 
   @command({
@@ -223,6 +223,19 @@ export class GenericTransceiver extends Transceiver {
   })
   async changeBand({ direction }: { direction: BandDirection }): Promise<void> {
     await this.driver.writeString(direction === BandDirection.Up ? "BU0;" : "BD0;")
+  }
+
+  @command()
+  getBreakIn(): Promise<boolean> {
+    return this.readResponse("BI;", (response) => response.match(/^BI(0|1);$/) && response === "BI1;")
+  }
+
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setBreakIn({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
   }
 
   protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {

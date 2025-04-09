@@ -45,7 +45,7 @@ export class Transceiver extends Device {
     throw new Error("Not implemented")
   }
 
-  copy?(parameter: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void>
+  copyBandSettings?(parameter: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void>
 
   setAGC?(parameter: { attack: AGCAttack }): Promise<void>
 
@@ -61,4 +61,7 @@ export class Transceiver extends Device {
   setAFGain?(parameter: { gain: number }): Promise<void>
 
   changeBand?(parameter: { direction: BandDirection }): Promise<void>
+
+  getBreakIn?(): Promise<boolean>
+  setBreakIn?(parameter: { enabled: boolean }): Promise<void>
 }

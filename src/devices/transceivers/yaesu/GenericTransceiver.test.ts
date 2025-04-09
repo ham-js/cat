@@ -187,20 +187,20 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("copy", () => {
+  describe("copyBandSettings", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.copy({ source: VFOType.Current, target: VFOType.Other })
+      await genericTransceiver.copyBandSettings({ source: VFOType.Current, target: VFOType.Other })
       expect(driver.writeString).toHaveBeenCalledWith("AB;")
 
-      await genericTransceiver.copy({ source: VFOType.Current, target: "memory" })
+      await genericTransceiver.copyBandSettings({ source: VFOType.Current, target: "memory" })
       expect(driver.writeString).toHaveBeenCalledWith("AM;")
 
-      await genericTransceiver.copy({ source: VFOType.Other, target: VFOType.Current })
+      await genericTransceiver.copyBandSettings({ source: VFOType.Other, target: VFOType.Current })
       expect(driver.writeString).toHaveBeenCalledWith("BA;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('copy')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('copyBandSettings')).toEqual(expect.objectContaining({
         properties: {
           source: {
             enum: [
@@ -226,6 +226,54 @@ describe("GenericTransceiver", () => {
       }))
     })
   })
+
+  describe("getBreakIn", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.subject.next(textEncoder.encode("BI0;"))
+      })
+      await expect(genericTransceiver.getBreakIn()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.subject.next(textEncoder.encode("BI1;"))
+      })
+      await expect(genericTransceiver.getBreakIn()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getBreakIn')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("setBreakIn", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setBreakIn({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BI0;")
+
+      await genericTransceiver.setBreakIn({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BI1;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setBreakIn')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
 
   describe("getAFGain", () => {
     test("implements the command correctly", async () => {
