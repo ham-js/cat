@@ -64,4 +64,6 @@ export class Transceiver extends Device {
 
   getBreakIn?(): Promise<boolean>
   setBreakIn?(parameter: { enabled: boolean }): Promise<void>
+
+  getManualNotch?(): Promise<{ enabled: boolean, frequency: number }>
 }

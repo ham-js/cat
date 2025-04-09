@@ -63,10 +63,10 @@ describe("GenericTransceiver", () => {
 
   describe("getVFO", () => {
     test("implements the command correctly", async () => {
-      driver.write.mockImplementationOnce(() => driver.subject.next(textEncoder.encode(`FB00012345;FA00014250000;`)))
+      driver.write.mockImplementationOnce(() => driver.send(`FB00012345;FA00014250000;`))
       await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
-      driver.write.mockImplementationOnce(() => driver.subject.next(textEncoder.encode(`FA00012345;FB00007200000;`)))
+      driver.write.mockImplementationOnce(() => driver.send(`FA00012345;FB00007200000;`))
       await expect( genericTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
 

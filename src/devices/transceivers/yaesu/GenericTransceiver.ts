@@ -248,6 +248,23 @@ export class GenericTransceiver extends Transceiver {
     await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
   }
 
+  @command()
+  async getManualNotch(): Promise<{ enabled: boolean; frequency: number; }> {
+    const enabled = await this.readResponse("BP00;", (response) => response.match(/^BP0000(0|1);$/) && response === "BP00001;")
+    const frequency = await this.readResponse("BP01;", (response) => {
+      const deciHzString = response.match(/^BP01(\d{3});$/)?.[1]
+
+      if (!deciHzString) return null
+
+      return parseInt(deciHzString, 10) * 10
+    })
+
+    return {
+      enabled,
+      frequency
+    }
+  }
+
   protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
     const value = firstValueFrom(
       delimiterParser(this.driver.stringObservable(), ";")

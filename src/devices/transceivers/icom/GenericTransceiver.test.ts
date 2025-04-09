@@ -62,7 +62,7 @@ describe("GenericTransceiver", () => {
 
   describe("getVFO", () => {
     test("implements the command correctly", async () => {
-      driver.write.mockImplementationOnce(() => driver.subject.next(new Uint8Array([
+      driver.write.mockImplementationOnce(() => driver.send(new Uint8Array([
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // for other vfo
         0xFE, 0xFE, 0x1F, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // from other device
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // for other controller
@@ -73,7 +73,7 @@ describe("GenericTransceiver", () => {
       ])))
       await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_300)
 
-      driver.write.mockImplementationOnce(() => driver.subject.next(new Uint8Array([
+      driver.write.mockImplementationOnce(() => driver.send(new Uint8Array([
         0xFE, 0xFE, 0x5E, 0xE0, 0x25, 0x00, 0x00, 0b0000_0000, 0b0000_0011, 0b0010_0101, 0b0001_0100, 0b0000_0000, 0xFD, // for other vfo
         0xFE, 0xFE, 0x1F, 0xE0, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // from other device
         0xFE, 0xFE, 0x5E, 0xAC, 0x25, 0x00, 0x01, 0b0000_0000, 0b0000_0000, 0b0010_0101, 0b0000_0111, 0b0000_0000, 0xFD, // for other controller

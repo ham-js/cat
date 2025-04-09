@@ -259,14 +259,14 @@ describe("GenericTransceiver", () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BI;"))
 
-        driver.subject.next(textEncoder.encode("BI0;"))
+        driver.send("BI0;")
       })
       await expect(genericTransceiver.getBreakIn()).resolves.toEqual(false)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BI;"))
 
-        driver.subject.next(textEncoder.encode("BI1;"))
+        driver.send("BI1;")
       })
       await expect(genericTransceiver.getBreakIn()).resolves.toEqual(true)
     })
@@ -307,21 +307,21 @@ describe("GenericTransceiver", () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AG0;"))
 
-        driver.subject.next(textEncoder.encode("AG0000;"))
+        driver.send("AG0000;")
       })
       await expect(genericTransceiver.getAFGain()).resolves.toEqual(0)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AG0;"))
 
-        driver.subject.next(textEncoder.encode("AG0255;"))
+        driver.send("AG0255;")
       })
       await expect(genericTransceiver.getAFGain()).resolves.toEqual(1)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AG0;"))
 
-        driver.subject.next(textEncoder.encode("AG0051;"))
+        driver.send("AG0051;")
       })
       await expect(genericTransceiver.getAFGain()).resolves.toEqual(0.2)
     })
@@ -366,21 +366,21 @@ describe("GenericTransceiver", () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
-        driver.subject.next(textEncoder.encode("AC000;"))
+        driver.send("AC000;")
       })
       await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.Off)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
-        driver.subject.next(textEncoder.encode("AC001;"))
+        driver.send("AC001;")
       })
       await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.On)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
-        driver.subject.next(textEncoder.encode("AC002;"))
+        driver.send("AC002;")
       })
       await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.StartTuning)
     })
@@ -451,14 +451,14 @@ describe("GenericTransceiver", () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BC0;"))
 
-        driver.subject.next(textEncoder.encode("BC00;"))
+        driver.send("BC00;")
       })
       await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(false)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BC0;"))
 
-        driver.subject.next(textEncoder.encode("BC01;"))
+        driver.send("BC01;")
       })
       await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(true)
     })
@@ -475,14 +475,14 @@ describe("GenericTransceiver", () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AI;"))
 
-        driver.subject.next(textEncoder.encode("AI0;"))
+        driver.send("AI0;")
       })
       await expect(genericTransceiver.getAutoInformation()).resolves.toEqual(false)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AI;"))
 
-        driver.subject.next(textEncoder.encode("AI1;"))
+        driver.send("AI1;")
       })
       await expect(genericTransceiver.getAutoInformation()).resolves.toEqual(true)
     })
@@ -552,19 +552,53 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getManualNotch", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP00;"))
+
+        driver.send("BP00000;")
+      }).mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP01;"))
+
+        driver.send("BP01150;")
+      })
+      await expect(genericTransceiver.getManualNotch()).resolves.toEqual({ enabled: false, frequency: 1500 })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP00;"))
+
+        driver.send("BP00001;")
+      }).mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP01;"))
+
+        driver.send("BP01300;")
+      })
+      await expect(genericTransceiver.getManualNotch()).resolves.toEqual({ enabled: true, frequency: 3000 })
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getManualNotch')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
   describe("getVFO", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("FA;"))
 
-        driver.subject.next(textEncoder.encode("FB012345;FA014250000;"))
+        driver.send("FB012345;FA014250000;")
       })
       await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("FB;"))
 
-        driver.subject.next(textEncoder.encode("FA012345;FB007200000;"))
+        driver.send("FA012345;FB007200000;")
       })
       await expect(genericTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
