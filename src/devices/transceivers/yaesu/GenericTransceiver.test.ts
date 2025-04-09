@@ -58,6 +58,33 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses rx busy responses into RXBusy events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(2),
+          toArray()
+        )
+      )
+
+      driver.send("BY00;")
+      driver.send("BY10;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          busy: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.RXBusy,
+        },
+        {
+          busy: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.RXBusy,
+        },
+      ])
+    })
+
     test("it parses manual notch frequency responses into ManualNotchFrequency events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
@@ -756,6 +783,32 @@ describe("GenericTransceiver", () => {
               type: "number"
             },
           },
+        })
+      )
+    })
+  })
+
+  describe("getRXBusy", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BY;"))
+
+        driver.send("BY00;")
+      })
+      await expect(genericTransceiver.getRXBusy()).resolves.toBe(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BY;"))
+
+        driver.send("BY10;")
+      })
+      await expect(genericTransceiver.getRXBusy()).resolves.toBe(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getRXBusy')).toEqual(
+        expect.objectContaining({
+          properties: {}
         })
       )
     })

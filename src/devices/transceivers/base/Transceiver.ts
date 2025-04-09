@@ -70,4 +70,6 @@ export class Transceiver extends Device {
   setManualNotch?(parameter: { enabled?: boolean, frequency?: number }): Promise<void>
 
   setBand?(parameter: { band: Band }): Promise<void>
+
+  getRXBusy?(): Promise<boolean>
 }

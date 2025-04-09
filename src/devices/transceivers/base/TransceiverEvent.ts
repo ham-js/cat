@@ -8,6 +8,7 @@ export enum TransceiverEventType {
   BreakIn = "BreakIn",
   ManualNotchEnabled = "ManualNotchEnabled",
   ManualNotchFrequency = "ManualNotchFrequency",
+  RXBusy = "RXBusy",
   VFO = "VFO"
 }
 
@@ -30,4 +31,7 @@ export type TransceiverEvent = ({
 } | {
   frequency: number,
   type: TransceiverEventType.ManualNotchFrequency
+} | {
+  busy: boolean,
+  type: TransceiverEventType.RXBusy
 }) & {timestamp: Date}

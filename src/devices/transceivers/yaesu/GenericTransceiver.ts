@@ -106,12 +106,27 @@ export class GenericTransceiver extends Transceiver {
             (frequency) => ({ frequency, type: TransceiverEventType.ManualNotchFrequency as const }),
             "frequency"
           ),
+          parseResponse(
+            response$,
+            this.parseRXBusyResponse,
+            (busy) => ({ busy, type: TransceiverEventType.RXBusy as const }),
+            "busy"
+          ),
         ))
       )
   }).pipe(
     finalize(() => this.setAutoInformation({ enabled: false })),
     share()
   )
+
+  @command()
+  getRXBusy(): Promise<boolean> {
+    return this.readResponse("BY;", this.parseRXBusyResponse)
+  }
+
+  protected parseRXBusyResponse(response: string): boolean | null {
+    return response.match(/^BY(0|1)0;$/) && response === "BY10;"
+  }
 
   @command({
     band: z.enum(Bands)
