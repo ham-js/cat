@@ -8,6 +8,7 @@ import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { AntennaTunerState } from "./AntennaTunerState"
 import { BandDirection } from "./BandDirection"
+import { Band } from "./Band"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
@@ -67,4 +68,6 @@ export class Transceiver extends Device {
 
   getManualNotch?(): Promise<{ enabled: boolean, frequency: number }>
   setManualNotch?(parameter: { enabled?: boolean, frequency?: number }): Promise<void>
+
+  setBand?(parameter: { band: Band }): Promise<void>
 }

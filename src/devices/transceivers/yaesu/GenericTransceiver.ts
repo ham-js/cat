@@ -12,6 +12,7 @@ import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { BandDirection } from "../base/BandDirection";
+import { Band, Bands } from "../base/Band";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -24,6 +25,21 @@ const AGCAttackNumbers: Record<AGCAttack, number> = {
   [AGCAttack.Mid]: 2,
   [AGCAttack.Slow]: 3,
   [AGCAttack.Auto]: 4,
+}
+
+const BandSelectMap: Record<Band, string> = {
+  "160m": "00",
+  "80m": "01",
+  "40m": "03",
+  "30m": "04",
+  "20m": "05",
+  "17m": "06",
+  "15m": "07",
+  "13m": "08",
+  "10m": "09",
+  "6m": "10",
+  "General": "11",
+  "10km": "12",
 }
 
 @supportedDrivers([
@@ -96,6 +112,13 @@ export class GenericTransceiver extends Transceiver {
     finalize(() => this.setAutoInformation({ enabled: false })),
     share()
   )
+
+  @command({
+    band: z.enum(Bands)
+  })
+  async setBand({ band }: { band: Band; }): Promise<void> {
+    await this.driver.writeString(`BS${BandSelectMap[band]};`)
+  }
 
   @command({
     enabled: z

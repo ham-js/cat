@@ -393,6 +393,73 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setBand", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setBand({ band: "160m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS00;")
+
+      await genericTransceiver.setBand({ band: "80m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS01;")
+
+      await genericTransceiver.setBand({ band: "40m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS03;")
+
+      await genericTransceiver.setBand({ band: "30m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS04;")
+
+      await genericTransceiver.setBand({ band: "20m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS05;")
+
+      await genericTransceiver.setBand({ band: "17m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS06;")
+
+      await genericTransceiver.setBand({ band: "15m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS07;")
+
+      await genericTransceiver.setBand({ band: "13m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS08;")
+
+      await genericTransceiver.setBand({ band: "10m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS09;")
+
+      await genericTransceiver.setBand({ band: "6m" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS10;")
+
+      await genericTransceiver.setBand({ band: "General" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS10;")
+
+      await genericTransceiver.setBand({ band: "10km" })
+      expect(driver.writeString).toHaveBeenCalledWith("BS11;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setBand')).toEqual(expect.objectContaining({
+        properties: {
+          band: {
+            enum: [
+              "10km",
+              "160m",
+              "80m",
+              "40m",
+              "30m",
+              "20m",
+              "17m",
+              "15m",
+              "13m",
+              "10m",
+              "6m",
+              "General",
+            ],
+            type: "string"
+          },
+        },
+        required: [
+          "band"
+        ]
+      }))
+    })
+  })
+
   describe("setAFGain", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setAFGain({ gain: 0 })
