@@ -8,6 +8,7 @@ export enum TransceiverEventType {
   BreakIn = "BreakIn",
   ManualNotchEnabled = "ManualNotchEnabled",
   ManualNotchFrequency = "ManualNotchFrequency",
+  RITEnabled = "RITEnabled",
   RXBusy = "RXBusy",
   VFO = "VFO"
 }
@@ -24,7 +25,7 @@ export type TransceiverEvent = ({
   type: TransceiverEventType.AFGain
 } | {
   enabled: boolean,
-  type: TransceiverEventType.AutoNotch | TransceiverEventType.BreakIn
+  type: TransceiverEventType.AutoNotch | TransceiverEventType.BreakIn | TransceiverEventType.RITEnabled
 } | {
   enabled: boolean,
   type: TransceiverEventType.ManualNotchEnabled

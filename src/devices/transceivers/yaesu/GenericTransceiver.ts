@@ -112,6 +112,12 @@ export class GenericTransceiver extends Transceiver {
             (busy) => ({ busy, type: TransceiverEventType.RXBusy as const }),
             "busy"
           ),
+          parseResponse(
+            response$,
+            this.parseRITEnabledResponse,
+            (enabled) => ({ enabled, type: TransceiverEventType.RITEnabled as const }),
+            "enabled"
+          ),
         ))
       )
   }).pipe(

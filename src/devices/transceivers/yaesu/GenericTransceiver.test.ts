@@ -58,6 +58,33 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses rit enabled responses into RITEnabled events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(2),
+          toArray()
+        )
+      )
+
+      driver.send("CF000;")
+      driver.send("CF010;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          enabled: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.RITEnabled,
+        },
+        {
+          enabled: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.RITEnabled,
+        },
+      ])
+    })
+
     test("it parses rx busy responses into RXBusy events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
