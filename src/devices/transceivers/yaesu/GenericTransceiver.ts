@@ -42,6 +42,59 @@ const BandSelectMap: Record<Band, string> = {
   "10km": "12",
 }
 
+const CTCSSFrequencies: Record<string, number> = {
+  "000": 67,
+  "001": 69.3,
+  "002": 71.9,
+  "003": 74.4,
+  "004": 77,
+  "005": 79.7,
+  "006": 82.5,
+  "007": 85.4,
+  "008": 88.5,
+  "009": 91.5,
+  "010": 94.8,
+  "011": 97.4,
+  "012": 100,
+  "013": 103.5,
+  "014": 107.2,
+  "015": 110.9,
+  "016": 114.8,
+  "017": 118.8,
+  "018": 123,
+  "019": 127.3,
+  "020": 131.8,
+  "021": 136.5,
+  "022": 141.3,
+  "023": 146.2,
+  "024": 151.4,
+  "025": 156.7,
+  "026": 159.8,
+  "027": 162.2,
+  "028": 165.5,
+  "029": 167.9,
+  "030": 171.3,
+  "031": 173.8,
+  "032": 177.3,
+  "033": 179.9,
+  "034": 183.5,
+  "035": 186.2,
+  "036": 189.9,
+  "037": 192.8,
+  "038": 196.6,
+  "039": 199.5,
+  "040": 203.5,
+  "041": 206.5,
+  "042": 210.7,
+  "043": 218.1,
+  "044": 225.7,
+  "045": 229.1,
+  "046": 233.6,
+  "047": 241.8,
+  "048": 250.3,
+  "049": 254.1
+}
+
 @supportedDrivers([
   DriverType.CP210xWebUSBDriver,
   ...DeviceAgnosticDriverTypes
@@ -294,6 +347,19 @@ export class GenericTransceiver extends Transceiver {
   @command()
   getAutoInformation(): Promise<boolean> {
     return this.readResponse("AI;", (response) => response.match(/^AI(0|1);$/) && response === "AI1;")
+  }
+
+  @command()
+  getCTCSSFrequency(): Promise<number> {
+    return this.readResponse("CN00;", this.parseCTCSSResponse)
+  }
+
+  protected parseCTCSSResponse(response: string): number | null {
+    const ctcssMatch = response.match(/^CN00(\d{3});$/)
+
+    if (!ctcssMatch) return null
+
+    return CTCSSFrequencies[ctcssMatch[1]]
   }
 
   @command({

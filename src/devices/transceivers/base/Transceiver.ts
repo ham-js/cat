@@ -75,4 +75,6 @@ export class Transceiver extends Device {
 
   getRITEnabled?(): Promise<boolean>
   setRITEnabled?(parameter: { enabled: boolean }): Promise<void>
+
+  getCTCSSFrequency?(): Promise<number>
 }
