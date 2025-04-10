@@ -7,6 +7,7 @@ export enum TransceiverEventType {
   AutoNotch = "AutoNotch",
   BreakIn = "BreakIn",
   CTCSSFrequency = "CTCFrequency",
+  DCSCode = "DCSCode",
   ManualNotchEnabled = "ManualNotchEnabled",
   ManualNotchFrequency = "ManualNotchFrequency",
   RITEnabled = "RITEnabled",
@@ -36,4 +37,7 @@ export type TransceiverEvent = ({
 } | {
   busy: boolean,
   type: TransceiverEventType.RXBusy
+} | {
+  code: number,
+  type: TransceiverEventType.DCSCode
 }) & {timestamp: Date}

@@ -288,6 +288,12 @@ export class GenericTransceiver extends Transceiver {
             (frequency) => ({ frequency, type: TransceiverEventType.CTCSSFrequency as const }),
             "frequency"
           ),
+          parseResponse(
+            response$,
+            this.parseDCSCodeResponse,
+            (code) => ({ code, type: TransceiverEventType.DCSCode as const }),
+            "code"
+          ),
         ))
       )
   }).pipe(
