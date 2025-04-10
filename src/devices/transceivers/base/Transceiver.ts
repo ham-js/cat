@@ -7,7 +7,7 @@ import { merge, Observable, share, Subject, takeUntil } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { AntennaTunerState } from "./AntennaTunerState"
-import { BandDirection } from "./BandDirection"
+import { Direction } from "./Direction"
 import { Band } from "./Band"
 
 export class Transceiver extends Device {
@@ -61,7 +61,7 @@ export class Transceiver extends Device {
   getAFGain?(): Promise<number>
   setAFGain?(parameter: { gain: number }): Promise<void>
 
-  changeBand?(parameter: { direction: BandDirection }): Promise<void>
+  changeBand?(parameter: { direction: Direction }): Promise<void>
 
   getBreakIn?(): Promise<boolean>
   setBreakIn?(parameter: { enabled: boolean }): Promise<void>

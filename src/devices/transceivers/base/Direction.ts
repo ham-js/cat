@@ -1,4 +1,4 @@
-export enum BandDirection {
+export enum Direction {
   Up = "Up",
   Down = "Down"
 }

@@ -11,7 +11,7 @@ import { getTestDevice } from "../../../test/utils/getTestDevice";
 import { firstValueFrom, take, toArray } from "rxjs";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { AntennaTunerState } from "../base/AntennaTunerState";
-import { BandDirection } from "../base/BandDirection";
+import { Direction } from "../base/Direction";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
@@ -924,12 +924,41 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("scrollMemoryChannel", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.scrollMemoryChannel({ direction: Direction.Up })
+      expect(driver.writeString).toHaveBeenCalledWith("CH0;")
+
+      await genericTransceiver.scrollMemoryChannel({ direction: Direction.Down })
+      expect(driver.writeString).toHaveBeenCalledWith("CH1;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('scrollMemoryChannel')).toEqual(
+        expect.objectContaining({
+          properties: {
+            direction: {
+              enum: [
+                "Up",
+                "Down"
+              ],
+              type: "string"
+            }
+          },
+          required: [
+            "direction"
+          ]
+        })
+      )
+    })
+  })
+
   describe("changeBand", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.changeBand({ direction: BandDirection.Down })
+      await genericTransceiver.changeBand({ direction: Direction.Down })
       expect(driver.writeString).toHaveBeenCalledWith("BD0;")
 
-      await genericTransceiver.changeBand({ direction: BandDirection.Up })
+      await genericTransceiver.changeBand({ direction: Direction.Up })
       expect(driver.writeString).toHaveBeenCalledWith("BU0;")
     })
 

@@ -11,7 +11,7 @@ import { VFOType } from "../base/VFOType";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
 import { AntennaTunerState } from "../base/AntennaTunerState";
-import { BandDirection } from "../base/BandDirection";
+import { Direction } from "../base/Direction";
 import { Band, Bands } from "../base/Band";
 
 const vfoType = z.enum([
@@ -298,10 +298,18 @@ export class GenericTransceiver extends Transceiver {
 
   @command({
     direction: z
-      .nativeEnum(BandDirection)
+      .nativeEnum(Direction)
   })
-  async changeBand({ direction }: { direction: BandDirection }): Promise<void> {
-    await this.driver.writeString(direction === BandDirection.Up ? "BU0;" : "BD0;")
+  async scrollMemoryChannel({ direction }: { direction: Direction }): Promise<void> {
+    await this.driver.writeString(direction === Direction.Up ? "CH0;" : "CH1;")
+  }
+
+  @command({
+    direction: z
+      .nativeEnum(Direction)
+  })
+  async changeBand({ direction }: { direction: Direction }): Promise<void> {
+    await this.driver.writeString(direction === Direction.Up ? "BU0;" : "BD0;")
   }
 
   @command()
