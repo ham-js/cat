@@ -125,6 +125,14 @@ export class GenericTransceiver extends Transceiver {
     share()
   )
 
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setRITEnabled({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(enabled ? "CF010;" : "CF000;")
+  }
+
   @command()
   getRITEnabled(): Promise<boolean> {
     return this.readResponse("CF0;", this.parseRITEnabledResponse)

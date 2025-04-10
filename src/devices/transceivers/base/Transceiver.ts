@@ -72,5 +72,7 @@ export class Transceiver extends Device {
   setBand?(parameter: { band: Band }): Promise<void>
 
   getRXBusy?(): Promise<boolean>
+
   getRITEnabled?(): Promise<boolean>
+  setRITEnabled?(parameter: { enabled: boolean }): Promise<void>
 }

@@ -392,6 +392,29 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setRITEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setRITEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("CF000;")
+
+      await genericTransceiver.setRITEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("CF000;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setRITEnabled')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
   describe("getBreakIn", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
@@ -438,7 +461,6 @@ describe("GenericTransceiver", () => {
       }))
     })
   })
-
 
   describe("getAFGain", () => {
     test("implements the command correctly", async () => {
