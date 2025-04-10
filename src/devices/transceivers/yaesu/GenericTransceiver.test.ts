@@ -341,6 +341,30 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getRITEnabled", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CF0;"))
+
+        driver.send("CF000;")
+      })
+      await expect(genericTransceiver.getRITEnabled()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CF0;"))
+
+        driver.send("CF010;")
+      })
+      await expect(genericTransceiver.getRITEnabled()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getRITEnabled')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
   describe("getBreakIn", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {

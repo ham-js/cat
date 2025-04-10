@@ -120,6 +120,15 @@ export class GenericTransceiver extends Transceiver {
   )
 
   @command()
+  getRITEnabled(): Promise<boolean> {
+    return this.readResponse("CF0;", this.parseRITEnabledResponse)
+  }
+
+  protected parseRITEnabledResponse(response: string): boolean | null {
+    return response.match(/^CF0(0|1)0;$/) && response === "CF010;"
+  }
+
+  @command()
   getRXBusy(): Promise<boolean> {
     return this.readResponse("BY;", this.parseRXBusyResponse)
   }
