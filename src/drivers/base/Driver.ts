@@ -15,7 +15,7 @@ export abstract class Driver {
   open?(): Promise<void>
   close?(): void | Promise<void>
 
-  public stringObservable(encoding: string = "utf-8", options: TextDecoderOptions = {}): Observable<string> {
+  public stringData(encoding: string = "utf-8", options: TextDecoderOptions = {}): Observable<string> {
     const textDecoder = new TextDecoder(encoding, options)
 
     return this.data

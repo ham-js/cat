@@ -18,8 +18,8 @@ describe("Driver", () => {
     expect(driver.write).toHaveBeenCalledWith(new Uint8Array([97, 98, 99]))
   })
 
-  test("stringObservable", async () => {
-    const result = firstValueFrom(driver.stringObservable())
+  test("stringData", async () => {
+    const result = firstValueFrom(driver.stringData())
 
     driver.send(new Uint8Array([65, 66, 67]))
 

@@ -3,18 +3,20 @@ import { Device } from "../../base/Device"
 import { DeviceType } from "../../base/DeviceType"
 import { TransceiverVendor } from "./TransceiverVendor"
 import { VFOType } from "./VFOType"
-import { merge, Observable, share, Subject, takeUntil } from "rxjs"
+import { filter, firstValueFrom, map, merge, Observable, share, Subject, takeUntil, timeout } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
-import { AntennaTunerState } from "./AntennaTunerState"
 import { Direction } from "./Direction"
 import { Band } from "./Bands"
+import { delimiterParser } from "../../base/parsers/delimiterParser"
+import { AntennaTunerState } from "./AntennaTunerState"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
   static readonly deviceVendor: TransceiverVendor
 
   pollingInterval = 500
+  responseTimeout = 1000
 
   protected _closeEvents = new Subject<void>()
   readonly events: Observable<TransceiverEvent> =
@@ -39,6 +41,22 @@ export class Transceiver extends Device {
     await super.close()
   }
 
+  protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
+    const value = firstValueFrom(
+      delimiterParser(this.driver.stringData(), ";")
+        .pipe(
+          map(mapFn),
+          filter((value) => value !== null && value !== undefined),
+          timeout(responseTimeout)
+        )
+    )
+
+    await this.driver.writeString(command)
+
+    return value
+  }
+
+
   getVFOFrequency(parameter: { vfo: VFOType }): Promise<number> {
     throw new Error("Not implemented")
   }
@@ -54,7 +72,7 @@ export class Transceiver extends Device {
   setAutoNotchEnabled?(parameter: { enabled: boolean }): Promise<void>
 
   getAntennaTunerState?(): Promise<AntennaTunerState>
-  setAntennaTunerState?(parameter: { state: AntennaTunerState }): Promise<void>
+  setAntennaTunerState?(parameter: Partial<AntennaTunerState>): Promise<void>
 
   // convention: gain is between 0-1 so consumers don't need to map to the
   // supported range of the device themselves

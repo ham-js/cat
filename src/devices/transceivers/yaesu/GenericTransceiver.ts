@@ -1,4 +1,4 @@
-import { firstValueFrom, filter, defer, map, share, merge, connect, timeout, finalize } from "rxjs";
+import { defer, share, merge, connect, finalize } from "rxjs";
 import { z } from "zod";
 import { DeviceAgnosticDriverTypes, DriverType } from "../../../drivers";
 import { command } from "../../base/decorators/command";
@@ -10,12 +10,12 @@ import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
-import { AntennaTunerState } from "../base/AntennaTunerState";
 import { Direction } from "../base/Direction";
 import { Band, Bands } from "../base/Bands";
 import { invertMap } from "../../../utils/invertMap";
 import { oneOf } from "../../../utils/oneOf";
 import { ExtractMapKey } from "../../../utils/types/ExtractMapKey";
+import { AntennaTunerState } from "../base/AntennaTunerState";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -216,12 +216,10 @@ export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu
 
-  responseTimeout = 1000
-
   readonly events = defer(() => {
     this.setAutoInformation({ enabled: true })
 
-    return delimiterParser(this.driver.stringObservable(), ";")
+    return delimiterParser(this.driver.stringData(), ";")
       .pipe(
         connect((response$) => merge(
           parseResponse(
@@ -238,9 +236,21 @@ export class GenericTransceiver extends Transceiver {
           ),
           parseResponse(
             response$,
-            this.parseAntennaTunerResponse,
-            (state) => ({ state, type: TransceiverEventType.AntennaTuner as const }),
-            "state"
+            (response) => this.parseAntennaTunerResponse(response)?.rx ?? null,
+            (rx) => ({ rx, type: TransceiverEventType.AntennaTunerRX as const }),
+            "rx"
+          ),
+          parseResponse(
+            response$,
+            (response) => this.parseAntennaTunerResponse(response)?.tx ?? null,
+            (tx) => ({ tx, type: TransceiverEventType.AntennaTunerTX as const }),
+            "tx"
+          ),
+          parseResponse(
+            response$,
+            (response) => this.parseAntennaTunerResponse(response)?.tuning ?? null,
+            (tuning) => ({ tuning, type: TransceiverEventType.AntennaTunerTuning as const }),
+            "tuning"
           ),
           parseResponse(
             response$,
@@ -409,12 +419,20 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command({
-    state: z.nativeEnum(AntennaTunerState)
+    rx: z
+      .boolean()
+      .optional(),
+    tx: z
+      .boolean()
+      .optional(),
+    tuning: z
+      .boolean()
+      .optional()
   })
-  async setAntennaTunerState({ state }: { state: AntennaTunerState }): Promise<void> {
-    if (state === AntennaTunerState.Off) await this.driver.writeString("AC000;")
-    else if (state === AntennaTunerState.On) await this.driver.writeString("AC001;")
-    else if (state === AntennaTunerState.StartTuning) await this.driver.writeString("AC002;")
+  async setAntennaTunerState({ rx, tx, tuning }: Partial<AntennaTunerState>): Promise<void> {
+    if (tuning) await this.driver.writeString("AC002;")
+    else if (rx || tx) await this.driver.writeString("AC001;")
+    else await this.driver.writeString("AC000;")
   }
 
   @command()
@@ -426,9 +444,10 @@ export class GenericTransceiver extends Transceiver {
     const stateMatch = response.match(/^AC00(\d);$/)
     if (!stateMatch) return null
 
-    if (stateMatch[1] === "1") return AntennaTunerState.On
-    if (stateMatch[1] === "2") return AntennaTunerState.StartTuning
-    else return AntennaTunerState.Off
+    if (stateMatch[1] === "1") return { rx: true, tx: true, tuning: false }
+    if (stateMatch[1] === "2") return { rx: false, tx: false, tuning: true }
+
+    return { rx: false, tx: false, tuning: false }
   }
 
   @command({
@@ -590,21 +609,6 @@ export class GenericTransceiver extends Transceiver {
   })
   async setManualNotchFrequency({ frequency }: { frequency: number }): Promise<void> {
     await this.driver.writeString(`BP01${(frequency / 10).toString().padStart(3, "0")};`)
-  }
-
-  protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
-    const value = firstValueFrom(
-      delimiterParser(this.driver.stringObservable(), ";")
-        .pipe(
-          map(mapFn),
-          filter((value) => value !== null && value !== undefined),
-          timeout(responseTimeout)
-        )
-    )
-
-    await this.driver.writeString(command)
-
-    return value
   }
 
   protected parseInformationResponse(

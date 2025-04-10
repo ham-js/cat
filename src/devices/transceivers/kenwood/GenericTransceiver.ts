@@ -29,6 +29,22 @@ export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood
 
+  @command()
+  getAntennaTunerState(): Promise<{ rx: boolean, tx: boolean, tuning: boolean }> {
+    return this.readResponse("AC;", this.parseAntennaTunerState)
+  }
+
+  protected parseAntennaTunerState(response: string): { rx: boolean, tx: boolean, tuning: boolean } | null {
+    const stateMatch = response.match(/^AC(?<rxString>0|1)(?<txString>0|1)(?<tuningString>0|1);$/)
+    if (!stateMatch?.groups) return null
+
+    return {
+      rx: stateMatch.groups.rxString === "1",
+      tx: stateMatch.groups.txString === "1",
+      tuning: stateMatch.groups.tuningString === "1"
+    }
+  }
+
   @command({
     source: z.enum([
       VFOType.Current
@@ -45,17 +61,10 @@ export class GenericTransceiver extends Transceiver {
     vfo: vfoType
   })
   async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
-    const value = firstValueFrom(
-      delimiterParser(this.driver.stringObservable(), ";")
-        .pipe(
-          map((command) => parseInt(command.match(new RegExp(`F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);`))?.[1] ?? "", 10)),
-          filter(Boolean)
-        )
-    )
+    const responseRegex = new RegExp(`^F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);$`)
+    const response = await this.readResponse(`F${vfo === VFOType.Current ? 'A' : 'B'};`, (value) => value.match(responseRegex))
 
-    await this.driver.writeString(`F${vfo === VFOType.Current ? 'A' : 'B'};`)
-
-    return value
+    return parseInt(response[1], 10)
   }
 
   @command({

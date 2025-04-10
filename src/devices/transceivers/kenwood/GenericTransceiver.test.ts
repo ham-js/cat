@@ -61,12 +61,69 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getAntennaTunerState", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC000;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: false, tuning: false })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC100;")
+      })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: true, tx: false, tuning: false })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC010;")
+      })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: true, tuning: false })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC001;")
+      })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: false, tuning: true })
+    })
+
+    test("specifies the parameter type correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getAntennaTunerState')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("parseAntennaTunerState", () => {
+    test("it parses the antenna tuner state correctly", () => {
+      expect(genericTransceiver["parseAntennaTunerState"]("AC000;")).toEqual({ rx: false, tx: false, tuning: false })
+      expect(genericTransceiver["parseAntennaTunerState"]("AC100;")).toEqual({ rx: true, tx: false, tuning: false })
+      expect(genericTransceiver["parseAntennaTunerState"]("AC010;")).toEqual({ rx: false, tx: true, tuning: false })
+      expect(genericTransceiver["parseAntennaTunerState"]("AC001;")).toEqual({ rx: false, tx: false, tuning: true })
+    })
+  })
+
   describe("getVFOFrequency", () => {
     test("implements the command correctly", async () => {
-      driver.write.mockImplementationOnce(() => driver.send(`FB00012345;FA00014250000;`))
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("FA;"))
+
+        driver.send(`FB00012345;FA00014250000;`)
+      })
       await expect(genericTransceiver.getVFOFrequency({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
-      driver.write.mockImplementationOnce(() => driver.send(`FA00012345;FB00007200000;`))
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("FB;"))
+
+        driver.send(`FA00012345;FB00007200000;`)
+      })
       await expect( genericTransceiver.getVFOFrequency({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
 
