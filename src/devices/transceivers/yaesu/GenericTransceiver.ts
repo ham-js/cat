@@ -215,12 +215,12 @@ export class GenericTransceiver extends Transceiver {
     enabled: z
       .boolean()
   })
-  async setAutoNotch({ enabled }: { enabled: boolean }): Promise<void> {
+  async setAutoNotchEnabled({ enabled }: { enabled: boolean }): Promise<void> {
     await this.driver.writeString(enabled ? "BC01;" : "BC00;")
   }
 
   @command()
-  getAutoNotch(): Promise<boolean> {
+  getAutoNotchEnabled(): Promise<boolean> {
     return this.readResponse("BC0;", this.parseAutoNotchResponse)
   }
 
@@ -253,7 +253,7 @@ export class GenericTransceiver extends Transceiver {
   @command({
     vfo: vfoType
   })
-  async getVFO({ vfo }: { vfo: VFOType }): Promise<number> {
+  async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
     const responseRegex = new RegExp(`^F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);$`)
     const response = await this.readResponse(`F${vfo === VFOType.Current ? 'A' : 'B'};`, (value) => value.match(responseRegex))
 
@@ -268,7 +268,7 @@ export class GenericTransceiver extends Transceiver {
       .lte(56_000_000),
     vfo: vfoType
   })
-  async setVFO({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
+  async setVFOFrequency({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
     await this.driver.writeString(
       `F${vfo === VFOType.Current ? 'A' : 'B'}${frequency.toString(10).padStart(9, '0')};`
     )
@@ -277,7 +277,7 @@ export class GenericTransceiver extends Transceiver {
   @command({
     attack: z.nativeEnum(AGCAttack)
   })
-  async setAGC({ attack }: { attack: AGCAttack; }): Promise<void> {
+  async setAGCAttack({ attack }: { attack: AGCAttack; }): Promise<void> {
     await this.driver.writeString(
       `GT0${AGCAttackNumbers[attack]};`
     )
@@ -286,14 +286,14 @@ export class GenericTransceiver extends Transceiver {
   @command({
     state: z.nativeEnum(AntennaTunerState)
   })
-  async setAntennaTuner({ state }: { state: AntennaTunerState }): Promise<void> {
+  async setAntennaTunerState({ state }: { state: AntennaTunerState }): Promise<void> {
     if (state === AntennaTunerState.Off) await this.driver.writeString("AC000;")
     else if (state === AntennaTunerState.On) await this.driver.writeString("AC001;")
     else if (state === AntennaTunerState.StartTuning) await this.driver.writeString("AC002;")
   }
 
   @command()
-  getAntennaTuner(): Promise<AntennaTunerState> {
+  getAntennaTunerState(): Promise<AntennaTunerState> {
     return this.readResponse("AC;", this.parseAntennaTunerResponse)
   }
 
@@ -379,7 +379,7 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
-  getBreakIn(): Promise<boolean> {
+  getBreakInEnabled(): Promise<boolean> {
     return this.readResponse("BI;", this.parseBreakInResponse)
   }
 
@@ -391,19 +391,18 @@ export class GenericTransceiver extends Transceiver {
     enabled: z
       .boolean()
   })
-  async setBreakIn({ enabled }: { enabled: boolean }): Promise<void> {
+  async setBreakInEnabled({ enabled }: { enabled: boolean }): Promise<void> {
     await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
   }
 
   @command()
-  async getManualNotch(): Promise<{ enabled: boolean; frequency: number; }> {
-    const enabled = await this.readResponse("BP00;", this.parseManualNotchEnabledResponse)
-    const frequency = await this.readResponse("BP01;", this.parseManualNotchFrequencyResponse)
+  getManualNotchEnabled(): Promise<boolean> {
+    return this.readResponse("BP00;", this.parseManualNotchEnabledResponse)
+  }
 
-    return {
-      enabled,
-      frequency
-    }
+  @command()
+  getManualNotchFrequency(): Promise<number> {
+    return this.readResponse("BP01;", this.parseManualNotchFrequencyResponse)
   }
 
   protected parseManualNotchEnabledResponse(response: string): boolean | null {
@@ -420,17 +419,20 @@ export class GenericTransceiver extends Transceiver {
   @command({
     enabled: z
       .boolean()
-      .optional(),
+  })
+  async setManualNotchEnabled({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(enabled ? "BP00001;" : "BP00000;")
+  }
+
+  @command({
     frequency: z
       .number()
       .min(10)
       .step(10)
       .max(3200)
-      .optional()
   })
-  async setManualNotch({ enabled, frequency }: { enabled?: boolean; frequency?: number; }): Promise<void> {
-    if (enabled !== undefined) await this.driver.writeString(enabled ? "BP00001;" : "BP00000;")
-    if (frequency !== undefined) await this.driver.writeString(`BP01${(frequency / 10).toString().padStart(3, "0")};`)
+  async setManualNotchFrequency({ frequency }: { frequency: number }): Promise<void> {
+    await this.driver.writeString(`BP01${(frequency / 10).toString().padStart(3, "0")};`)
   }
 
   protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {

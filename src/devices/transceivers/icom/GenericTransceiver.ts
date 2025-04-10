@@ -59,7 +59,7 @@ export class GenericTransceiver extends Transceiver {
       AGCAttack.Slow
     ])
   })
-  async setAGC({ attack }: { attack: AGCAttack }): Promise<void> {
+  async setAGCAttack({ attack }: { attack: AGCAttack }): Promise<void> {
     await this.driver.write(
       this.buildCommand(
         0x16,
@@ -79,7 +79,7 @@ export class GenericTransceiver extends Transceiver {
       .lte(56_000_000),
     vfo: vfoType
   })
-  async setVFO({ frequency, vfo }: { frequency: number; vfo: VFOType }): Promise<void> {
+  async setVFOFrequency({ frequency, vfo }: { frequency: number; vfo: VFOType }): Promise<void> {
     await this.driver.write(
       this.buildCommand(
         0x25,
@@ -95,7 +95,7 @@ export class GenericTransceiver extends Transceiver {
   @command({
     vfo: vfoType
   })
-  async getVFO({ vfo }: { vfo: VFOType }): Promise<number> {
+  async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
     const value = firstValueFrom(
       delimiterParser(this.driver.data, 0xFD)
         .pipe(

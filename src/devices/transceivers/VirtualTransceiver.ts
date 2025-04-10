@@ -30,7 +30,7 @@ export class VirtualTransceiver extends Transceiver {
   @command({
     vfo: z.nativeEnum(VFOType)
   })
-  async getVFO({ vfo }: { vfo: VFOType; }): Promise<number> {
+  async getVFOFrequency({ vfo }: { vfo: VFOType; }): Promise<number> {
     return Promise.resolve(this.state.vfo[vfo])
   }
 
@@ -38,14 +38,14 @@ export class VirtualTransceiver extends Transceiver {
     frequency: z.number().int(),
     vfo: z.nativeEnum(VFOType)
   })
-  async setVFO({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
+  async setVFOFrequency({ frequency, vfo }: { frequency: number; vfo: VFOType; }): Promise<void> {
     this.state.vfo[vfo] = frequency 
   }
 
   @command({
     attack: z.nativeEnum(AGCAttack)
   })
-  async setAGC({ attack }: { attack: AGCAttack; }): Promise<void> {
+  async setAGCAttack({ attack }: { attack: AGCAttack; }): Promise<void> {
     this.state.agcAttack = attack 
   }
 }

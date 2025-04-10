@@ -415,41 +415,41 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getBreakIn", () => {
+  describe("getBreakInEnabled", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BI;"))
 
         driver.send("BI0;")
       })
-      await expect(genericTransceiver.getBreakIn()).resolves.toEqual(false)
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(false)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BI;"))
 
         driver.send("BI1;")
       })
-      await expect(genericTransceiver.getBreakIn()).resolves.toEqual(true)
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(true)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getBreakIn')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('getBreakInEnabled')).toEqual(expect.objectContaining({
         properties: {}
       }))
     })
   })
 
-  describe("setBreakIn", () => {
+  describe("setBreakInEnabled", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setBreakIn({ enabled: false })
+      await genericTransceiver.setBreakInEnabled({ enabled: false })
       expect(driver.writeString).toHaveBeenCalledWith("BI0;")
 
-      await genericTransceiver.setBreakIn({ enabled: true })
+      await genericTransceiver.setBreakInEnabled({ enabled: true })
       expect(driver.writeString).toHaveBeenCalledWith("BI1;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setBreakIn')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('setBreakInEnabled')).toEqual(expect.objectContaining({
         properties: {
           enabled: {
             type: "boolean"
@@ -588,51 +588,51 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getAntennaTuner", () => {
+  describe("getAntennaTunerState", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC000;")
       })
-      await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.Off)
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Off)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC001;")
       })
-      await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.On)
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.On)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC002;")
       })
-      await expect(genericTransceiver.getAntennaTuner()).resolves.toEqual(AntennaTunerState.StartTuning)
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.StartTuning)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getAntennaTuner')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('getAntennaTunerState')).toEqual(expect.objectContaining({
         properties: {}
       }))
     })
   })
 
-  describe("setAntennaTuner", () => {
+  describe("setAntennaTunerState", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setAntennaTuner({ state: AntennaTunerState.On })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.On })
       expect(driver.writeString).toHaveBeenCalledWith("AC001;")
 
-      await genericTransceiver.setAntennaTuner({ state: AntennaTunerState.Off })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.Off })
       expect(driver.writeString).toHaveBeenCalledWith("AC000;")
 
-      await genericTransceiver.setAntennaTuner({ state: AntennaTunerState.StartTuning })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.StartTuning })
       expect(driver.writeString).toHaveBeenCalledWith("AC002;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setAntennaTuner')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('setAntennaTunerState')).toEqual(expect.objectContaining({
         properties: {
           state: {
             enum: [
@@ -650,17 +650,17 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setAutoNotch", () => {
+  describe("setAutoNotchEnabled", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setAutoNotch({ enabled: false })
+      await genericTransceiver.setAutoNotchEnabled({ enabled: false })
       expect(driver.writeString).toHaveBeenCalledWith("BC00;")
 
-      await genericTransceiver.setAutoNotch({ enabled: true })
+      await genericTransceiver.setAutoNotchEnabled({ enabled: true })
       expect(driver.writeString).toHaveBeenCalledWith("BC01;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setAutoNotch')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('setAutoNotchEnabled')).toEqual(expect.objectContaining({
         properties: {
           enabled: {
             type: "boolean"
@@ -673,25 +673,25 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getAutoNotch", () => {
+  describe("getAutoNotchEnabled", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BC0;"))
 
         driver.send("BC00;")
       })
-      await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(false)
+      await expect(genericTransceiver.getAutoNotchEnabled()).resolves.toEqual(false)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BC0;"))
 
         driver.send("BC01;")
       })
-      await expect(genericTransceiver.getAutoNotch()).resolves.toEqual(true)
+      await expect(genericTransceiver.getAutoNotchEnabled()).resolves.toEqual(true)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getAutoInformation')).toEqual(expect.objectContaining({
+      expect(genericTransceiver.getCommandSchema('getAutoNotchEnabled')).toEqual(expect.objectContaining({
         properties: {}
       }))
     })
@@ -744,17 +744,17 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setVFO", () => {
+  describe("setVFOFrequency", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setVFO({ frequency: 14_250_000, vfo: VFOType.Current })
+      await genericTransceiver.setVFOFrequency({ frequency: 14_250_000, vfo: VFOType.Current })
       expect(driver.writeString).toHaveBeenCalledWith("FA014250000;")
 
-      await genericTransceiver.setVFO({ frequency: 7_250_000, vfo: VFOType.Other })
+      await genericTransceiver.setVFOFrequency({ frequency: 7_250_000, vfo: VFOType.Other })
       expect(driver.writeString).toHaveBeenCalledWith("FB007250000;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setVFO')).toEqual(
+      expect(genericTransceiver.getCommandSchema('setVFOFrequency')).toEqual(
         expect.objectContaining({
           properties: {
             frequency: {
@@ -779,33 +779,25 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getManualNotch", () => {
+  describe("getManualNotchFrequency", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
-        expect(data).toEqual(textEncoder.encode("BP00;"))
-
-        driver.send("BP00000;")
-      }).mockImplementationOnce((data) => {
-        expect(data).toEqual(textEncoder.encode("BP01;"))
-
-        driver.send("BP01150;")
-      })
-      await expect(genericTransceiver.getManualNotch()).resolves.toEqual({ enabled: false, frequency: 1500 })
-
-      driver.write.mockImplementationOnce((data) => {
-        expect(data).toEqual(textEncoder.encode("BP00;"))
-
-        driver.send("BP00001;")
-      }).mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BP01;"))
 
         driver.send("BP01300;")
       })
-      await expect(genericTransceiver.getManualNotch()).resolves.toEqual({ enabled: true, frequency: 3000 })
+      await expect(genericTransceiver.getManualNotchFrequency()).resolves.toEqual(3000)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP01;"))
+
+        driver.send("BP01050;")
+      })
+      await expect(genericTransceiver.getManualNotchFrequency()).resolves.toEqual(500)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getManualNotch')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getManualNotchFrequency')).toEqual(
         expect.objectContaining({
           properties: {},
         })
@@ -813,42 +805,70 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setManualNotch", () => {
+  describe("getManualNotchEnabled", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setManualNotch({})
-      expect(driver.writeString).not.toHaveBeenCalledWith()
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP00;"))
 
-      await genericTransceiver.setManualNotch({ enabled: false })
-      expect(driver.writeString).toHaveBeenCalledWith("BP00000;")
+        driver.send("BP00000;")
+      })
+      await expect(genericTransceiver.getManualNotchEnabled()).resolves.toEqual(false)
 
-      await genericTransceiver.setManualNotch({ enabled: true })
-      expect(driver.writeString).toHaveBeenCalledWith("BP00001;")
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP00;"))
 
-      await genericTransceiver.setManualNotch({ frequency: 1230 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP01123;")
-
-      await genericTransceiver.setManualNotch({ frequency: 10 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP01001;")
-
-      await genericTransceiver.setManualNotch({ frequency: 100 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP01010;")
-
-      await genericTransceiver.setManualNotch({ enabled: true, frequency: 100 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP00001;")
-      expect(driver.writeString).toHaveBeenCalledWith("BP01010;")
-
-      await genericTransceiver.setManualNotch({ enabled: false, frequency: 90 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP00000;")
-      expect(driver.writeString).toHaveBeenCalledWith("BP01009;")
+        driver.send("BP00001;")
+      })
+      await expect(genericTransceiver.getManualNotchEnabled()).resolves.toEqual(true)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setManualNotch')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getManualNotchEnabled')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("setManualNotchEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setManualNotchEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00000;")
+
+      await genericTransceiver.setManualNotchEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BP00001;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setManualNotchEnabled')).toEqual(
         expect.objectContaining({
           properties: {
             enabled: {
               type: "boolean"
             },
+          },
+          required: [
+            "enabled"
+          ]
+        })
+      )
+    })
+  })
+
+  describe("setManualNotchFrequency", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setManualNotchFrequency({ frequency: 1230 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01123;")
+
+      await genericTransceiver.setManualNotchFrequency({ frequency: 10 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01001;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setManualNotchFrequency')).toEqual(
+        expect.objectContaining({
+          properties: {
             frequency: {
               maximum: 3200,
               minimum: 10,
@@ -856,6 +876,9 @@ describe("GenericTransceiver", () => {
               type: "number"
             },
           },
+          required: [
+            "frequency"
+          ]
         })
       )
     })
@@ -913,25 +936,25 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getVFO", () => {
+  describe("getVFOFrequency", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("FA;"))
 
         driver.send("FB012345;FA014250000;")
       })
-      await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
+      await expect(genericTransceiver.getVFOFrequency({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("FB;"))
 
         driver.send("FA012345;FB007200000;")
       })
-      await expect(genericTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
+      await expect(genericTransceiver.getVFOFrequency({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getVFO')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getVFOFrequency')).toEqual(
         expect.objectContaining({
           properties: {
             vfo: {
@@ -1008,23 +1031,23 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setAGC", () => {
+  describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setAGC({ attack: AGCAttack.Auto })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Auto })
       expect(driver.writeString).toHaveBeenCalledWith("GT04;")
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Fast })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Fast })
       expect(driver.writeString).toHaveBeenCalledWith("GT01;")
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Mid })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Mid })
       expect(driver.writeString).toHaveBeenCalledWith("GT02;")
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Slow })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Slow })
       expect(driver.writeString).toHaveBeenCalledWith("GT03;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setAGC')).toEqual(
+      expect(genericTransceiver.getCommandSchema('setAGCAttack')).toEqual(
         expect.objectContaining({
           properties: {
             attack: {

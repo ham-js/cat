@@ -26,17 +26,17 @@ describe("GenericTransceiver", () => {
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Kenwood))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
-  describe("setVFO", () => {
+  describe("setVFOFrequency", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setVFO({ frequency: 14_250_000, vfo: VFOType.Current })
+      await genericTransceiver.setVFOFrequency({ frequency: 14_250_000, vfo: VFOType.Current })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("FA00014250000;"))
 
-      await genericTransceiver.setVFO({ frequency: 7_250_000, vfo: VFOType.Other })
+      await genericTransceiver.setVFOFrequency({ frequency: 7_250_000, vfo: VFOType.Other })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("FB00007250000;"))
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setVFO')).toEqual(
+      expect(genericTransceiver.getCommandSchema('setVFOFrequency')).toEqual(
         expect.objectContaining({
           properties: {
             frequency: {
@@ -61,17 +61,17 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getVFO", () => {
+  describe("getVFOFrequency", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce(() => driver.send(`FB00012345;FA00014250000;`))
-      await expect(genericTransceiver.getVFO({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
+      await expect(genericTransceiver.getVFOFrequency({ vfo: VFOType.Current })).resolves.toBe(14_250_000)
 
       driver.write.mockImplementationOnce(() => driver.send(`FA00012345;FB00007200000;`))
-      await expect( genericTransceiver.getVFO({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
+      await expect( genericTransceiver.getVFOFrequency({ vfo: VFOType.Other })).resolves.toBe(7_200_000)
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getVFO')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getVFOFrequency')).toEqual(
         expect.objectContaining({
           properties: {
             vfo: {
@@ -90,23 +90,23 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setAGC", () => {
+  describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setAGC({ attack: AGCAttack.Off })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Off })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC00;"))
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Fast })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Fast })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC03;"))
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Mid })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Mid })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC02;"))
 
-      await genericTransceiver.setAGC({ attack: AGCAttack.Slow })
+      await genericTransceiver.setAGCAttack({ attack: AGCAttack.Slow })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC01;"))
     })
 
     test("specifies the parameter type correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setAGC')).toEqual(
+      expect(genericTransceiver.getCommandSchema('setAGCAttack')).toEqual(
         expect.objectContaining({
           properties: {
             attack: {

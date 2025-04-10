@@ -14,7 +14,7 @@ describe("Transceiver", () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
       const transceiver = new Transceiver(new TestDriver())
-      jest.spyOn(transceiver, "getVFO")
+      jest.spyOn(transceiver, "getVFOFrequency")
         .mockImplementation(({ vfo }) => {
           if (vfo === VFOType.Current) return Promise.resolve(14_250_300)
 
@@ -47,7 +47,7 @@ describe("Transceiver", () => {
 
     test("it stops polling when the device is closed", async () => {
       const transceiver = new Transceiver(new TestDriver())
-      jest.spyOn(transceiver, "getVFO")
+      jest.spyOn(transceiver, "getVFOFrequency")
         .mockImplementation(() => Promise.resolve(7_200_000))
 
       const subscription = transceiver.events.subscribe()

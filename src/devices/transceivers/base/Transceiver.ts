@@ -20,12 +20,12 @@ export class Transceiver extends Device {
   readonly events: Observable<TransceiverEvent> =
     merge(
       poll(async () => ({
-        frequency: await this.getVFO({ vfo: VFOType.Current }),
+        frequency: await this.getVFOFrequency({ vfo: VFOType.Current }),
         type: TransceiverEventType.VFO as const,
         vfo: VFOType.Current
       }), "frequency"),
       poll(async () => ({
-        frequency: await this.getVFO({ vfo: VFOType.Other }),
+        frequency: await this.getVFOFrequency({ vfo: VFOType.Other }),
         type: TransceiverEventType.VFO as const,
         vfo: VFOType.Other
       }), "frequency"),
@@ -39,22 +39,22 @@ export class Transceiver extends Device {
     await super.close()
   }
 
-  getVFO(parameter: { vfo: VFOType }): Promise<number> {
+  getVFOFrequency(parameter: { vfo: VFOType }): Promise<number> {
     throw new Error("Not implemented")
   }
-  setVFO(parameter: { frequency: number, vfo: VFOType }): Promise<void> {
+  setVFOFrequency(parameter: { frequency: number, vfo: VFOType }): Promise<void> {
     throw new Error("Not implemented")
   }
 
   copyBandSettings?(parameter: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void>
 
-  setAGC?(parameter: { attack: AGCAttack }): Promise<void>
+  setAGCAttack?(parameter: { attack: AGCAttack }): Promise<void>
 
-  getAutoNotch?(): Promise<boolean>
-  setAutoNotch?(parameter: { enabled: boolean }): Promise<void>
+  getAutoNotchEnabled?(): Promise<boolean>
+  setAutoNotchEnabled?(parameter: { enabled: boolean }): Promise<void>
 
-  getAntennaTuner?(): Promise<AntennaTunerState>
-  setAntennaTuner?(parameter: { state: AntennaTunerState }): Promise<void>
+  getAntennaTunerState?(): Promise<AntennaTunerState>
+  setAntennaTunerState?(parameter: { state: AntennaTunerState }): Promise<void>
 
   // convention: gain is between 0-1 so consumers don't need to map to the
   // supported range of the device themselves
@@ -63,11 +63,13 @@ export class Transceiver extends Device {
 
   changeBand?(parameter: { direction: Direction }): Promise<void>
 
-  getBreakIn?(): Promise<boolean>
-  setBreakIn?(parameter: { enabled: boolean }): Promise<void>
+  getBreakInEnabled?(): Promise<boolean>
+  setBreakInEnabled?(parameter: { enabled: boolean }): Promise<void>
 
-  getManualNotch?(): Promise<{ enabled: boolean, frequency: number }>
-  setManualNotch?(parameter: { enabled?: boolean, frequency?: number }): Promise<void>
+  getManualNotchEnabled?(): Promise<boolean>
+  getManualNotchFrequency?(): Promise<number>
+  setManualNotchEnabled?(parameter: { enabled: boolean }): Promise<void>
+  setManualNotchFrequency?(parameter: { frequency: number }): Promise<void>
 
   setBand?(parameter: { band: Band }): Promise<void>
 
