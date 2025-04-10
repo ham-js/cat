@@ -175,6 +175,12 @@ export class GenericTransceiver extends Transceiver {
             (enabled) => ({ enabled, type: TransceiverEventType.RITEnabled as const }),
             "enabled"
           ),
+          parseResponse(
+            response$,
+            this.parseCTCSSFrequencyResponse,
+            (frequency) => ({ frequency, type: TransceiverEventType.CTCSSFrequency as const }),
+            "frequency"
+          ),
         ))
       )
   }).pipe(
@@ -355,10 +361,10 @@ export class GenericTransceiver extends Transceiver {
 
   @command()
   getCTCSSFrequency(): Promise<number> {
-    return this.readResponse("CN00;", this.parseCTCSSResponse)
+    return this.readResponse("CN00;", this.parseCTCSSFrequencyResponse)
   }
 
-  protected parseCTCSSResponse(response: string): number | null {
+  protected parseCTCSSFrequencyResponse(response: string): number | null {
     const ctcssMatch = response.match(/^CN00(\d{3});$/)
 
     if (!ctcssMatch) return null

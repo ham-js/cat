@@ -6,6 +6,7 @@ export enum TransceiverEventType {
   AntennaTuner = "AntennaTuner",
   AutoNotch = "AutoNotch",
   BreakIn = "BreakIn",
+  CTCSSFrequency = "CTCFrequency",
   ManualNotchEnabled = "ManualNotchEnabled",
   ManualNotchFrequency = "ManualNotchFrequency",
   RITEnabled = "RITEnabled",
@@ -31,7 +32,7 @@ export type TransceiverEvent = ({
   type: TransceiverEventType.ManualNotchEnabled
 } | {
   frequency: number,
-  type: TransceiverEventType.ManualNotchFrequency
+  type: TransceiverEventType.ManualNotchFrequency | TransceiverEventType.CTCSSFrequency
 } | {
   busy: boolean,
   type: TransceiverEventType.RXBusy

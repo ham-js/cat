@@ -59,6 +59,39 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses ctcss frequency responses into CTCSSFrequency events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(3),
+          toArray()
+        )
+      )
+
+      driver.send("CN00000;")
+      driver.send("CN00002;")
+      driver.send("CN00049;")
+      
+      await expect(result).resolves.toEqual([
+        {
+          frequency: 67,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.CTCSSFrequency,
+        },
+        {
+          frequency: 71.9,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.CTCSSFrequency,
+        },
+        {
+          frequency: 254.1,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.CTCSSFrequency,
+        },
+      ])
+    })
+
     test("it parses rit enabled responses into RITEnabled events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
