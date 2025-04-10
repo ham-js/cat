@@ -944,6 +944,39 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getDCSCode", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CN01;"))
+
+        driver.send("CN01000;")
+      })
+      await expect(genericTransceiver.getDCSCode()).resolves.toBe(0o23)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CN01;"))
+
+        driver.send("CN01015;")
+      })
+      await expect(genericTransceiver.getDCSCode()).resolves.toBe(0o74)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CN01;"))
+
+        driver.send("CN01103;")
+      })
+      await expect(genericTransceiver.getDCSCode()).resolves.toBe(0o754)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getDCSCode')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
   describe("getCTCSSFrequency", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {

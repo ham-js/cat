@@ -80,4 +80,6 @@ export class Transceiver extends Device {
 
   getCTCSSFrequency?(): Promise<number>
   setCTCSSFrequency?(parameter: { frequency: number }): Promise<void>
+
+  getDCSCode?(): Promise<number>
 }

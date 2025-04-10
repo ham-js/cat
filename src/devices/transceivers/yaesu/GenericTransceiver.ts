@@ -45,7 +45,7 @@ const BandSelectMap: Record<Band, string> = {
   "10km": "12",
 }
 
-const CTCSSCodeFrequencies: Record<string, CTCSSFrequency> = {
+const StringToCTCSSFrequencyMap: Record<string, CTCSSFrequency> = {
   "000": 67,
   "001": 69.3,
   "002": 71.9,
@@ -97,7 +97,114 @@ const CTCSSCodeFrequencies: Record<string, CTCSSFrequency> = {
   "048": 250.3,
   "049": 254.1
 }
-const CTCSSFrequencyCodes = invert(CTCSSCodeFrequencies)
+const CTCSSFrequencyToStringMap = invert(StringToCTCSSFrequencyMap)
+
+const StringToDCSCodeMap: Record<string, number> = {
+  "000": 0o23,
+  "001": 0o25,
+  "002": 0o26,
+  "003": 0o31,
+  "004": 0o32,
+  "005": 0o36,
+  "006": 0o43,
+  "007": 0o47,
+  "008": 0o51,
+  "009": 0o53,
+  "010": 0o54,
+  "011": 0o65,
+  "012": 0o71,
+  "013": 0o72,
+  "014": 0o73,
+  "015": 0o74,
+  "016": 0o114,
+  "017": 0o115,
+  "018": 0o116,
+  "019": 0o122,
+  "020": 0o125,
+  "021": 0o131,
+  "022": 0o132,
+  "023": 0o134,
+  "024": 0o143,
+  "025": 0o145,
+  "026": 0o152,
+  "027": 0o155,
+  "028": 0o156,
+  "029": 0o162,
+  "030": 0o165,
+  "031": 0o172,
+  "032": 0o174,
+  "033": 0o205,
+  "034": 0o212,
+  "035": 0o223,
+  "036": 0o225,
+  "037": 0o226,
+  "038": 0o243,
+  "039": 0o244,
+  "040": 0o245,
+  "041": 0o246,
+  "042": 0o251,
+  "043": 0o252,
+  "044": 0o255,
+  "045": 0o261,
+  "046": 0o263,
+  "047": 0o265,
+  "048": 0o266,
+  "049": 0o271,
+  "050": 0o274,
+  "051": 0o306,
+  "052": 0o311,
+  "053": 0o315,
+  "054": 0o325,
+  "055": 0o331,
+  "056": 0o332,
+  "057": 0o343,
+  "058": 0o346,
+  "059": 0o351,
+  "060": 0o356,
+  "061": 0o364,
+  "062": 0o365,
+  "063": 0o371,
+  "064": 0o411,
+  "065": 0o412,
+  "066": 0o413,
+  "067": 0o423,
+  "068": 0o431,
+  "069": 0o432,
+  "070": 0o445,
+  "071": 0o446,
+  "072": 0o452,
+  "073": 0o454,
+  "074": 0o455,
+  "075": 0o462,
+  "076": 0o464,
+  "077": 0o465,
+  "078": 0o466,
+  "079": 0o503,
+  "080": 0o506,
+  "081": 0o516,
+  "082": 0o523,
+  "083": 0o526,
+  "084": 0o532,
+  "085": 0o546,
+  "086": 0o565,
+  "087": 0o606,
+  "088": 0o612,
+  "089": 0o624,
+  "090": 0o627,
+  "091": 0o631,
+  "092": 0o632,
+  "093": 0o654,
+  "094": 0o662,
+  "095": 0o664,
+  "096": 0o703,
+  "097": 0o712,
+  "098": 0o723,
+  "099": 0o731,
+  "100": 0o732,
+  "101": 0o734,
+  "102": 0o743,
+  "103": 0o754,
+}
 
 @supportedDrivers([
   DriverType.CP210xWebUSBDriver,
@@ -360,6 +467,20 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
+  getDCSCode(): Promise<number> {
+    return this.readResponse("CN01;", this.parseDCSCodeResponse)
+  }
+
+  protected parseDCSCodeResponse(response: string): number | null {
+    const dcsMatch = response.match(/^CN01(\d{3});$/)
+
+    if (!dcsMatch || !(dcsMatch[1] in StringToDCSCodeMap)) return null
+
+    return StringToDCSCodeMap[dcsMatch[1]]
+  }
+
+
+  @command()
   getCTCSSFrequency(): Promise<number> {
     return this.readResponse("CN00;", this.parseCTCSSFrequencyResponse)
   }
@@ -367,16 +488,16 @@ export class GenericTransceiver extends Transceiver {
   protected parseCTCSSFrequencyResponse(response: string): number | null {
     const ctcssMatch = response.match(/^CN00(\d{3});$/)
 
-    if (!ctcssMatch) return null
+    if (!ctcssMatch || !(ctcssMatch[1] in StringToCTCSSFrequencyMap)) return null
 
-    return CTCSSCodeFrequencies[ctcssMatch[1]]
+    return StringToCTCSSFrequencyMap[ctcssMatch[1]]
   }
 
   @command({
     frequency: oneOf(CTCSSFrequencies)
   })
   async setCTCSSFrequency({ frequency }: { frequency: number }): Promise<void> {
-    await this.driver.writeString(`CN00${CTCSSFrequencyCodes[frequency as CTCSSFrequency]};`)
+    await this.driver.writeString(`CN00${CTCSSFrequencyToStringMap[frequency as CTCSSFrequency]};`)
   }
 
   @command({
