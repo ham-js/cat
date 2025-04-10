@@ -12,6 +12,7 @@ import { firstValueFrom, take, toArray } from "rxjs";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { Direction } from "../base/Direction";
+import { CTCSSFrequencies } from "../base/CTCSSFrequencies";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
@@ -935,6 +936,36 @@ describe("GenericTransceiver", () => {
       )
     })
   })
+
+  describe("setCTCSSFrequency", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setCTCSSFrequency({ frequency: 67 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN00000;")
+
+      await genericTransceiver.setCTCSSFrequency({ frequency: 110.9 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN00015;")
+
+      await genericTransceiver.setCTCSSFrequency({ frequency: 254.1 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN00049;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setCTCSSFrequency')).toEqual(
+        expect.objectContaining({
+          properties: {
+            frequency: {
+              enum: CTCSSFrequencies,
+              type: "number"
+            }
+          },
+          required: [
+            "frequency"
+          ]
+        })
+      )
+    })
+  })
+
 
   describe("getVFOFrequency", () => {
     test("implements the command correctly", async () => {

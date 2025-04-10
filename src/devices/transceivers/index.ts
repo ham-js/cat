@@ -11,7 +11,8 @@ import { VFOType } from "./base/VFOType"
 import { TransceiverEvent } from "./base/TransceiverEvent"
 import { AntennaTunerState } from "./base/AntennaTunerState"
 import { Direction } from "./base/Direction"
-import { Band, Bands } from "./base/Band"
+import { Band, Bands } from "./base/Bands"
+import { CTCSSFrequencies } from "./base/CTCSSFrequencies"
 
 export const ICOMTransceivers: typeof Transceiver[] = [
   ICOMGenericTransceiver
@@ -39,6 +40,7 @@ export {
   AntennaTunerState,
   Band,
   Bands,
+  CTCSSFrequencies,
   Direction,
   ICOMGenericTransceiver,
   KenwoodGenericTransceiver,

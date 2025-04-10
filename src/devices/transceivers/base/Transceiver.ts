@@ -8,7 +8,7 @@ import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { AntennaTunerState } from "./AntennaTunerState"
 import { Direction } from "./Direction"
-import { Band } from "./Band"
+import { Band } from "./Bands"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
@@ -79,4 +79,5 @@ export class Transceiver extends Device {
   setRITEnabled?(parameter: { enabled: boolean }): Promise<void>
 
   getCTCSSFrequency?(): Promise<number>
+  setCTCSSFrequency?(parameter: { frequency: number }): Promise<void>
 }

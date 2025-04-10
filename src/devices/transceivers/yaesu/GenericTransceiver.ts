@@ -12,7 +12,10 @@ import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { Direction } from "../base/Direction";
-import { Band, Bands } from "../base/Band";
+import { Band, Bands } from "../base/Bands";
+import { CTCSSFrequencies, CTCSSFrequency } from "../base/CTCSSFrequencies";
+import { invert } from "../../../utils/invert";
+import { oneOf } from "../../../utils/oneOf";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -42,7 +45,7 @@ const BandSelectMap: Record<Band, string> = {
   "10km": "12",
 }
 
-const CTCSSFrequencies: Record<string, number> = {
+const CTCSSCodeFrequencies: Record<string, CTCSSFrequency> = {
   "000": 67,
   "001": 69.3,
   "002": 71.9,
@@ -94,6 +97,7 @@ const CTCSSFrequencies: Record<string, number> = {
   "048": 250.3,
   "049": 254.1
 }
+const CTCSSFrequencyCodes = invert(CTCSSCodeFrequencies)
 
 @supportedDrivers([
   DriverType.CP210xWebUSBDriver,
@@ -359,7 +363,14 @@ export class GenericTransceiver extends Transceiver {
 
     if (!ctcssMatch) return null
 
-    return CTCSSFrequencies[ctcssMatch[1]]
+    return CTCSSCodeFrequencies[ctcssMatch[1]]
+  }
+
+  @command({
+    frequency: oneOf(CTCSSFrequencies)
+  })
+  async setCTCSSFrequency({ frequency }: { frequency: number }): Promise<void> {
+    await this.driver.writeString(`CN00${CTCSSFrequencyCodes[frequency as CTCSSFrequency]};`)
   }
 
   @command({
