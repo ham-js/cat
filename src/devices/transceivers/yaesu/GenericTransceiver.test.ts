@@ -72,7 +72,7 @@ describe("GenericTransceiver", () => {
       driver.send("CN00000;")
       driver.send("CN00002;")
       driver.send("CN00049;")
-      
+
       await expect(result).resolves.toEqual([
         {
           frequency: 67,
@@ -104,7 +104,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("CF000;")
       driver.send("CF010;")
-      
+
       await expect(result).resolves.toEqual([
         {
           enabled: false,
@@ -131,7 +131,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("BY00;")
       driver.send("BY10;")
-      
+
       await expect(result).resolves.toEqual([
         {
           busy: false,
@@ -159,7 +159,7 @@ describe("GenericTransceiver", () => {
       driver.send("BP01001;")
       driver.send("BP01045;")
       driver.send("BP01320;")
-      
+
       await expect(result).resolves.toEqual([
         {
           frequency: 10,
@@ -191,7 +191,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("BP00000;")
       driver.send("BP00001;")
-      
+
       await expect(result).resolves.toEqual([
         {
           enabled: false,
@@ -218,7 +218,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("BC00;")
       driver.send("BC01;")
-      
+
       await expect(result).resolves.toEqual([
         {
           enabled: false,
@@ -245,7 +245,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("IF001014250390+001000300000;")
       driver.send("OI001007200120+001000300000;")
-      
+
       await expect(result).resolves.toEqual([
         {
           frequency: 14_250_390,
@@ -274,7 +274,7 @@ describe("GenericTransceiver", () => {
 
       driver.send("BI0;")
       driver.send("BI1;")
-      
+
       await expect(result).resolves.toEqual([
         {
           enabled: false,
@@ -302,7 +302,7 @@ describe("GenericTransceiver", () => {
       driver.send("AC000;")
       driver.send("AC001;")
       driver.send("AC002;")
-      
+
       await expect(result).resolves.toEqual([
         {
           state: AntennaTunerState.Off,
@@ -336,7 +336,7 @@ describe("GenericTransceiver", () => {
       driver.send("AG0128;")
       driver.send("AG0051;")
       driver.send("AG0000;")
-      
+
       await expect(result).resolves.toEqual([
         {
           gain: 1,
@@ -344,7 +344,7 @@ describe("GenericTransceiver", () => {
           type: TransceiverEventType.AFGain,
         },
         {
-          gain: 128/255,
+          gain: 128 / 255,
           timestamp: new Date("1992-01-22T13:00:00Z"),
           type: TransceiverEventType.AFGain,
         },
@@ -972,6 +972,140 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.getCommandSchema('getDCSCode')).toEqual(
         expect.objectContaining({
           properties: {},
+        })
+      )
+    })
+  })
+
+  describe("setDCSCode", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setDCSCode({ code: 0o23 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN01000;")
+
+      await genericTransceiver.setDCSCode({ code: 0o205 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN01033;")
+
+      await genericTransceiver.setDCSCode({ code: 0o754 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN01103;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setDCSCode')).toEqual(
+        expect.objectContaining({
+          properties: {
+            code: {
+              enum: [
+                19,
+                21,
+                22,
+                25,
+                26,
+                30,
+                35,
+                39,
+                41,
+                43,
+                44,
+                53,
+                57,
+                58,
+                59,
+                60,
+                76,
+                77,
+                78,
+                82,
+                85,
+                89,
+                90,
+                92,
+                99,
+                101,
+                106,
+                109,
+                110,
+                114,
+                117,
+                122,
+                124,
+                133,
+                138,
+                147,
+                149,
+                150,
+                163,
+                164,
+                165,
+                166,
+                169,
+                170,
+                173,
+                177,
+                179,
+                181,
+                182,
+                185,
+                188,
+                198,
+                201,
+                205,
+                213,
+                217,
+                218,
+                227,
+                230,
+                233,
+                238,
+                244,
+                245,
+                249,
+                265,
+                266,
+                267,
+                275,
+                281,
+                282,
+                293,
+                294,
+                298,
+                300,
+                301,
+                306,
+                308,
+                309,
+                310,
+                323,
+                326,
+                334,
+                339,
+                342,
+                346,
+                358,
+                373,
+                390,
+                394,
+                404,
+                407,
+                409,
+                410,
+                428,
+                434,
+                436,
+                451,
+                458,
+                467,
+                473,
+                474,
+                476,
+                483,
+                492,
+              ],
+              type: "number"
+            },
+          },
+          required: [
+            "code"
+          ]
         })
       )
     })

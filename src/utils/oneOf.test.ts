@@ -7,6 +7,26 @@ describe("oneOf", () => {
   test("it returns the correct schema", () => {
     expect(
       zodToJsonSchema(
+        oneOf([])
+      )
+    ).toEqual(
+      zodToJsonSchema(
+        z.never()
+      )
+    )
+
+    expect(
+      zodToJsonSchema(
+        oneOf([1])
+      )
+    ).toEqual(
+      zodToJsonSchema(
+        z.literal(1),
+      )
+    )
+
+    expect(
+      zodToJsonSchema(
         oneOf([1,
           2,
           3
