@@ -90,6 +90,38 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("copyBandSettings", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.copyBandSettings({ source: VFOType.Current, target: VFOType.Other })
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("VV;"))
+    })
+
+    test("specifies the parameter type correctly", () => {
+      expect(genericTransceiver.getCommandSchema('copyBandSettings')).toEqual(
+        expect.objectContaining({
+          properties: {
+            source: {
+              enum: [
+                "Current",
+              ],
+              type: "string"
+            },
+            target: {
+              enum: [
+                "Other",
+              ],
+              type: "string"
+            }
+          },
+          required: [
+            "source",
+            "target"
+          ]
+        })
+      )
+    })
+  })
+
   describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Off })
@@ -103,6 +135,9 @@ describe("GenericTransceiver", () => {
 
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Slow })
       expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC01;"))
+
+      await genericTransceiver.setAGCAttack({ attack: "on" })
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC04;"))
     })
 
     test("specifies the parameter type correctly", () => {
@@ -115,6 +150,7 @@ describe("GenericTransceiver", () => {
                 "Slow",
                 "Mid",
                 "Fast",
+                "on"
               ],
               type: "string"
             }

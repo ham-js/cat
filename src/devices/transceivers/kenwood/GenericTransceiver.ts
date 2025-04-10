@@ -14,11 +14,12 @@ const vfoType = z.enum([
   VFOType.Other
 ])
 
-const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | AGCAttack.Fast, number> = {
+const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | AGCAttack.Fast | "on", number> = {
   [AGCAttack.Off]: 0,
   [AGCAttack.Slow]: 1,
   [AGCAttack.Mid]: 2,
   [AGCAttack.Fast]: 3,
+  on: 4
 }
 
 @supportedDrivers([
@@ -27,6 +28,18 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood
+
+  @command({
+    source: z.enum([
+      VFOType.Current
+    ]),
+    target: z.enum([
+      VFOType.Other
+    ])
+  })
+  async copyBandSettings(_: { source: VFOType, target: VFOType }): Promise<void> {
+    await this.driver.writeString("VV;")
+  }
 
   @command({
     vfo: vfoType
@@ -65,9 +78,10 @@ export class GenericTransceiver extends Transceiver {
       AGCAttack.Slow,
       AGCAttack.Mid,
       AGCAttack.Fast,
+      "on"
     ])
   })
-  async setAGCAttack({ attack }: { attack: AGCAttack; }): Promise<void> {
+  async setAGCAttack({ attack }: { attack: AGCAttack | "on" }): Promise<void> {
     await this.driver.writeString(
       `GC0${AGCAttackNumbers[attack as keyof typeof AGCAttackNumbers]};`
     )
