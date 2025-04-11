@@ -287,6 +287,18 @@ export class GenericTransceiver extends Transceiver {
             (code) => ({ code, type: TransceiverEventType.DCSCode as const }),
             "code"
           ),
+          parseResponse(
+            response$,
+            this.parseAGCStateResponse,
+            ({ attack }) => ({ attack, type: TransceiverEventType.AGCAttack as const }),
+            "attack"
+          ),
+          parseResponse(
+            response$,
+            this.parseAGCStateResponse,
+            ({ auto }) => ({ auto, type: TransceiverEventType.AGCAuto as const }),
+            "auto"
+          ),
         ))
       )
   }).pipe(

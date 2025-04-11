@@ -1,8 +1,11 @@
+import { AGCAttack } from "./AGCAttack"
 import { AntennaTunerState } from "./AntennaTunerState"
 import { VFOType } from "./VFOType"
 
 export enum TransceiverEventType {
   AFGain = "AFGain",
+  AGCAttack = "AGCAttack",
+  AGCAuto = "AGCAuto",
   AntennaTuner = "AntennaTuner",
   AutoNotch = "AutoNotch",
   BreakIn = "BreakIn",
@@ -40,4 +43,10 @@ export type TransceiverEvent = ({
 } | {
   code: number,
   type: TransceiverEventType.DCSCode
+} | {
+  attack: Omit<AGCAttack, AGCAttack.Auto>,
+  type: TransceiverEventType.AGCAttack
+} | {
+  auto: boolean,
+  type: TransceiverEventType.AGCAuto
 }) & {timestamp: Date}

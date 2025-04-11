@@ -59,6 +59,83 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver.setAutoInformation).toHaveBeenCalledWith({ enabled: true })
     })
 
+    test("it parses agc responses into AGCAuto and AGCAttack events", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
+
+      const result = firstValueFrom(
+        genericTransceiver.events.pipe(
+          take(11),
+          toArray()
+        )
+      )
+
+      driver.send("GT00;")
+      driver.send("GT04;")
+      driver.send("GT01;")
+      driver.send("GT05;")
+      driver.send("GT02;")
+      driver.send("GT06;")
+      driver.send("GT03;")
+
+      await expect(result).resolves.toEqual([
+        {
+          attack: AGCAttack.Off,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAttack,
+        },
+        {
+          auto: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          attack: AGCAttack.Fast,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAttack,
+        },
+        {
+          auto: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          auto: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          attack: AGCAttack.Mid,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAttack,
+        },
+        {
+          auto: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          auto: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          attack: AGCAttack.Slow,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAttack,
+        },
+        {
+          auto: true,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+        {
+          auto: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.AGCAuto,
+        },
+      ])
+    })
+
     test("it parses ctcss frequency responses into CTCSSFrequency events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
