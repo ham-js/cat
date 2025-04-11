@@ -271,6 +271,48 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getAFGain", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AG;"))
+
+        driver.send("AG000;")
+      })
+      await expect(genericTransceiver.getAFGain()).resolves.toEqual(0)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AG;"))
+
+        driver.send("AG255;")
+      })
+      await expect(genericTransceiver.getAFGain()).resolves.toEqual(1)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AG;"))
+
+        driver.send("AG051;")
+      })
+      await expect(genericTransceiver.getAFGain()).resolves.toEqual(0.2)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getAFGain')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("parseAFGainResponse", () => {
+    test("it returns the AF gain", () => {
+      expect(genericTransceiver["parseAFGainResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseAFGainResponse"]("AG000;")).toEqual(0)
+      expect(genericTransceiver["parseAFGainResponse"]("AG255;")).toEqual(1)
+      expect(genericTransceiver["parseAFGainResponse"]("AG128;")).toEqual(128 / 255)
+      expect(genericTransceiver["parseAFGainResponse"]("AG051;")).toEqual(0.2)
+    })
+  })
+
+
   describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Off })

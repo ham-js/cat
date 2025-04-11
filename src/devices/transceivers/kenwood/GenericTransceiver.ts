@@ -30,6 +30,18 @@ export class GenericTransceiver extends Transceiver {
   static readonly deviceVendor = TransceiverVendor.Kenwood
 
   @command()
+  getAFGain(): Promise<number> {
+    return this.readResponse("AG;", this.parseAFGainResponse)
+  }
+
+  protected parseAFGainResponse(response: string): number | null {
+    const gainMatch = response.match(/^AG(\d{3});$/)
+    if (!gainMatch) return null
+
+    return parseInt(gainMatch[1], 10) / 255
+  }
+
+  @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
   }
