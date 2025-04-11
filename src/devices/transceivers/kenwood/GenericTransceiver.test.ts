@@ -113,7 +113,7 @@ describe("GenericTransceiver", () => {
   })
 
   describe("parseManualNotchEnabledResponse", () => {
-    test("it returns the AF gain", () => {
+    test("it returns the manual notch enabled state", () => {
       expect(genericTransceiver["parseManualNotchEnabledResponse"]("ABC;")).toEqual(null)
       expect(genericTransceiver["parseManualNotchEnabledResponse"]("NT0;")).toEqual(false)
       expect(genericTransceiver["parseManualNotchEnabledResponse"]("NT1;")).toEqual(true)

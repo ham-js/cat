@@ -1292,6 +1292,62 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getBreakInEnabled", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.send("BI0;")
+      })
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.send("BI1;")
+      })
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getBreakInEnabled')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("parseBreakIn", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseBreakInResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseBreakInResponse"]("BI0;")).toEqual(false)
+      expect(genericTransceiver["parseBreakInResponse"]("BI1;")).toEqual(true)
+    })
+  })
+
+  describe("setBreakInEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setBreakInEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BI0;")
+
+      await genericTransceiver.setBreakInEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BI1;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setBreakInEnabled')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
+
   describe("getAGCState", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
@@ -1461,6 +1517,14 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver["parseAFGainResponse"]("AG0255;")).toEqual(1)
       expect(genericTransceiver["parseAFGainResponse"]("AG0128;")).toEqual(128 / 255)
       expect(genericTransceiver["parseAFGainResponse"]("AG0051;")).toEqual(0.2)
+    })
+  })
+
+  describe("parseManualNotchEnabledResponse", () => {
+    test("it returns the manual notch enabled state", () => {
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("BP00000;")).toEqual(false)
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("BP00001;")).toEqual(true)
     })
   })
 })

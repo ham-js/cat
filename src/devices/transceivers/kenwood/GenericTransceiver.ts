@@ -28,7 +28,7 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
-  static readonly deviceVendor: TransceiverVendor = TransceiverVendor.Kenwood
+  static readonly deviceVendor = TransceiverVendor.Kenwood
 
   @command()
   getAFGain(): Promise<number> {

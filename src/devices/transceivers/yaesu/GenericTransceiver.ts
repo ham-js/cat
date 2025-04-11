@@ -16,7 +16,7 @@ import { oneOf } from "../../../utils/oneOf";
 import { ExtractMapKey } from "../../../utils/types/ExtractMapKey";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { AGCState } from "../base/AGCState";
-import { GenericTransceiver as KenwoodGenericTransceiver } from "../kenwood/GenericTransceiver";
+import { Transceiver } from "../base/Transceiver";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -205,7 +205,7 @@ const DCSCodeToStringMap = invertMap(StringToDCSCodeMap)
   DriverType.CP210xWebUSBDriver,
   ...DeviceAgnosticDriverTypes
 ])
-export class GenericTransceiver extends KenwoodGenericTransceiver {
+export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu
 
@@ -305,6 +305,34 @@ export class GenericTransceiver extends KenwoodGenericTransceiver {
     finalize(() => this.setAutoInformation({ enabled: false })),
     share()
   )
+
+  @command({
+    vfo: vfoType
+  })
+  async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
+    const responseRegex = new RegExp(`^F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);$`)
+    const response = await this.readResponse(`F${vfo === VFOType.Current ? 'A' : 'B'};`, (value) => value.match(responseRegex))
+
+    return parseInt(response[1], 10)
+  }
+
+  @command()
+  getBreakInEnabled(): Promise<boolean> {
+    return this.readResponse("BI;", this.parseBreakInResponse)
+  }
+
+  protected parseBreakInResponse(response: string): boolean | null {
+    return response.match(/^BI(0|1);$/) && response === "BI1;"
+  }
+
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setBreakInEnabled({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
+  }
+
 
   @command({
     enabled: z
