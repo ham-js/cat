@@ -86,6 +86,40 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getManualNotchEnabled", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("NT;"))
+
+        driver.send("NT0;")
+      })
+      await expect(genericTransceiver.getManualNotchEnabled()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("NT;"))
+
+        driver.send("NT1;")
+      })
+      await expect(genericTransceiver.getManualNotchEnabled()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getManualNotchEnabled')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("parseManualNotchEnabledResponse", () => {
+    test("it returns the AF gain", () => {
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("NT0;")).toEqual(false)
+      expect(genericTransceiver["parseManualNotchEnabledResponse"]("NT1;")).toEqual(true)
+    })
+  })
+
   describe("changeBand", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.changeBand({ direction: Direction.Down })

@@ -78,6 +78,15 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
+  getManualNotchEnabled(): Promise<boolean> {
+    return this.readResponse("NT;", this.parseManualNotchEnabledResponse) 
+  }
+
+  protected parseManualNotchEnabledResponse(response: string): boolean | null {
+    return response.match(/^NT(0|1);$/) && response === "NT1;"
+  }
+
+  @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
   }
