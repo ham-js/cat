@@ -7,6 +7,7 @@ import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { AntennaTunerState } from "../base/AntennaTunerState";
+import { AGCState } from "../base/AGCState";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -83,6 +84,32 @@ export class GenericTransceiver extends Transceiver {
     )
   }
 
+  @command()
+  getAGCState(): Promise<AGCState> {
+    return this.readResponse("GC;", (response) => {
+      const attack = this.parseAGCAttackResponse(response)
+
+      if (!attack) return
+
+      return {
+        auto: false,
+        attack
+      }
+    })
+  }
+
+  protected parseAGCAttackResponse(response: string): AGCAttack | undefined {
+    const attackMatch = response.match(/^GC([0-3]);$/)?.[1]
+
+    if (!attackMatch) return
+
+    if (attackMatch === "1") return AGCAttack.Slow
+    if (attackMatch === "2") return AGCAttack.Mid
+    if (attackMatch === "3") return AGCAttack.Fast
+
+    return AGCAttack.Off
+  }
+
   @command({
     attack: z.enum([
       AGCAttack.Off,
@@ -94,7 +121,7 @@ export class GenericTransceiver extends Transceiver {
   })
   async setAGCAttack({ attack }: { attack: AGCAttack | "on" }): Promise<void> {
     await this.driver.writeString(
-      `GC0${AGCAttackNumbers[attack as keyof typeof AGCAttackNumbers]};`
+      `GC${AGCAttackNumbers[attack as keyof typeof AGCAttackNumbers]};`
     )
   }
 }

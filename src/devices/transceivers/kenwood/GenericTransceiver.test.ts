@@ -62,6 +62,56 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getAGCState", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GC;"))
+
+        driver.send("GC0;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Off })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GC;"))
+
+        driver.send("GC1;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Slow })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GC;"))
+
+        driver.send("GC2;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Mid })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GC;"))
+
+        driver.send("GC3;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Fast })
+    })
+
+    test("specifies the parameter type correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getAGCState')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("parseAGCAttackResponse", () => {
+    test("it parses the agc attack correctly", () => {
+      expect(genericTransceiver["parseAGCAttackResponse"]("ABC;")).toEqual(undefined)
+      expect(genericTransceiver["parseAGCAttackResponse"]("GC0;")).toEqual(AGCAttack.Off)
+      expect(genericTransceiver["parseAGCAttackResponse"]("GC1;")).toEqual(AGCAttack.Slow)
+      expect(genericTransceiver["parseAGCAttackResponse"]("GC2;")).toEqual(AGCAttack.Mid)
+      expect(genericTransceiver["parseAGCAttackResponse"]("GC3;")).toEqual(AGCAttack.Fast)
+    })
+  })
+
   describe("getAntennaTunerState", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
@@ -224,19 +274,19 @@ describe("GenericTransceiver", () => {
   describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Off })
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC00;"))
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC0;"))
 
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Fast })
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC03;"))
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC3;"))
 
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Mid })
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC02;"))
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC2;"))
 
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Slow })
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC01;"))
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC1;"))
 
       await genericTransceiver.setAGCAttack({ attack: "on" })
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC04;"))
+      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("GC4;"))
     })
 
     test("specifies the parameter type correctly", () => {
