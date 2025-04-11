@@ -379,16 +379,6 @@ export class GenericTransceiver extends KenwoodGenericTransceiver {
   }
 
   @command({
-    vfo: vfoType
-  })
-  async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
-    const responseRegex = new RegExp(`^F${vfo === VFOType.Current ? 'A' : 'B'}(\\d+);$`)
-    const response = await this.readResponse(`F${vfo === VFOType.Current ? 'A' : 'B'};`, (value) => value.match(responseRegex))
-
-    return parseInt(response[1], 10)
-  }
-
-  @command({
     frequency: z
       .number()
       .int()

@@ -57,7 +57,6 @@ export class Transceiver extends Device {
     return value
   }
 
-
   getVFOFrequency(parameter: { vfo: VFOType }): Promise<number> {
     throw new Error("Not implemented")
   }
