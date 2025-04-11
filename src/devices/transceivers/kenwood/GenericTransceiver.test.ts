@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { GenericTransceiver } from "./GenericTransceiver";
 import { TestDriver } from "../../../test/utils/TestDriver";
 import { DeviceType } from "../../base/DeviceType";
@@ -15,11 +15,14 @@ describe("GenericTransceiver", () => {
   const genericTransceiver = new (getTestDevice(GenericTransceiver))(driver)
 
   beforeEach(async () => {
-    driver.write.mockReset()
+    jest.spyOn(driver, "writeString")
+
     await genericTransceiver.open()
   })
 
   afterEach(async () => {
+    jest.restoreAllMocks()
+
     await genericTransceiver.close()
   })
 
@@ -312,6 +315,33 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setAFGain", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setAFGain({ gain: 0 })
+      expect(driver.writeString).toHaveBeenCalledWith("AG000;")
+
+      await genericTransceiver.setAFGain({ gain: 1 })
+      expect(driver.writeString).toHaveBeenCalledWith("AG255;")
+
+      await genericTransceiver.setAFGain({ gain: 0.5 })
+      expect(driver.writeString).toHaveBeenCalledWith("AG128;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setAFGain')).toEqual(expect.objectContaining({
+        properties: {
+          gain: {
+            minimum: 0,
+            maximum: 1,
+            type: "number"
+          }
+        },
+        required: [
+          "gain"
+        ]
+      }))
+    })
+  })
 
   describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {

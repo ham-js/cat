@@ -41,6 +41,16 @@ export class GenericTransceiver extends Transceiver {
     return parseInt(gainMatch[1], 10) / 255
   }
 
+  @command({
+    gain: z
+      .number()
+      .min(0)
+      .max(1)
+  })
+  async setAFGain({ gain }: { gain: number; }): Promise<void> {
+    await this.driver.writeString(`AG${Math.round(gain * 255).toString().padStart(3, "0")};`)
+  }
+
   @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
