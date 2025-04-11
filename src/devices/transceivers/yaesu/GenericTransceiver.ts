@@ -16,19 +16,12 @@ import { invertMap } from "../../../utils/invertMap";
 import { oneOf } from "../../../utils/oneOf";
 import { ExtractMapKey } from "../../../utils/types/ExtractMapKey";
 import { AntennaTunerState } from "../base/AntennaTunerState";
+import { AGCState } from "../base/AGCState";
 
 const vfoType = z.enum([
   VFOType.Current,
   VFOType.Other
 ])
-
-const AGCAttackNumbers: Record<AGCAttack, number> = {
-  [AGCAttack.Off]: 0,
-  [AGCAttack.Fast]: 1,
-  [AGCAttack.Mid]: 2,
-  [AGCAttack.Slow]: 3,
-  [AGCAttack.Auto]: 4,
-}
 
 const BandSelectMap: Record<Band, string> = {
   "160m": "00",
@@ -397,13 +390,34 @@ export class GenericTransceiver extends Transceiver {
     )
   }
 
+  @command()
+  getAGCState(): Promise<AGCState> {
+    return this.readResponse("GT0;", this.parseAGCStateResponse)
+  }
+
+  protected parseAGCStateResponse(response: string): AGCState | null {
+    const attackMatch = response.match(/^GT0([0-6]);$/)?.[1]
+    if (!attackMatch) return null
+
+    if (attackMatch === "1") return { auto: false, attack: AGCAttack.Fast }
+    if (attackMatch === "2") return { auto: false, attack: AGCAttack.Mid }
+    if (attackMatch === "3") return { auto: false, attack: AGCAttack.Slow }
+    if (attackMatch === "4") return { auto: true, attack: AGCAttack.Fast }
+    if (attackMatch === "5") return { auto: true, attack: AGCAttack.Mid }
+    if (attackMatch === "6") return { auto: true, attack: AGCAttack.Slow }
+
+    return { auto: false, attack: AGCAttack.Off }
+  }
+
   @command({
     attack: z.nativeEnum(AGCAttack)
   })
   async setAGCAttack({ attack }: { attack: AGCAttack; }): Promise<void> {
-    await this.driver.writeString(
-      `GT0${AGCAttackNumbers[attack]};`
-    )
+    if (attack === AGCAttack.Off) await this.driver.writeString("GT00;")
+    else if (attack === AGCAttack.Fast) await this.driver.writeString("GT01;")
+    else if (attack === AGCAttack.Mid) await this.driver.writeString("GT02;")
+    else if (attack === AGCAttack.Slow) await this.driver.writeString("GT03;")
+    else if (attack === AGCAttack.Auto) await this.driver.writeString("GT04;")
   }
 
   @command({
@@ -479,12 +493,12 @@ export class GenericTransceiver extends Transceiver {
     return this.readResponse("CN01;", this.parseDCSCodeResponse)
   }
 
-  protected parseDCSCodeResponse(response: string): number | null {
+  protected parseDCSCodeResponse(response: string): number | undefined {
     const dcsMatch = response.match(/^CN01(\d{3});$/)
 
-    if (!dcsMatch) return null
+    if (!dcsMatch) return
 
-    return StringToDCSCodeMap.get(dcsMatch[1] as ExtractMapKey<typeof StringToDCSCodeMap>) ?? null
+    return StringToDCSCodeMap.get(dcsMatch[1] as ExtractMapKey<typeof StringToDCSCodeMap>)
   }
 
   @command({
@@ -502,12 +516,12 @@ export class GenericTransceiver extends Transceiver {
     return this.readResponse("CN00;", this.parseCTCSSFrequencyResponse)
   }
 
-  protected parseCTCSSFrequencyResponse(response: string): number | null {
+  protected parseCTCSSFrequencyResponse(response: string): number | undefined {
     const ctcssMatch = response.match(/^CN00(\d{3});$/)
 
-    if (!ctcssMatch) return null
+    if (!ctcssMatch) return
 
-    return StringToCTCSSFrequencyMap.get(ctcssMatch[1] as ExtractMapKey<typeof StringToCTCSSFrequencyMap>) ?? null
+    return StringToCTCSSFrequencyMap.get(ctcssMatch[1] as ExtractMapKey<typeof StringToCTCSSFrequencyMap>)
   }
 
   @command({

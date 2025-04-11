@@ -13,6 +13,7 @@ import { Direction } from "./base/Direction"
 import { Band, Bands } from "./base/Bands"
 import { CTCSSFrequencies } from "./base/CTCSSFrequencies"
 import { AntennaTunerState } from "./base/AntennaTunerState"
+import { AGCState } from "./base/AGCState"
 
 export const ICOMTransceivers: typeof Transceiver[] = [
   ICOMGenericTransceiver
@@ -37,6 +38,7 @@ export const Transceivers: typeof Transceiver[] = [
 
 export {
   AGCAttack,
+  AGCState,
   AntennaTunerState,
   Band,
   Bands,

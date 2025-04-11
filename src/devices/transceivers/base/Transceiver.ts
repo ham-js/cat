@@ -1,4 +1,3 @@
-import { AGCAttack } from "./AGCAttack"
 import { Device } from "../../base/Device"
 import { DeviceType } from "../../base/DeviceType"
 import { TransceiverVendor } from "./TransceiverVendor"
@@ -10,6 +9,8 @@ import { Direction } from "./Direction"
 import { Band } from "./Bands"
 import { delimiterParser } from "../../base/parsers/delimiterParser"
 import { AntennaTunerState } from "./AntennaTunerState"
+import { AGCState } from "./AGCState"
+import { AGCAttack } from "./AGCAttack"
 
 export class Transceiver extends Device {
   static readonly deviceType = DeviceType.Transceiver
@@ -67,6 +68,7 @@ export class Transceiver extends Device {
   copyBandSettings?(parameter: { source: VFOType | "memory", target: VFOType | "memory" }): Promise<void>
 
   setAGCAttack?(parameter: { attack: AGCAttack }): Promise<void>
+  getAGCState?(): Promise<AGCState>
 
   getAutoNotchEnabled?(): Promise<boolean>
   setAutoNotchEnabled?(parameter: { enabled: boolean }): Promise<void>

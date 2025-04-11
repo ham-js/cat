@@ -1262,6 +1262,91 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getAGCState", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT00;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Off })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT01;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Fast })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT02;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Mid })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT03;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: false, attack: AGCAttack.Slow })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT04;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: true, attack: AGCAttack.Fast })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT05;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: true, attack: AGCAttack.Mid })
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("GT0;"))
+
+        driver.send("GT06;")
+      })
+      await expect(genericTransceiver.getAGCState()).resolves.toEqual({ auto: true, attack: AGCAttack.Slow })
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getVFOFrequency')).toEqual(
+        expect.objectContaining({
+          properties: {
+            vfo: {
+              enum: [
+                "Current",
+                "Other"
+              ],
+              type: "string"
+            }
+          },
+          required: [
+            "vfo"
+          ]
+        })
+      )
+    })
+  })
+
+  describe("parseAGCStateResponse", () => {
+    test("it returns the AGC state", () => {
+      expect(genericTransceiver["parseAGCStateResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseAGCStateResponse"]("GT00;")).toEqual({ attack: AGCAttack.Off, auto: false })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT01;")).toEqual({ attack: AGCAttack.Fast, auto: false })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT02;")).toEqual({ attack: AGCAttack.Mid, auto: false })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT03;")).toEqual({ attack: AGCAttack.Slow, auto: false })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT04;")).toEqual({ attack: AGCAttack.Fast, auto: true })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT05;")).toEqual({ attack: AGCAttack.Mid, auto: true })
+      expect(genericTransceiver["parseAGCStateResponse"]("GT06;")).toEqual({ attack: AGCAttack.Slow, auto: true })
+    })
+  })
+
   describe("setAGCAttack", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setAGCAttack({ attack: AGCAttack.Auto })
