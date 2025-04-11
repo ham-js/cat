@@ -12,6 +12,7 @@ import { firstValueFrom, take, toArray } from "rxjs";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { Direction } from "../base/Direction";
 import { CTCSSFrequencies } from "../base/CTCSSFrequencies";
+import { AntennaTunerState } from "../base/AntennaTunerState";
 
 describe("GenericTransceiver", () => {
   const driver = new TestDriver()
@@ -293,7 +294,7 @@ describe("GenericTransceiver", () => {
 
       const result = firstValueFrom(
         genericTransceiver.events.pipe(
-          take(8),
+          take(3),
           toArray()
         )
       )
@@ -304,44 +305,19 @@ describe("GenericTransceiver", () => {
 
       await expect(result).resolves.toEqual([
         {
-          rx: false,
+          state: AntennaTunerState.Off,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerRX,
+          type: TransceiverEventType.AntennaTuner,
         },
         {
-          tx: false,
+          state: AntennaTunerState.On,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerTX,
+          type: TransceiverEventType.AntennaTuner,
         },
         {
-          tuning: false,
+          state: AntennaTunerState.Tuning,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerTuning,
-        },
-        {
-          rx: true,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerRX,
-        },
-        {
-          tx: true,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerTX,
-        },
-        {
-          rx: false,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerRX,
-        },
-        {
-          tx: false,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerTX,
-        },
-        {
-          tuning: true,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.AntennaTunerTuning,
+          type: TransceiverEventType.AntennaTuner,
         },
       ])
     })
@@ -653,21 +629,21 @@ describe("GenericTransceiver", () => {
 
         driver.send("AC000;")
       })
-      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual({ tx: false, rx: false, tuning: false })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Off)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC001;")
       })
-      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual({ tx: true, rx: true, tuning: false })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.On)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC002;")
       })
-      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual({ tx: false, rx: false, tuning: true })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Tuning)
     })
 
     test("specifies the schema correctly", () => {
@@ -679,38 +655,31 @@ describe("GenericTransceiver", () => {
 
   describe("setAntennaTunerState", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setAntennaTunerState({ tx: true })
-      expect(driver.writeString).toHaveBeenCalledWith("AC001;")
-      jest.resetAllMocks()
-      await genericTransceiver.setAntennaTunerState({ rx: true })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.On })
       expect(driver.writeString).toHaveBeenCalledWith("AC001;")
 
-      await genericTransceiver.setAntennaTunerState({ tx: false })
-      expect(driver.writeString).toHaveBeenCalledWith("AC000;")
-      jest.resetAllMocks()
-      await genericTransceiver.setAntennaTunerState({ rx: false })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.Off })
       expect(driver.writeString).toHaveBeenCalledWith("AC000;")
 
-      await genericTransceiver.setAntennaTunerState({ tuning: true })
-      expect(driver.writeString).toHaveBeenCalledWith("AC002;")
-      jest.resetAllMocks()
-      await genericTransceiver.setAntennaTunerState({ tx: false, rx: false, tuning: true })
+      await genericTransceiver.setAntennaTunerState({ state: AntennaTunerState.Tuning })
       expect(driver.writeString).toHaveBeenCalledWith("AC002;")
     })
 
     test("specifies the schema correctly", () => {
       expect(genericTransceiver.getCommandSchema('setAntennaTunerState')).toEqual(expect.objectContaining({
         properties: {
-          rx: {
-            type: "boolean"
+          state: {
+            enum: [
+              "Off",
+              "On",
+              "Tuning"
+            ],
+            type: "string"
           },
-          tx: {
-            type: "boolean"
-          },
-          tuning: {
-            type: "boolean"
-          }
         },
+        required: [
+          "state"
+        ]
       }))
     })
   })
@@ -1364,10 +1333,9 @@ describe("GenericTransceiver", () => {
 
   describe("parseAntennaTunerResponse", () => {
     test("it returns the antenna tuner state", () => {
-      expect(genericTransceiver["parseAntennaTunerResponse"]("ABC;")).toEqual(null)
-      expect(genericTransceiver["parseAntennaTunerResponse"]("AC000;")).toEqual({ tx: false, rx: false, tuning: false })
-      expect(genericTransceiver["parseAntennaTunerResponse"]("AC001;")).toEqual({ tx: true, rx: true, tuning: false })
-      expect(genericTransceiver["parseAntennaTunerResponse"]("AC002;")).toEqual({ tx: false, rx: false, tuning: true })
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC000;")).toEqual(AntennaTunerState.Off)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC001;")).toEqual(AntennaTunerState.On)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC002;")).toEqual(AntennaTunerState.Tuning)
     })
   })
 

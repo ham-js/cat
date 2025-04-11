@@ -7,6 +7,7 @@ import { VFOType } from "../base/VFOType";
 import { AGCAttack } from "../base/AGCAttack";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { getTestDevice } from "../../../test/utils/getTestDevice";
+import { AntennaTunerState } from "../base/AntennaTunerState";
 
 describe("GenericTransceiver", () => {
   const textEncoder = new TextEncoder()
@@ -68,28 +69,64 @@ describe("GenericTransceiver", () => {
 
         driver.send("AC000;")
       })
-      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: false, tuning: false })
-
-      driver.write.mockImplementationOnce((data) => {
-        expect(data).toEqual(textEncoder.encode("AC;"))
-
-        driver.send("AC100;")
-      })
-      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: true, tx: false, tuning: false })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Off)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC010;")
       })
-      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: true, tuning: false })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.On)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC100;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Off)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC110;")
+      })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.On)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC000;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState({ rx: true })).resolves.toEqual(AntennaTunerState.Off)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC010;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState({ rx: true })).resolves.toEqual(AntennaTunerState.Off)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC100;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState({ rx: true })).resolves.toEqual(AntennaTunerState.On)
+
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("AC;"))
+
+        driver.send("AC110;")
+      })
+      await expect(genericTransceiver.getAntennaTunerState({ rx: true })).resolves.toEqual(AntennaTunerState.On)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("AC;"))
 
         driver.send("AC001;")
       })
-      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual({ rx: false, tx: false, tuning: true })
+      await expect( genericTransceiver.getAntennaTunerState()).resolves.toEqual(AntennaTunerState.Tuning)
     })
 
     test("specifies the parameter type correctly", () => {
@@ -101,12 +138,17 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("parseAntennaTunerState", () => {
+  describe("parseAntennaTunerStateResponse", () => {
     test("it parses the antenna tuner state correctly", () => {
-      expect(genericTransceiver["parseAntennaTunerState"]("AC000;")).toEqual({ rx: false, tx: false, tuning: false })
-      expect(genericTransceiver["parseAntennaTunerState"]("AC100;")).toEqual({ rx: true, tx: false, tuning: false })
-      expect(genericTransceiver["parseAntennaTunerState"]("AC010;")).toEqual({ rx: false, tx: true, tuning: false })
-      expect(genericTransceiver["parseAntennaTunerState"]("AC001;")).toEqual({ rx: false, tx: false, tuning: true })
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC000;")).toEqual(AntennaTunerState.Off)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC010;")).toEqual(AntennaTunerState.On)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC100;")).toEqual(AntennaTunerState.Off)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC110;")).toEqual(AntennaTunerState.On)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC000;", true)).toEqual(AntennaTunerState.Off)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC010;", true)).toEqual(AntennaTunerState.Off)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC100;", true)).toEqual(AntennaTunerState.On)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC110;", true)).toEqual(AntennaTunerState.On)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC001;", true)).toEqual(AntennaTunerState.Tuning)
     })
   })
 

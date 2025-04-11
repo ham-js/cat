@@ -236,21 +236,9 @@ export class GenericTransceiver extends Transceiver {
           ),
           parseResponse(
             response$,
-            (response) => this.parseAntennaTunerResponse(response)?.rx ?? null,
-            (rx) => ({ rx, type: TransceiverEventType.AntennaTunerRX as const }),
-            "rx"
-          ),
-          parseResponse(
-            response$,
-            (response) => this.parseAntennaTunerResponse(response)?.tx ?? null,
-            (tx) => ({ tx, type: TransceiverEventType.AntennaTunerTX as const }),
-            "tx"
-          ),
-          parseResponse(
-            response$,
-            (response) => this.parseAntennaTunerResponse(response)?.tuning ?? null,
-            (tuning) => ({ tuning, type: TransceiverEventType.AntennaTunerTuning as const }),
-            "tuning"
+            this.parseAntennaTunerStateResponse,
+            (state) => ({ state, type: TransceiverEventType.AntennaTuner as const }),
+            "state"
           ),
           parseResponse(
             response$,
@@ -419,35 +407,28 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command({
-    rx: z
-      .boolean()
-      .optional(),
-    tx: z
-      .boolean()
-      .optional(),
-    tuning: z
-      .boolean()
-      .optional()
+    state: z
+      .nativeEnum(AntennaTunerState)
   })
-  async setAntennaTunerState({ rx, tx, tuning }: Partial<AntennaTunerState>): Promise<void> {
-    if (tuning) await this.driver.writeString("AC002;")
-    else if (rx || tx) await this.driver.writeString("AC001;")
+  async setAntennaTunerState({ state }: { state: AntennaTunerState }): Promise<void> {
+    if (state === AntennaTunerState.Tuning) await this.driver.writeString("AC002;")
+    else if (state === AntennaTunerState.On) await this.driver.writeString("AC001;")
     else await this.driver.writeString("AC000;")
   }
 
   @command()
   getAntennaTunerState(): Promise<AntennaTunerState> {
-    return this.readResponse("AC;", this.parseAntennaTunerResponse)
+    return this.readResponse("AC;", this.parseAntennaTunerStateResponse)
   }
 
-  protected parseAntennaTunerResponse(response: string): AntennaTunerState | null {
+  protected parseAntennaTunerStateResponse(response: string): AntennaTunerState | null {
     const stateMatch = response.match(/^AC00(\d);$/)
     if (!stateMatch) return null
 
-    if (stateMatch[1] === "1") return { rx: true, tx: true, tuning: false }
-    if (stateMatch[1] === "2") return { rx: false, tx: false, tuning: true }
+    if (stateMatch[1] === "1") return AntennaTunerState.On
+    if (stateMatch[1] === "2") return AntennaTunerState.Tuning
 
-    return { rx: false, tx: false, tuning: false }
+    return AntennaTunerState.Off
   }
 
   @command({

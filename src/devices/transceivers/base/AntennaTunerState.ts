@@ -1,5 +1,5 @@
-export interface AntennaTunerState {
-  rx: boolean,
-  tx: boolean,
-  tuning: boolean
+export enum AntennaTunerState {
+  Off = "Off",
+  On = "On",
+  Tuning = "Tuning"
 }

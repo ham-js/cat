@@ -72,7 +72,7 @@ export class Transceiver extends Device {
   setAutoNotchEnabled?(parameter: { enabled: boolean }): Promise<void>
 
   getAntennaTunerState?(): Promise<AntennaTunerState>
-  setAntennaTunerState?(parameter: Partial<AntennaTunerState>): Promise<void>
+  setAntennaTunerStateResponse?(parameter: { state: AntennaTunerState }): Promise<void>
 
   // convention: gain is between 0-1 so consumers don't need to map to the
   // supported range of the device themselves

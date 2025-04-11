@@ -1,10 +1,9 @@
+import { AntennaTunerState } from "./AntennaTunerState"
 import { VFOType } from "./VFOType"
 
 export enum TransceiverEventType {
   AFGain = "AFGain",
-  AntennaTunerRX = "AntennaTunerRX",
-  AntennaTunerTX = "AntennaTunerTX",
-  AntennaTunerTuning = "AntennaTunerTuning",
+  AntennaTuner = "AntennaTuner",
   AutoNotch = "AutoNotch",
   BreakIn = "BreakIn",
   CTCSSFrequency = "CTCFrequency",
@@ -21,14 +20,8 @@ export type TransceiverEvent = ({
   type: TransceiverEventType.VFO,
   vfo: VFOType
 } | {
-  rx: boolean,
-  type: TransceiverEventType.AntennaTunerRX
-} | {
-  tx: boolean,
-  type: TransceiverEventType.AntennaTunerTX
-} | {
-  tuning: boolean,
-  type: TransceiverEventType.AntennaTunerTuning
+  state: AntennaTunerState,
+  type: TransceiverEventType.AntennaTuner
 } | {
   gain: number,
   type: TransceiverEventType.AFGain

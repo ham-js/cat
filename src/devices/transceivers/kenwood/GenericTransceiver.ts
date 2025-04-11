@@ -1,13 +1,12 @@
 import { z } from "zod";
-import { filter, firstValueFrom, map } from "rxjs";
 import { command } from "../../base/decorators/command";
 import { supportedDrivers } from "../../base/decorators/supportedDrivers";
-import { delimiterParser } from "../../base/parsers/delimiterParser";
 import { AGCAttack } from "../base/AGCAttack";
 import { Transceiver } from "../base/Transceiver";
 import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
+import { AntennaTunerState } from "../base/AntennaTunerState";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -30,19 +29,22 @@ export class GenericTransceiver extends Transceiver {
   static readonly deviceVendor = TransceiverVendor.Kenwood
 
   @command()
-  getAntennaTunerState(): Promise<{ rx: boolean, tx: boolean, tuning: boolean }> {
-    return this.readResponse("AC;", this.parseAntennaTunerState)
+  getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
+    return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
   }
 
-  protected parseAntennaTunerState(response: string): { rx: boolean, tx: boolean, tuning: boolean } | null {
+  protected parseAntennaTunerStateResponse(response: string, rx = false): AntennaTunerState | null {
     const stateMatch = response.match(/^AC(?<rxString>0|1)(?<txString>0|1)(?<tuningString>0|1);$/)
     if (!stateMatch?.groups) return null
 
-    return {
-      rx: stateMatch.groups.rxString === "1",
-      tx: stateMatch.groups.txString === "1",
-      tuning: stateMatch.groups.tuningString === "1"
-    }
+    const rxEnabled = stateMatch.groups.rxString === "1"
+    const txEnabled = stateMatch.groups.txString === "1"
+    const tuningEnabled = stateMatch.groups.tuningString === "1"
+
+    if (tuningEnabled) return AntennaTunerState.Tuning
+    if (rx) return rxEnabled ? AntennaTunerState.On : AntennaTunerState.Off
+
+    return txEnabled ? AntennaTunerState.On : AntennaTunerState.Off
   }
 
   @command({
