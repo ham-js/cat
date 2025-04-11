@@ -8,6 +8,7 @@ import { AGCAttack } from "../base/AGCAttack";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { getTestDevice } from "../../../test/utils/getTestDevice";
 import { AntennaTunerState } from "../base/AntennaTunerState";
+import { Direction } from "../base/Direction";
 
 describe("GenericTransceiver", () => {
   const textEncoder = new TextEncoder()
@@ -29,6 +30,35 @@ describe("GenericTransceiver", () => {
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Kenwood))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
+
+  describe("changeBand", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.changeBand({ direction: Direction.Down })
+      expect(driver.writeString).toHaveBeenCalledWith("BD;")
+
+      await genericTransceiver.changeBand({ direction: Direction.Up })
+      expect(driver.writeString).toHaveBeenCalledWith("BU;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('changeBand')).toEqual(
+        expect.objectContaining({
+          properties: {
+            direction: {
+              enum: [
+                "Up",
+                "Down"
+              ],
+              type: "string"
+            }
+          },
+          required: [
+            "direction"
+          ]
+        })
+      )
+    })
+  })
 
   describe("setVFOFrequency", () => {
     test("implements the command correctly", async () => {

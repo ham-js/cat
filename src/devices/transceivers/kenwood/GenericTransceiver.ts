@@ -8,6 +8,7 @@ import { VFOType } from "../base/VFOType";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { AGCState } from "../base/AGCState";
+import { Direction } from "../base/Direction";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -49,6 +50,14 @@ export class GenericTransceiver extends Transceiver {
   })
   async setAFGain({ gain }: { gain: number; }): Promise<void> {
     await this.driver.writeString(`AG${Math.round(gain * 255).toString().padStart(3, "0")};`)
+  }
+
+  @command({
+    direction: z
+      .nativeEnum(Direction)
+  })
+  async changeBand({ direction }: { direction: Direction; }): Promise<void> {
+    await this.driver.writeString(direction === Direction.Up ? "BU;" : "BD;")
   }
 
   @command()
