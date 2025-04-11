@@ -551,14 +551,6 @@ export class GenericTransceiver extends KenwoodGenericTransceiver {
     await this.driver.writeString(direction === Direction.Up ? "BU0;" : "BD0;")
   }
 
-  @command({
-    enabled: z
-      .boolean()
-  })
-  async setBreakInEnabled({ enabled }: { enabled: boolean }): Promise<void> {
-    await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
-  }
-
   @command()
   getManualNotchEnabled(): Promise<boolean> {
     return this.readResponse("BP00;", this.parseManualNotchEnabledResponse)

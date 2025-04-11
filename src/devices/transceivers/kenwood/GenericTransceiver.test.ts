@@ -63,6 +63,29 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setBreakInEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setBreakInEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("BI0;")
+
+      await genericTransceiver.setBreakInEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("BI1;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setBreakInEnabled')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
   describe("changeBand", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.changeBand({ direction: Direction.Down })

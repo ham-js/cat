@@ -69,6 +69,14 @@ export class GenericTransceiver extends Transceiver {
     return response.match(/^BI(0|1);$/) && response === "BI1;"
   }
 
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setBreakInEnabled({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(`BI${enabled ? "1" : "0"};`)
+  }
+
   @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
