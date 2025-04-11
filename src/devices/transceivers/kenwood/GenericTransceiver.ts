@@ -28,7 +28,7 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 ])
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
-  static readonly deviceVendor = TransceiverVendor.Kenwood
+  static readonly deviceVendor: TransceiverVendor = TransceiverVendor.Kenwood
 
   @command()
   getAFGain(): Promise<number> {
@@ -58,6 +58,15 @@ export class GenericTransceiver extends Transceiver {
   })
   async changeBand({ direction }: { direction: Direction; }): Promise<void> {
     await this.driver.writeString(direction === Direction.Up ? "BU;" : "BD;")
+  }
+
+  @command()
+  getBreakInEnabled(): Promise<boolean> {
+    return this.readResponse("BI;", this.parseBreakInResponse)
+  }
+
+  protected parseBreakInResponse(response: string): boolean | null {
+    return response.match(/^BI(0|1);$/) && response === "BI1;"
   }
 
   @command()

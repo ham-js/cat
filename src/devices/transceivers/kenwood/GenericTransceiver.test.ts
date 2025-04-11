@@ -31,6 +31,38 @@ describe("GenericTransceiver", () => {
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Kenwood))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
+  describe("getBreakInEnabled", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.send("BI0;")
+      })
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BI;"))
+
+        driver.send("BI1;")
+      })
+      await expect(genericTransceiver.getBreakInEnabled()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getBreakInEnabled')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("parseBreakIn", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseBreakInResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseBreakInResponse"]("BI0;")).toEqual(false)
+      expect(genericTransceiver["parseBreakInResponse"]("BI1;")).toEqual(true)
+    })
+  })
+
   describe("changeBand", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.changeBand({ direction: Direction.Down })

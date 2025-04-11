@@ -5,7 +5,6 @@ import { command } from "../../base/decorators/command";
 import { supportedDrivers } from "../../base/decorators/supportedDrivers";
 import { delimiterParser } from "../../base/parsers/delimiterParser";
 import { AGCAttack } from "../base/AGCAttack";
-import { Transceiver } from "../base/Transceiver";
 import { TransceiverVendor } from "../base/TransceiverVendor";
 import { VFOType } from "../base/VFOType";
 import { TransceiverEventType } from "../base/TransceiverEvent";
@@ -17,6 +16,7 @@ import { oneOf } from "../../../utils/oneOf";
 import { ExtractMapKey } from "../../../utils/types/ExtractMapKey";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { AGCState } from "../base/AGCState";
+import { GenericTransceiver as KenwoodGenericTransceiver } from "../kenwood/GenericTransceiver";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -205,7 +205,7 @@ const DCSCodeToStringMap = invertMap(StringToDCSCodeMap)
   DriverType.CP210xWebUSBDriver,
   ...DeviceAgnosticDriverTypes
 ])
-export class GenericTransceiver extends Transceiver {
+export class GenericTransceiver extends KenwoodGenericTransceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu
 
@@ -559,15 +559,6 @@ export class GenericTransceiver extends Transceiver {
   })
   async changeBand({ direction }: { direction: Direction }): Promise<void> {
     await this.driver.writeString(direction === Direction.Up ? "BU0;" : "BD0;")
-  }
-
-  @command()
-  getBreakInEnabled(): Promise<boolean> {
-    return this.readResponse("BI;", this.parseBreakInResponse)
-  }
-
-  protected parseBreakInResponse(response: string): boolean | null {
-    return response.match(/^BI(0|1);$/) && response === "BI1;"
   }
 
   @command({
