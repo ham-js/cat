@@ -87,6 +87,28 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
+  getManualNotchFrequencyOffset(): Promise<number> {
+    return this.readResponse("BP;", this.parseManualNotchFrequencyResponse)
+  }
+
+  protected parseManualNotchFrequencyResponse(response: string): number | null {
+    const valueMatch = response.match(/^BP(\d{3});$/)
+    if (!valueMatch) return null
+
+    return parseInt(valueMatch[1], 10) / 255
+  }
+
+  @command({
+    frequencyOffset: z
+      .number()
+      .min(0)
+      .max(1)
+  })
+  async setManualNotchFrequencyOffset({ frequencyOffset }: { frequencyOffset: number }): Promise<void> {
+    await this.driver.writeString(`BP${(Math.round(frequencyOffset * 255)).toString().padStart(3, "0")};`)
+  }
+
+  @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
   }

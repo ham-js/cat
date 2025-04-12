@@ -86,6 +86,78 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setManualNotchFrequencyOffset", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 0 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP000;")
+
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 0.5 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP128;")
+
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 1 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP255;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setManualNotchFrequencyOffset')).toEqual(
+        expect.objectContaining({
+          properties: {
+            frequencyOffset: {
+              maximum: 1,
+              minimum: 0,
+              type: "number"
+            },
+          },
+          required: [
+            "frequencyOffset"
+          ]
+        })
+      )
+    })
+  })
+
+  describe("getManualNotchFrequencyOffset", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP;"))
+
+        driver.send("BP000;")
+      })
+      await expect(genericTransceiver.getManualNotchFrequencyOffset()).resolves.toEqual(0)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP;"))
+
+        driver.send("BP128;")
+      })
+      await expect(genericTransceiver.getManualNotchFrequencyOffset()).resolves.toEqual(128 / 255)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BP;"))
+
+        driver.send("BP255;")
+      })
+      await expect(genericTransceiver.getManualNotchFrequencyOffset()).resolves.toEqual(1)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getManualNotchFrequencyOffset')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("parseManualNotchFrequencyResponse", () => {
+    test("it returns the manual notch enabled state", () => {
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP000;")).toEqual(0)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP001;")).toEqual(1/255)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP255;")).toEqual(1)
+    })
+  })
+
   describe("getManualNotchEnabled", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {

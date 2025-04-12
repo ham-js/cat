@@ -75,7 +75,7 @@ export class Transceiver extends Device {
   getAntennaTunerState?(): Promise<AntennaTunerState>
   setAntennaTunerStateResponse?(parameter: { state: AntennaTunerState }): Promise<void>
 
-  // convention: gain is between 0-1 so consumers don't need to map to the
+  // convention: gain is between 0 - 1 so consumers don't need to map to the
   // supported range of the device themselves
   getAFGain?(): Promise<number>
   setAFGain?(parameter: { gain: number }): Promise<void>
@@ -86,9 +86,12 @@ export class Transceiver extends Device {
   setBreakInEnabled?(parameter: { enabled: boolean }): Promise<void>
 
   getManualNotchEnabled?(): Promise<boolean>
-  getManualNotchFrequency?(): Promise<number>
+  // convetion: offset is between 0 - 1. Some TRX give this as values in hz in
+  // relation to VFO frequency and some give it as a factor in relation to the
+  // bandscope edges
+  getManualNotchFrequencyOffset?(): Promise<number>
   setManualNotchEnabled?(parameter: { enabled: boolean }): Promise<void>
-  setManualNotchFrequency?(parameter: { frequency: number }): Promise<void>
+  setManualNotchFrequencyOffset?(parameter: { frequencyOffset: number }): Promise<void>
 
   setBand?(parameter: { band: Band }): Promise<void>
 

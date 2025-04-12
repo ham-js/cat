@@ -223,7 +223,7 @@ describe("GenericTransceiver", () => {
       ])
     })
 
-    test("it parses manual notch frequency responses into ManualNotchFrequency events", async () => {
+    test("it parses manual notch frequency responses into ManualNotchFrequencyOffset events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
       const result = firstValueFrom(
@@ -239,19 +239,19 @@ describe("GenericTransceiver", () => {
 
       await expect(result).resolves.toEqual([
         {
-          frequency: 10,
+          frequencyOffset: 10 / 3200,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.ManualNotchFrequency,
+          type: TransceiverEventType.ManualNotchFrequencyOffset,
         },
         {
-          frequency: 450,
+          frequencyOffset: 450 / 3200,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.ManualNotchFrequency,
+          type: TransceiverEventType.ManualNotchFrequencyOffset,
         },
         {
-          frequency: 3200,
+          frequencyOffset: 1,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.ManualNotchFrequency,
+          type: TransceiverEventType.ManualNotchFrequencyOffset,
         }
       ])
     })
@@ -843,25 +843,25 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getManualNotchFrequency", () => {
+  describe("getManualNotchFrequencyOffset", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BP01;"))
 
         driver.send("BP01300;")
       })
-      await expect(genericTransceiver.getManualNotchFrequency()).resolves.toEqual(3000)
+      await expect(genericTransceiver.getManualNotchFrequencyOffset()).resolves.toEqual(3000 / 3200)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BP01;"))
 
         driver.send("BP01050;")
       })
-      await expect(genericTransceiver.getManualNotchFrequency()).resolves.toEqual(500)
+      await expect(genericTransceiver.getManualNotchFrequencyOffset()).resolves.toEqual(500 / 3200)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getManualNotchFrequency')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getManualNotchFrequencyOffset')).toEqual(
         expect.objectContaining({
           properties: {},
         })
@@ -920,31 +920,42 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("setManualNotchFrequency", () => {
+  describe("setManualNotchFrequencyOffset", () => {
     test("implements the command correctly", async () => {
-      await genericTransceiver.setManualNotchFrequency({ frequency: 1230 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP01123;")
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 0 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01000;")
 
-      await genericTransceiver.setManualNotchFrequency({ frequency: 10 })
-      expect(driver.writeString).toHaveBeenCalledWith("BP01001;")
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 0.45 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01144;")
+
+      await genericTransceiver.setManualNotchFrequencyOffset({ frequencyOffset: 1 })
+      expect(driver.writeString).toHaveBeenCalledWith("BP01320;")
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('setManualNotchFrequency')).toEqual(
+      expect(genericTransceiver.getCommandSchema('setManualNotchFrequencyOffset')).toEqual(
         expect.objectContaining({
           properties: {
-            frequency: {
-              maximum: 3200,
-              minimum: 10,
-              multipleOf: 10,
+            frequencyOffset: {
+              maximum: 1,
+              minimum: 0,
               type: "number"
             },
           },
           required: [
-            "frequency"
+            "frequencyOffset"
           ]
         })
       )
+    })
+  })
+
+  describe("parseManualNotchFrequencyResponse", () => {
+    test("it returns the manual notch enabled state", () => {
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP01000;")).toEqual(0)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP01001;")).toEqual(10/3200)
+      expect(genericTransceiver["parseManualNotchFrequencyResponse"]("BP01320;")).toEqual(1)
     })
   })
 

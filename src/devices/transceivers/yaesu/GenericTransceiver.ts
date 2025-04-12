@@ -260,8 +260,8 @@ export class GenericTransceiver extends Transceiver {
           parseResponse(
             response$,
             this.parseManualNotchFrequencyResponse,
-            (frequency) => ({ frequency, type: TransceiverEventType.ManualNotchFrequency as const }),
-            "frequency"
+            (frequencyOffset) => ({ frequencyOffset, type: TransceiverEventType.ManualNotchFrequencyOffset as const }),
+            "frequencyOffset"
           ),
           parseResponse(
             response$,
@@ -585,7 +585,7 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
-  getManualNotchFrequency(): Promise<number> {
+  getManualNotchFrequencyOffset(): Promise<number> {
     return this.readResponse("BP01;", this.parseManualNotchFrequencyResponse)
   }
 
@@ -597,7 +597,7 @@ export class GenericTransceiver extends Transceiver {
     const deciHzMatch = response.match(/^BP01(\d{3});$/)
     if (!deciHzMatch) return null
 
-    return parseInt(deciHzMatch[1], 10) * 10
+    return parseInt(deciHzMatch[1], 10) * 10 / 3200
   }
 
   @command({
@@ -609,14 +609,13 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command({
-    frequency: z
+    frequencyOffset: z
       .number()
-      .min(10)
-      .step(10)
-      .max(3200)
+      .min(0)
+      .max(1)
   })
-  async setManualNotchFrequency({ frequency }: { frequency: number }): Promise<void> {
-    await this.driver.writeString(`BP01${(frequency / 10).toString().padStart(3, "0")};`)
+  async setManualNotchFrequencyOffset({ frequencyOffset }: { frequencyOffset: number }): Promise<void> {
+    await this.driver.writeString(`BP01${Math.round(frequencyOffset * 3200 / 10).toString().padStart(3, "0")};`)
   }
 
   protected parseInformationResponse(
