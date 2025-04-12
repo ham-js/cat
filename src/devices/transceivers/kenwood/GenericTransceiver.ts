@@ -9,11 +9,26 @@ import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { AGCState } from "../base/AGCState";
 import { Direction } from "../base/Direction";
+import { Band } from "../base/Bands";
 
 const vfoType = z.enum([
   VFOType.Current,
   VFOType.Other
 ])
+
+const BandSelectMap: Record<Exclude<Band, "10km">, string> = {
+  "160m": "00",
+  "80m": "01",
+  "40m": "02",
+  "30m": "03",
+  "20m": "04",
+  "17m": "05",
+  "15m": "06",
+  "13m": "07",
+  "10m": "08",
+  "6m": "09",
+  "General": "10",
+}
 
 const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | AGCAttack.Fast | "on", number> = {
   [AGCAttack.Off]: 0,
@@ -29,6 +44,25 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 export class GenericTransceiver extends Transceiver {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood
+
+  @command({
+    band: z.enum([
+      "160m",
+      "80m",
+      "40m",
+      "30m",
+      "20m",
+      "17m",
+      "15m",
+      "13m",
+      "10m",
+      "6m",
+      "General",
+    ])
+  })
+  async setBand({ band }: { band: Exclude<Band, "10km">; }): Promise<void> {
+    await this.driver.writeString(`BU0${BandSelectMap[band]};`) 
+  }
 
   @command()
   getAFGain(): Promise<number> {
