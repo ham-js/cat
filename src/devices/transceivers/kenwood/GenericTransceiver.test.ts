@@ -63,6 +63,38 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getRITEnabled", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("RT;"))
+
+        driver.send("RT0;")
+      })
+      await expect(genericTransceiver.getRITEnabled()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("RT;"))
+
+        driver.send("RT1;")
+      })
+      await expect(genericTransceiver.getRITEnabled()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getRITEnabled')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("parseRITEnabledResponse", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseRITEnabledResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseRITEnabledResponse"]("RT0;")).toEqual(false)
+      expect(genericTransceiver["parseRITEnabledResponse"]("RT1;")).toEqual(true)
+    })
+  })
+
   describe("getBreakInEnabled", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {

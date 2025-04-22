@@ -74,6 +74,15 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
+  getRITEnabled(): Promise<boolean> {
+    return this.readResponse("RT;", this.parseRITEnabledResponse)
+  }
+
+  protected parseRITEnabledResponse(response: string): boolean | null {
+    return response.match(/^RT(0|1);$/) && response === "RT1;"
+  }
+
+  @command()
   getAFGain(): Promise<number> {
     return this.readResponse("AG;", this.parseAFGainResponse)
   }
