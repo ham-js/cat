@@ -9,6 +9,7 @@ import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { getTestDevice } from "../../../test/utils/getTestDevice";
 import { AntennaTunerState } from "../base/AntennaTunerState";
 import { Direction } from "../base/Direction";
+import { CTCSSFrequencies } from "../base/CTCSSFrequencies";
 
 describe("GenericTransceiver", () => {
   const textEncoder = new TextEncoder()
@@ -121,6 +122,35 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN30;")).toEqual(171.3)
       expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN49;")).toEqual(254.1)
       expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN50;")).toEqual(undefined)
+    })
+  })
+
+  describe("setCTCSSFrequency", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setCTCSSFrequency({ frequency: 67 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN00;")
+
+      await genericTransceiver.setCTCSSFrequency({ frequency: 110.9 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN15;")
+
+      await genericTransceiver.setCTCSSFrequency({ frequency: 254.1 })
+      expect(driver.writeString).toHaveBeenCalledWith("CN49;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setCTCSSFrequency')).toEqual(
+        expect.objectContaining({
+          properties: {
+            frequency: {
+              enum: CTCSSFrequencies,
+              type: "number"
+            }
+          },
+          required: [
+            "frequency"
+          ]
+        })
+      )
     })
   })
 

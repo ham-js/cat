@@ -1226,7 +1226,6 @@ describe("GenericTransceiver", () => {
     })
   })
 
-
   describe("getVFOFrequency", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {

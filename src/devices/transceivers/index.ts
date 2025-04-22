@@ -14,6 +14,8 @@ import { Band, Bands } from "./base/Bands"
 import { CTCSSFrequencies } from "./base/CTCSSFrequencies"
 import { AntennaTunerState } from "./base/AntennaTunerState"
 import { AGCState } from "./base/AGCState"
+import { CTCSSFrequencyToStringMap as KenwoodCTCSSFrequencyToStringMap } from "./kenwood/CTCSSFrequencyToStringMap"
+import { StringToCTCSSFrequencyMap as KenwoodStringToCTCSSFrequencyMap } from "./kenwood/StringToCTCSSFrequencyMap"
 
 export const ICOMTransceivers: typeof Transceiver[] = [
   ICOMGenericTransceiver
@@ -45,7 +47,9 @@ export {
   CTCSSFrequencies,
   Direction,
   ICOMGenericTransceiver,
+  KenwoodCTCSSFrequencyToStringMap,
   KenwoodGenericTransceiver,
+  KenwoodStringToCTCSSFrequencyMap,
   Transceiver,
   TransceiverEvent,
   TransceiverVendor,
