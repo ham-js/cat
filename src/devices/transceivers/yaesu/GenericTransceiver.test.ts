@@ -196,7 +196,7 @@ describe("GenericTransceiver", () => {
       ])
     })
 
-    test("it parses rx busy responses into RXBusy events", async () => {
+    test("it parses tx busy responses into RXBusy events", async () => {
       jest.useFakeTimers().setSystemTime(new Date("1992-01-22T13:00:00Z"))
 
       const result = firstValueFrom(
@@ -211,14 +211,14 @@ describe("GenericTransceiver", () => {
 
       await expect(result).resolves.toEqual([
         {
-          busy: false,
-          timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.RXBusy,
-        },
-        {
           busy: true,
           timestamp: new Date("1992-01-22T13:00:00Z"),
-          type: TransceiverEventType.RXBusy,
+          type: TransceiverEventType.TXBusy,
+        },
+        {
+          busy: false,
+          timestamp: new Date("1992-01-22T13:00:00Z"),
+          type: TransceiverEventType.TXBusy,
         },
       ])
     })
@@ -959,29 +959,37 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("getRXBusy", () => {
+  describe("getTXBusy", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BY;"))
 
         driver.send("BY00;")
       })
-      await expect(genericTransceiver.getRXBusy()).resolves.toBe(false)
+      await expect(genericTransceiver.getTXBusy()).resolves.toBe(true)
 
       driver.write.mockImplementationOnce((data) => {
         expect(data).toEqual(textEncoder.encode("BY;"))
 
         driver.send("BY10;")
       })
-      await expect(genericTransceiver.getRXBusy()).resolves.toBe(true)
+      await expect(genericTransceiver.getTXBusy()).resolves.toBe(false)
     })
 
     test("specifies the schema correctly", () => {
-      expect(genericTransceiver.getCommandSchema('getRXBusy')).toEqual(
+      expect(genericTransceiver.getCommandSchema('getTXBusy')).toEqual(
         expect.objectContaining({
           properties: {}
         })
       )
+    })
+  })
+
+  describe("parseTXBusyResponse", () => {
+    test("it returns the tx busy state", () => {
+      expect(genericTransceiver["parseTXBusyResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseTXBusyResponse"]("BY00;")).toEqual(true)
+      expect(genericTransceiver["parseTXBusyResponse"]("BY10;")).toEqual(false)
     })
   })
 

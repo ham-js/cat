@@ -14,7 +14,7 @@ export enum TransceiverEventType {
   ManualNotchEnabled = "ManualNotchEnabled",
   ManualNotchFrequencyOffset = "ManualNotchFrequencyOffset",
   RITEnabled = "RITEnabled",
-  RXBusy = "RXBusy",
+  TXBusy = "TXBusy",
   VFO = "VFO"
 }
 
@@ -39,7 +39,7 @@ export type TransceiverEvent = ({
   type: TransceiverEventType.CTCSSFrequency
 } | {
   busy: boolean,
-  type: TransceiverEventType.RXBusy
+  type: TransceiverEventType.TXBusy
 } | {
   code: number,
   type: TransceiverEventType.DCSCode

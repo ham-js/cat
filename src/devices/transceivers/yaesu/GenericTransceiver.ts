@@ -265,8 +265,8 @@ export class GenericTransceiver extends Transceiver {
           ),
           parseResponse(
             response$,
-            this.parseRXBusyResponse,
-            (busy) => ({ busy, type: TransceiverEventType.RXBusy as const }),
+            this.parseTXBusyResponse,
+            (busy) => ({ busy, type: TransceiverEventType.TXBusy as const }),
             "busy"
           ),
           parseResponse(
@@ -352,12 +352,12 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
-  getRXBusy(): Promise<boolean> {
-    return this.readResponse("BY;", this.parseRXBusyResponse)
+  getTXBusy(): Promise<boolean> {
+    return this.readResponse("BY;", this.parseTXBusyResponse)
   }
 
-  protected parseRXBusyResponse(response: string): boolean | null {
-    return response.match(/^BY(0|1)0;$/) && response === "BY10;"
+  protected parseTXBusyResponse(response: string): boolean | null {
+    return response.match(/^BY(0|1)0;$/) && response === "BY00;"
   }
 
   @command({
