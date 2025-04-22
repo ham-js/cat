@@ -1186,6 +1186,17 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("parseCTCSSFrequencyResponse", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("ABC;")).toEqual(undefined)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00000;")).toEqual(67.0)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00001;")).toEqual(69.3)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00030;")).toEqual(171.3)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00049;")).toEqual(254.1)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00050;")).toEqual(undefined)
+    })
+  })
+
   describe("setCTCSSFrequency", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setCTCSSFrequency({ frequency: 67 })

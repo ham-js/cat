@@ -87,6 +87,43 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("getCTCSSFrequency", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CN;"))
+
+        driver.send("CN00;")
+      })
+      await expect(genericTransceiver.getCTCSSFrequency()).resolves.toBe(67)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("CN;"))
+
+        driver.send("CN49;")
+      })
+      await expect(genericTransceiver.getCTCSSFrequency()).resolves.toBe(254.1)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getCTCSSFrequency')).toEqual(
+        expect.objectContaining({
+          properties: {},
+        })
+      )
+    })
+  })
+
+  describe("parseCTCSSFrequencyResponse", () => {
+    test("it returns the break in state", () => {
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("ABC;")).toEqual(undefined)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN00;")).toEqual(67.0)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN01;")).toEqual(69.3)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN30;")).toEqual(171.3)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN49;")).toEqual(254.1)
+      expect(genericTransceiver["parseCTCSSFrequencyResponse"]("CN50;")).toEqual(undefined)
+    })
+  })
+
   describe("parseRITEnabledResponse", () => {
     test("it returns the break in state", () => {
       expect(genericTransceiver["parseRITEnabledResponse"]("ABC;")).toEqual(null)
