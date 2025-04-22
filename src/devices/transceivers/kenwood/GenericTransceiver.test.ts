@@ -63,6 +63,29 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setManualNotchEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setManualNotchEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("NT0;")
+
+      await genericTransceiver.setManualNotchEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("NT1;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setManualNotchEnabled')).toEqual(expect.objectContaining({
+        properties: {
+          enabled: {
+            type: "boolean"
+          }
+        },
+        required: [
+          "enabled"
+        ]
+      }))
+    })
+  })
+
   describe("setBreakInEnabled", () => {
     test("implements the command correctly", async () => {
       await genericTransceiver.setBreakInEnabled({ enabled: false })

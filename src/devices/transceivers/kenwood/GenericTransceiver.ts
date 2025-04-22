@@ -142,6 +142,14 @@ export class GenericTransceiver extends Transceiver {
     await this.driver.writeString(`BP${(Math.round(frequencyOffset * 255)).toString().padStart(3, "0")};`)
   }
 
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setManualNotchEnabled({ enabled }: { enabled: boolean; }): Promise<void> {
+    await this.driver.writeString(enabled ? "NT1;" : "NT0;")
+  }
+
   @command()
   getAntennaTunerState({ rx } = { rx: false }): Promise<AntennaTunerState> {
     return this.readResponse("AC;", (response) => this.parseAntennaTunerStateResponse(response, rx))
