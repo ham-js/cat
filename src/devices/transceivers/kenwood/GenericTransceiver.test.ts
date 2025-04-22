@@ -31,6 +31,38 @@ describe("GenericTransceiver", () => {
   test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Kenwood))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
+  describe("getTXBusy", () => {
+    test("implements the command correctly", async () => {
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BY;"))
+
+        driver.send("BY0;")
+      })
+      await expect(genericTransceiver.getTXBusy()).resolves.toEqual(false)
+
+      driver.write.mockImplementationOnce((data) => {
+        expect(data).toEqual(textEncoder.encode("BY;"))
+
+        driver.send("BY1;")
+      })
+      await expect(genericTransceiver.getTXBusy()).resolves.toEqual(true)
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('getTXBusy')).toEqual(expect.objectContaining({
+        properties: {}
+      }))
+    })
+  })
+
+  describe("parseTXBusyResponse", () => {
+    test("it returns the tx bust state", () => {
+      expect(genericTransceiver["parseTXBusyResponse"]("ABC;")).toEqual(null)
+      expect(genericTransceiver["parseTXBusyResponse"]("BY0;")).toEqual(false)
+      expect(genericTransceiver["parseTXBusyResponse"]("BY1;")).toEqual(true)
+    })
+  })
+
   describe("getBreakInEnabled", () => {
     test("implements the command correctly", async () => {
       driver.write.mockImplementationOnce((data) => {
@@ -55,7 +87,7 @@ describe("GenericTransceiver", () => {
     })
   })
 
-  describe("parseBreakIn", () => {
+  describe("parseBreakInResponse", () => {
     test("it returns the break in state", () => {
       expect(genericTransceiver["parseBreakInResponse"]("ABC;")).toEqual(null)
       expect(genericTransceiver["parseBreakInResponse"]("BI0;")).toEqual(false)

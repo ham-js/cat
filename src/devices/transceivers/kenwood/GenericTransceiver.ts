@@ -65,6 +65,15 @@ export class GenericTransceiver extends Transceiver {
   }
 
   @command()
+  getTXBusy(): Promise<boolean> {
+    return this.readResponse("BY;", this.parseTXBusyResponse) 
+  }
+
+  protected parseTXBusyResponse(response: string): null | boolean {
+    return response.match(/^BY(0|1);$/) && response === "BY1;"
+  }
+
+  @command()
   getAFGain(): Promise<number> {
     return this.readResponse("AG;", this.parseAFGainResponse)
   }
