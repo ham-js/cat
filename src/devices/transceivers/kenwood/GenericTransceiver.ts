@@ -82,6 +82,14 @@ export class GenericTransceiver extends Transceiver {
     return response.match(/^RT(0|1);$/) && response === "RT1;"
   }
 
+  @command({
+    enabled: z
+      .boolean()
+  })
+  async setRITEnabled({ enabled }: { enabled: boolean; }): Promise<void> {
+    await this.driver.writeString(enabled ? "RT1;" : "RT0;")
+  }
+
   @command()
   getAFGain(): Promise<number> {
     return this.readResponse("AG;", this.parseAFGainResponse)
