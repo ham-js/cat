@@ -7,12 +7,11 @@ import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { Direction } from "./Direction"
 import { Band } from "./Bands"
-import { delimiterParser } from "../../base/parsers/delimiterParser"
 import { AntennaTunerState } from "./AntennaTunerState"
 import { AGCState } from "./AGCState"
 import { AGCAttack } from "./AGCAttack"
 
-export class Transceiver extends Device {
+export class Transceiver<DataType extends string | Uint8Array> extends Device<DataType> {
   static readonly deviceType = DeviceType.Transceiver
   static readonly deviceVendor: TransceiverVendor
 
@@ -42,9 +41,11 @@ export class Transceiver extends Device {
     await super.close()
   }
 
-  protected async readResponse<MapResult>(command: string, mapFn: (response: string) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
+  protected async readResponse<MapResult>(command: DataType, mapFn: (response: DataType) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
+    if (!this.data) throw new Error("In order to use `readResponse` you need to implement the `data` property")
+
     const value = firstValueFrom(
-      delimiterParser(this.driver.stringData(), ";")
+      this.data
         .pipe(
           map(mapFn),
           filter((value) => value !== null && value !== undefined),
@@ -52,7 +53,8 @@ export class Transceiver extends Device {
         )
     )
 
-    await this.driver.writeString(command)
+    if (typeof command === "string") await this.driver.writeString(command)
+    else await this.driver.write(command)
 
     return value
   }

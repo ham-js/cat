@@ -17,21 +17,25 @@ import { AGCState } from "./base/AGCState"
 import { CTCSSFrequencyToStringMap as KenwoodCTCSSFrequencyToStringMap } from "./kenwood/CTCSSFrequencyToStringMap"
 import { StringToCTCSSFrequencyMap as KenwoodStringToCTCSSFrequencyMap } from "./kenwood/StringToCTCSSFrequencyMap"
 
-export const ICOMTransceivers: typeof Transceiver[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ICOMTransceivers: typeof Transceiver<any>[] = [
   ICOMGenericTransceiver
 ]
 
-export const KenwoodTransceivers: typeof Transceiver[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const KenwoodTransceivers: typeof Transceiver<any>[] = [
   KenwoodGenericTransceiver
 ]
 
-export const YaesuTransceivers: typeof Transceiver[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const YaesuTransceivers: typeof Transceiver<any>[] = [
   YaesuGenericTransceiver,
   FT891,
   FT991
 ]
 
-export const Transceivers: typeof Transceiver[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const Transceivers: typeof Transceiver<any>[] = [
   ...ICOMTransceivers,
   ...KenwoodTransceivers,
   ...YaesuTransceivers,

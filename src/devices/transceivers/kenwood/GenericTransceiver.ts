@@ -14,6 +14,7 @@ import { ExtractMapKey } from "../../../utils/types/ExtractMapKey";
 import { oneOf } from "../../../utils/oneOf";
 import { CTCSSFrequencyToStringMap } from "./CTCSSFrequencyToStringMap";
 import { StringToCTCSSFrequencyMap } from "./StringToCTCSSFrequencyMap";
+import { delimiterParser } from "../../base/parsers/delimiterParser";
 
 const vfoType = z.enum([
   VFOType.Current,
@@ -45,9 +46,11 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 @supportedDrivers([
   ...DeviceAgnosticDriverTypes
 ])
-export class GenericTransceiver extends Transceiver {
+export class GenericTransceiver extends Transceiver<string> {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Kenwood
+
+  protected data = delimiterParser(this.driver.stringData(), ";")
 
   @command({
     band: z.enum([

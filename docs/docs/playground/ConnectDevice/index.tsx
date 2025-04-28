@@ -33,7 +33,6 @@ export const ConnectDevice = ({ device, onChange }: Props) => {
         await device.open({ log: true })
 
         onChange(device)
-
       } finally {
         setConnecting(false)
       }

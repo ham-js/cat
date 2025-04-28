@@ -15,7 +15,7 @@ interface State {
 @supportedDrivers([
   DriverType.DummyDriver
 ])
-export class VirtualTransceiver extends Transceiver {
+export class VirtualTransceiver extends Transceiver<never> {
   static deviceName = "Transceiver"
   static deviceVendor = TransceiverVendor.Virtual
 

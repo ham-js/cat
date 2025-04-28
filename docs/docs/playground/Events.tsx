@@ -24,7 +24,7 @@ export const Events = ({ device }: Props) => {
       subscription.unsubscribe()
       setSubscription(null)
     } else {
-      setSubscription(device!.events!.subscribe((event) => {
+      setSubscription(device!.events.subscribe((event) => {
         setEvents((events) => [...events, event])
       }))
     }

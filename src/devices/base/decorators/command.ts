@@ -3,20 +3,20 @@ import { Device } from "../Device";
 import zodToJsonSchema from "zod-to-json-schema";
 import { JSONSchema7 } from "json-schema";
 
-export function command<This extends Device, ReturnType extends Promise<unknown>>():
+export function command<This extends Device<any>, ReturnType extends Promise<unknown>>():
   (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: (this: This, parameter?: any) => ReturnType,
     context: ClassMethodDecoratorContext<This>
   ) => typeof target
 
-export function command<This extends Device, SchemaShape extends z.ZodRawShape, ReturnType extends Promise<unknown>>(schemaShape: SchemaShape):
+export function command<This extends Device<any>, SchemaShape extends z.ZodRawShape, ReturnType extends Promise<unknown>>(schemaShape: SchemaShape):
   (
     target: (this: This, parameter: z.infer<z.ZodObject<SchemaShape>>) => ReturnType,
     context: ClassMethodDecoratorContext<This>
   ) => typeof target
 
-export function command<This extends Device, SchemaShape extends z.ZodRawShape, ReturnType extends Promise<unknown>>(schemaShape?: SchemaShape):
+export function command<This extends Device<any>, SchemaShape extends z.ZodRawShape, ReturnType extends Promise<unknown>>(schemaShape?: SchemaShape):
   (
     target: (this: This, parameter: z.infer<z.ZodObject<SchemaShape>>) => Promise<Awaited<ReturnType>>,
     context: ClassMethodDecoratorContext<This>

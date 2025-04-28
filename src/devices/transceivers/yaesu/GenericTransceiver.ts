@@ -153,9 +153,11 @@ const DCSCodeToStringMap = invertMap(StringToDCSCodeMap)
   DriverType.CP210xWebUSBDriver,
   ...DeviceAgnosticDriverTypes
 ])
-export class GenericTransceiver extends Transceiver {
+export class GenericTransceiver extends Transceiver<string> {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.Yaesu
+
+  protected data = delimiterParser(this.driver.stringData(), ";")
 
   readonly events = defer(() => {
     this.setAutoInformation({ enabled: true })

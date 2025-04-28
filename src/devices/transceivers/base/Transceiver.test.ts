@@ -1,10 +1,18 @@
-import { describe, expect, jest, test } from "@jest/globals"
+import { beforeEach, describe, expect, jest, test } from "@jest/globals"
 import { Transceiver } from "./Transceiver"
 import { DeviceType } from "../../base/DeviceType"
 import { TestDriver } from "../../../test/utils/TestDriver"
 import { firstValueFrom, take, toArray } from "rxjs"
 import { VFOType } from "./VFOType"
 import { TransceiverEventType } from "./TransceiverEvent"
+
+class StringTransceiver extends Transceiver<string> {
+  data = this.driver.stringData()
+}
+
+class Uint8ArrayTransceiver extends Transceiver<Uint8Array> {
+  data = this.driver.data
+}
 
 describe("Transceiver", () => {
   test("device vendor", () => expect(Transceiver.deviceType).toBe(DeviceType.Transceiver))
@@ -59,24 +67,51 @@ describe("Transceiver", () => {
   })
 
   describe("readResponse", () => {
-    const textEncoder = new TextEncoder()
     const driver = new TestDriver()
-    const transceiver = new Transceiver(driver)
+    const stringTransceiver = new StringTransceiver(driver)
+    const uint8ArrayTransceiver = new Uint8ArrayTransceiver(driver)
 
-    test("it sends a command and reads back the response", async () => {
-      const result = transceiver["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+    beforeEach(() => {
+      jest.spyOn(driver, "writeString")
+    })
 
-      expect(driver.write).toHaveBeenCalledWith(textEncoder.encode("TEST"))
+    test("it sends a string command and reads back the response", async () => {
+      const result = stringTransceiver["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+
+      expect(driver.writeString).toHaveBeenCalledWith("TEST")
       driver.send("AB;") // this returns null in the map fn
       driver.send("CDE;")
 
       await expect(result).resolves.toEqual("E")
     })
 
-    test("it implements a timeout", async () => {
+    test("it sends a byte command and reads back the response", async () => {
+      const result = uint8ArrayTransceiver["readResponse"](new Uint8Array([65, 66, 67]), (response) => response.length > 3 ? response[2] : null)
+
+      expect(driver.write).toHaveBeenCalledWith(new Uint8Array([65, 66, 67]))
+      driver.send(new Uint8Array([65, 66, 67])) // this returns null in the map fn
+      driver.send(new Uint8Array([68, 69, 70, 71]))
+
+      await expect(result).resolves.toEqual(70)
+    })
+
+    test("it implements a timeout for string commands", async () => {
       jest.useFakeTimers()
 
-      const result = transceiver["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+      const result = stringTransceiver["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+
+      // this is a trick to prevent the promise to reject before jest's expect can handle the error because we advance the timer for the timeout
+      try {
+        return expect(result).rejects.toThrow("Timeout has occurred")
+      } finally {
+        await jest.advanceTimersToNextTimerAsync()
+      }
+    })
+
+    test("it implements a timeout for byte commands", async () => {
+      jest.useFakeTimers()
+
+      const result = uint8ArrayTransceiver["readResponse"](new Uint8Array([65, 66, 67]), (response) => response.length > 3 ? response[2] : null)
 
       // this is a trick to prevent the promise to reject before jest's expect can handle the error because we advance the timer for the timeout
       try {

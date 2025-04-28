@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex"
 import { JSONSchema7 } from "json-schema"
 
-import { Observable, share, Subject } from "rxjs"
+import { EMPTY, Observable, share, Subject } from "rxjs"
 import { DeviceType } from "./DeviceType"
 import { DeviceVendor } from "./DeviceVendor"
 import { DriverType } from "../../drivers/base/DriverType"
@@ -10,12 +10,13 @@ import { Driver } from "../../drivers/base/Driver"
 import { DeviceLog } from "./DeviceLog"
 import { DeviceEvent } from "./DeviceEvent"
 
-export class Device {
+export class Device<DataType = never> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
 
-  readonly events?: Observable<DeviceEvent>
+  protected data: Observable<DataType> = EMPTY
+  readonly events: Observable<DeviceEvent> = EMPTY
 
   protected _deviceLog: Subject<DeviceLog> | undefined
 

@@ -44,12 +44,14 @@ const AGCAttackNumbers: Record<AGCAttack.Fast | AGCAttack.Mid | AGCAttack.Slow, 
     .int()
     .gt(0),
 })
-export class GenericTransceiver extends Transceiver {
+export class GenericTransceiver extends Transceiver<Uint8Array> {
   static readonly deviceName: string = "Generic Transceiver"
   static readonly deviceVendor = TransceiverVendor.ICOM
 
   constructor(protected driver: Driver, protected parameter: { deviceAddress: number, controllerAddress: number }) {
     super(driver, parameter)
+
+    this.data = delimiterParser(this.driver.data, 0xFD)
   }
 
   @command({
