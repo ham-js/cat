@@ -1,4 +1,3 @@
-import { filter, firstValueFrom, map } from "rxjs"
 import { z } from "zod"
 
 import { AGCAttack } from "../base/AGCAttack"
@@ -98,22 +97,18 @@ export class GenericTransceiver extends Transceiver<Uint8Array> {
     vfo: vfoType
   })
   async getVFOFrequency({ vfo }: { vfo: VFOType }): Promise<number> {
-    const value = firstValueFrom(
-      delimiterParser(this.driver.data, 0xFD)
-        .pipe(
-          filter((command) =>
-            this.commandMatchesDevice(command)
-            && command[4] === 0x25
-            && command[5] == 0x00
-            && this.getCommandData(command)[0] === VFOMap[vfo as keyof typeof VFOMap]
-          ),
-          map((command) => fromLittleEndianBCD(this.getCommandData(command).slice(1)))
-        )
-    )
+    return this.readResponse(
+      this.buildCommand(0x25, 0x00, new Uint8Array([VFOMap[vfo]])),
+      (response) => {
+        if (!(
+          this.commandMatchesDevice(response)
+          && response[4] === 0x25
+          && response[5] == 0x00
+          && this.getCommandData(response)[0] === VFOMap[vfo as keyof typeof VFOMap]
+        )) return
 
-    await this.driver.write(this.buildCommand(0x25, 0x00))
-
-    return value
+        return fromLittleEndianBCD(this.getCommandData(response).slice(1))
+      })
   }
 
   protected getCommandData(command: Uint8Array): Uint8Array {
