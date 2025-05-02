@@ -7,7 +7,8 @@ import { WebSocketDriver } from "./WebSocketDriver"
 
 export { Driver } from "./base/Driver"
 export { DriverType } from "./base/DriverType"
-export { DriverLog } from "./LogDriver"
+export { DriverLog, LogDriver } from "./LogDriver"
+export { WebUSBDriver } from "./browser/web-usb/base/WebUSBDriver"
 
 export const BrowserDriverTypes = [
   DriverType.CP210xWebUSBDriver,
