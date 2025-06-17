@@ -69,3 +69,9 @@ yarn run test:e2e
 Please refer to [https://ham-js.github.io/cat] in order to understand how the library works.
 
 # Contributors
+
+<a href="https://github.com/ham-js/cat/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ham-js/cat" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
