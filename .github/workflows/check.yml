@@ -28,7 +28,7 @@ jobs:
           node-version: "^22"
       - run: yarn install
       - run: yarn lint
-  build:
+  typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,3 +38,26 @@ jobs:
           node-version: "^22"
       - run: yarn install
       - run: yarn build --noEmit
+
+  lint-docs:
+    runs-on: ubuntu-latest
+    working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: yarn
+          node-version: "^22"
+      - run: yarn install
+      - run: yarn lint
+  typecheck-docs:
+    runs-on: ubuntu-latest
+    working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: yarn
+          node-version: "^22"
+      - run: yarn install
+      - run: yarn typecheck
