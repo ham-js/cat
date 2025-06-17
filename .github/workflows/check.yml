@@ -75,7 +75,6 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: cd .. && yarn install && yarn link
+      - run: cd .. && yarn install && yarn build
       - run: yarn install
-      - run: yarn link @ham-js/cat
       - run: yarn typecheck
