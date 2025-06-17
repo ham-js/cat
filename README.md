@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/ham-js/cat">
-    <img src="https://raw.githubusercontent.com/ham-js/cat/initial-setup/docs/static/img/logo.png" alt="Logo" width="128" height="128" />
+    <img src="https://raw.githubusercontent.com/ham-js/cat/main/docs/static/img/logo.png" alt="Logo" width="128" height="128" />
   </a>
 
 <h3 align="center">@ham-js/cat</h3>
