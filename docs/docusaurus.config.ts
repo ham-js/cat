@@ -52,8 +52,8 @@ const config: Config = {
       items: [
         {to: '/docs/getting-started', label: 'Getting Started'},
         {to: '/docs/playground', label: 'Playground'},
-        {type: "docSidebar", sidebarId: 'supportedDevices', label: 'Supported Devices'},
-        {to: '/docs/collaboration', label: 'Collaboration'},
+        {to: "/docs/supported-devices", label: 'Supported Devices'},
+        {to: '/docs/contributing', label: 'Contributing'},
         {to: '/docs/api', label: 'API'},
         {to: '/docs/glossary', label: 'Glossary'},
         {

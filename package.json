@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "example:run": "ts-node -r tsconfig-paths/register",
+    "example:run": "ts-node --project tsconfig.examples.json -r tsconfig-paths/register",
     "lint": "eslint src",
     "test": "jest",
     "test:e2e:transceiver": "CI=true jest src/test/e2e/transceiver.test.ts --testPathIgnorePatterns=''"

@@ -2,7 +2,7 @@ import { Device } from "../../base/Device"
 import { DeviceType } from "../../base/DeviceType"
 import { TransceiverVendor } from "./TransceiverVendor"
 import { VFOType } from "./VFOType"
-import { filter, firstValueFrom, map, merge, Observable, share, Subject, takeUntil, timeout } from "rxjs"
+import { merge, Observable, share, Subject, takeUntil } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
 import { poll } from "../../base/utils/poll"
 import { Direction } from "./Direction"
@@ -16,7 +16,6 @@ export class Transceiver<DataType extends string | Uint8Array> extends Device<Da
   static readonly deviceVendor: TransceiverVendor
 
   pollingInterval = 500
-  responseTimeout = 1000
 
   protected _closeEvents = new Subject<void>()
   readonly events: Observable<TransceiverEvent> =
@@ -39,24 +38,6 @@ export class Transceiver<DataType extends string | Uint8Array> extends Device<Da
   async close() {
     this._closeEvents.next()
     await super.close()
-  }
-
-  protected async readResponse<MapResult>(command: DataType, mapFn: (response: DataType) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
-    if (!this.data) throw new Error("In order to use `readResponse` you need to implement the `data` property")
-
-    const value = firstValueFrom(
-      this.data
-        .pipe(
-          map(mapFn),
-          filter((value) => value !== null && value !== undefined),
-          timeout(responseTimeout)
-        )
-    )
-
-    if (typeof command === "string") await this.driver.writeString(command)
-    else await this.driver.write(command)
-
-    return value
   }
 
   getVFOFrequency(parameter: { vfo: VFOType }): Promise<number> {

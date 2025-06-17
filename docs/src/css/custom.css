@@ -33,3 +33,17 @@ fieldset {
   border: 0;
   padding: 0;
 }
+
+.reactExample {
+  background-color: var(--ifm-background-surface-color);
+  margin-bottom: var(--ifm-spacing-vertical);
+  padding: var(--ifm-spacing-vertical) var(--ifm-spacing-horizontal);
+}
+
+.reactExample::before {
+  content: "Live Example";
+  color: var(--ifm-color-secondary-darkest);
+  display: block;
+  font-size: 0.7rem;
+  margin-bottom: 1rem;
+}

@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex"
 import { JSONSchema7 } from "json-schema"
 
-import { EMPTY, Observable, share, Subject } from "rxjs"
+import { firstValueFrom, map, filter, EMPTY, Observable, share, Subject, timeout } from "rxjs"
 import { DeviceType } from "./DeviceType"
 import { DeviceVendor } from "./DeviceVendor"
 import { DriverType } from "../../drivers/base/DriverType"
@@ -10,10 +10,12 @@ import { Driver } from "../../drivers/base/Driver"
 import { DeviceLog } from "./DeviceLog"
 import { DeviceEvent } from "./DeviceEvent"
 
-export class Device<DataType = never> {
+export class Device<DataType extends string | Uint8Array = never> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
   static readonly deviceVendor: DeviceVendor
+
+  responseTimeout = 1000
 
   protected data: Observable<DataType> = EMPTY
   readonly events: Observable<DeviceEvent> = EMPTY
@@ -94,5 +96,23 @@ export class Device<DataType = never> {
 
   getCommands(): string[] {
     return [...this.commandSchemas.keys()]
+  }
+
+  protected async readResponse<MapResult>(command: DataType, mapFn: (response: DataType) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
+    if (!this.data) throw new Error("In order to use `readResponse` you need to implement the `data` property")
+
+    const value = firstValueFrom(
+      this.data
+        .pipe(
+          map(mapFn),
+          filter((value) => value !== null && value !== undefined),
+          timeout(responseTimeout)
+        )
+    )
+
+    if (typeof command === "string") await this.driver.writeString(command)
+    else await this.driver.write(command)
+
+    return value
   }
 }

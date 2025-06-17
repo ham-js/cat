@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "@jest/globals"
+import { beforeEach, describe, expect, jest, test } from "@jest/globals"
 import { z } from "zod"
 import { Device } from "./Device"
 import { command } from "./decorators/command"
@@ -135,4 +135,69 @@ describe("DeviceDriver", () => {
       expect(() => device.getCommandSchema("noCommand")).toThrow("Couldn't find a command parameter schema for the command `noCommand`. Did you forget to declare the command using the @command({}) decorator?")
     })
   })
+
+  describe("readResponse", () => {
+    class StringDevice extends Device<string> {
+      data = this.driver.stringData()
+    }
+
+    class Uint8ArrayDevice extends Device<Uint8Array> {
+      data = this.driver.data
+    }
+
+    const driver = new TestDriver()
+    const stringDevice = new StringDevice(driver)
+    const uint8ArrayDevice = new Uint8ArrayDevice(driver)
+
+    beforeEach(() => {
+      jest.spyOn(driver, "writeString")
+    })
+
+    test("it sends a string command and reads back the response", async () => {
+      const result = stringDevice["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+
+      expect(driver.writeString).toHaveBeenCalledWith("TEST")
+      driver.send("AB;") // this returns null in the map fn
+      driver.send("CDE;")
+
+      await expect(result).resolves.toEqual("E")
+    })
+
+    test("it sends a byte command and reads back the response", async () => {
+      const result = uint8ArrayDevice["readResponse"](new Uint8Array([65, 66, 67]), (response) => response.length > 3 ? response[2] : null)
+
+      expect(driver.write).toHaveBeenCalledWith(new Uint8Array([65, 66, 67]))
+      driver.send(new Uint8Array([65, 66, 67])) // this returns null in the map fn
+      driver.send(new Uint8Array([68, 69, 70, 71]))
+
+      await expect(result).resolves.toEqual(70)
+    })
+
+    test("it implements a timeout for string commands", async () => {
+      jest.useFakeTimers()
+
+      const result = stringDevice["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
+
+      // this is a trick to prevent the promise to reject before jest's expect can handle the error because we advance the timer for the timeout
+      try {
+        return expect(result).rejects.toThrow("Timeout has occurred")
+      } finally {
+        await jest.advanceTimersToNextTimerAsync()
+      }
+    })
+
+    test("it implements a timeout for byte commands", async () => {
+      jest.useFakeTimers()
+
+      const result = uint8ArrayDevice["readResponse"](new Uint8Array([65, 66, 67]), (response) => response.length > 3 ? response[2] : null)
+
+      // this is a trick to prevent the promise to reject before jest's expect can handle the error because we advance the timer for the timeout
+      try {
+        return expect(result).rejects.toThrow("Timeout has occurred")
+      } finally {
+        await jest.advanceTimersToNextTimerAsync()
+      }
+    })
+  })
+
 })
