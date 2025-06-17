@@ -21,22 +21,26 @@
 
 ADD BADGES
 
-# Examples
+# Getting Started
 
-## Create a command for the Yaesu FT-891
+## Installation (yarn)
 
-## Create a generic serial port
+```bash
+yarn add @ham-js/cat
+```
 
-## Send a command via WebUSB
+## Installation (npm )
 
-## Send a command via Node SerialPort
+```bash
+npm install @ham-js/cat
+```
 
-## Run the end-to-end test suite against your device
+Check out the [examples](https://github.com/ham-js/cat/main/examples).
 
 # Features
 
 * *interface* transceivers, antennas and other devices
-* send commands via so called *drivers* that you decide what they actually are (e.g. can be a COM port, a websocket for remote stations or something else)
+* send commands via *drivers* that you decide what they actually are (e.g. can be a COM port, a websocket for remote stations or something else)
 * send commands via *webserial* (possibly a driver on the host necessary) or our *webusb drivers* (no driver on the host necessary)
 * (mostly) *platform-agnostic*
 
