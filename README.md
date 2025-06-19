@@ -23,19 +23,7 @@ ADD BADGES
 
 # Getting Started
 
-## Installation (yarn)
-
-```bash
-yarn add @ham-js/cat
-```
-
-## Installation (npm )
-
-```bash
-npm install @ham-js/cat
-```
-
-Check out the [examples](https://github.com/ham-js/cat/main/examples).
+Check out the [docs](https://ham-js.github.io/cat/docs/getting-started!)
 
 # Features
 
@@ -60,7 +48,7 @@ We provide an automated end-to-end test suite that can run real commands against
 
 ## via the browser
 
-Go to [https://ham-js.github.io/cat].
+Go to (ham-js.github.io/cat)[https://ham-js.github.io/cat].
 
 ## via Node
 
@@ -70,7 +58,7 @@ yarn run test:e2e
 
 # Contributing
 
-Please refer to [https://ham-js.github.io/cat] in order to understand how the library works.
+Please refer to (the contributing guide)[https://ham-js.github.io/cat/contributing] in order to understand how the library works.
 
 # Contributors
 
