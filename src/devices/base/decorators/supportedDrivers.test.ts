@@ -28,7 +28,6 @@ class OtherChildDevice extends ParentDevice {
   }
 }
 
-
 describe("supportedDrivers", () => {
   test("it returns the right supported drivers", () => {
     expect(ParentDevice.supportedDrivers).toEqual([TEST_DRIVER_TYPE])

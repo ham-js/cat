@@ -634,6 +634,7 @@ describe("GenericTransceiver", () => {
       expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC100;", true)).toEqual(AntennaTunerState.On)
       expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC110;", true)).toEqual(AntennaTunerState.On)
       expect(genericTransceiver["parseAntennaTunerStateResponse"]("AC001;", true)).toEqual(AntennaTunerState.Tuning)
+      expect(genericTransceiver["parseAntennaTunerStateResponse"]("JB007;", true)).toEqual(null)
     })
   })
 

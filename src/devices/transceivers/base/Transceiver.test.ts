@@ -57,4 +57,16 @@ describe("Transceiver", () => {
       expect(subscription.closed).toBe(true)
     })
   })
+
+  describe("getVFOFrequency", () => {
+    test("it needs to be implemented", () => {
+      expect(() => new Transceiver(new TestDriver()).getVFOFrequency({ vfo: VFOType.Current })).toThrow("Not implemented")
+    })
+  })
+
+  describe("setVFOFrequency", () => {
+    test("it needs to be implemented", () => {
+      expect(() => new Transceiver(new TestDriver()).setVFOFrequency({ frequency: 1, vfo: VFOType.Current })).toThrow("Not implemented")
+    })
+  })
 })

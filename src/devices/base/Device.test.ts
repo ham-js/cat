@@ -31,7 +31,7 @@ class TestDevice extends Device {
   noCommand() {}
 }
 
-describe("DeviceDriver", () => {
+describe("Device", () => {
   const driver = new TestDriver()
   let device: TestDevice
 
@@ -52,6 +52,12 @@ describe("DeviceDriver", () => {
     })
 
     test("allows to log", async () => {
+      await device.open({ log: true })
+
+      expect(device.driverLog).toBeTruthy()
+      expect(device.deviceLog).toBeTruthy()
+
+      // idempotent
       await device.open({ log: true })
 
       expect(device.driverLog).toBeTruthy()
@@ -153,6 +159,10 @@ describe("DeviceDriver", () => {
       jest.spyOn(driver, "writeString")
     })
 
+    test("it throws an error without the data property", async () => {
+      await expect(device["readResponse"]("TEST" as never, () => "bla")).rejects.toThrow("In order to use `readResponse` you need to implement the `data` property")
+    })
+
     test("it sends a string command and reads back the response", async () => {
       const result = stringDevice["readResponse"]("TEST", (response) => response.length > 3 ? response.charAt(2) : null)
 
@@ -199,5 +209,4 @@ describe("DeviceDriver", () => {
       }
     })
   })
-
 })

@@ -99,7 +99,7 @@ export class Device<DataType extends string | Uint8Array = never> {
   }
 
   protected async readResponse<MapResult>(command: DataType, mapFn: (response: DataType) => MapResult, responseTimeout = this.responseTimeout): Promise<NonNullable<MapResult>> {
-    if (!this.data) throw new Error("In order to use `readResponse` you need to implement the `data` property")
+    if (this.data === EMPTY) throw new Error("In order to use `readResponse` you need to implement the `data` property")
 
     const value = firstValueFrom(
       this.data

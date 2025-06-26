@@ -27,8 +27,11 @@ class TestDevice extends Device {
 
   @command({
     message: z.string()
+      .or(
+        z.undefined()
+      )
   })
-  myErrorCommand({ message }: { message: string }) {
+  myErrorCommand({ message }: { message?: string }) {
     return new Promise<string>((resolve, reject) => {
       reject(message)
     })
@@ -101,6 +104,21 @@ describe("command", () => {
       error: "Whoopsie",
       parameter: {
         message: "Whoopsie"
+      },
+      timestamp: expect.any(Date)
+    })
+
+    // logs unknown errors
+
+    const unknownLog = firstValueFrom(device.deviceLog!)
+
+    await expect(device.myErrorCommand({ message: undefined })).rejects.toBeFalsy()
+
+    await expect(unknownLog).resolves.toEqual({
+      command: "myErrorCommand",
+      error: expect.objectContaining({ message: "Unknown error" }),
+      parameter: {
+        message: undefined
       },
       timestamp: expect.any(Date)
     })

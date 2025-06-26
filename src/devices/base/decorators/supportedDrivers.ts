@@ -3,7 +3,6 @@ import { DriverType } from "../../../drivers"
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const equal = (supportedDrivers: DriverType[], otherSupportedDrivers: any): boolean => {
   if (supportedDrivers === otherSupportedDrivers) return true
-  if (!Array.isArray(otherSupportedDrivers)) return false
 
   const supportedDriversSet = new Set(supportedDrivers)
   const otherSupportedDriversSet = new Set(otherSupportedDrivers)

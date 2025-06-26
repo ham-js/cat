@@ -24,5 +24,25 @@ describe("parseResponse", () => {
       someRandomValue: expect.any(Date),
       timestamp: new Date("1992-01-22T13:00:00")
     }])
+
+    // without distinct key
+
+    const nonDistinctInput = of("NO", "TEST", "TEST")
+
+    const nonDistinctObservable = parseResponse(
+        nonDistinctInput,
+        (response) => response === "TEST" ? true : null,
+        (responseIsTest) => ({ responseIsTest }),
+      ).pipe(
+        toArray()
+      )
+
+    await expect(firstValueFrom(nonDistinctObservable)).resolves.toEqual([{
+      responseIsTest: true,
+      timestamp: new Date("1992-01-22T13:00:00")
+    }, {
+      responseIsTest: true,
+      timestamp: new Date("1992-01-22T13:00:00")
+    }])
   })
 })
