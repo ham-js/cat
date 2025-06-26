@@ -16,10 +16,7 @@ import { CTCSSFrequencyToStringMap } from "./CTCSSFrequencyToStringMap";
 import { StringToCTCSSFrequencyMap } from "./StringToCTCSSFrequencyMap";
 import { delimiterParser } from "../../base/parsers/delimiterParser";
 
-const vfoType = z.enum([
-  VFOType.Current,
-  VFOType.Other
-])
+const vfoType = z.nativeEnum(VFOType)
 
 const BandSelectMap: Record<Exclude<Band, "10km">, string> = {
   "160m": "00",

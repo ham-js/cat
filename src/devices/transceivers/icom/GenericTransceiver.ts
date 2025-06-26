@@ -14,10 +14,7 @@ import { command } from "../../base/decorators/command"
 import { device } from "../../base/decorators/device"
 import { DeviceAgnosticDriverTypes } from "../../../drivers"
 
-const vfoType = z.enum([
-    VFOType.Current,
-    VFOType.Other
-  ])
+const vfoType = z.nativeEnum(VFOType)
 
 const VFOMap: Record<z.infer<typeof vfoType>, number> = {
   [VFOType.Current]: 0,

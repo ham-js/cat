@@ -20,10 +20,7 @@ import { Transceiver } from "../base/Transceiver";
 import { CTCSSFrequencyToStringMap } from "../kenwood/CTCSSFrequencyToStringMap";
 import { StringToCTCSSFrequencyMap } from "../kenwood/StringToCTCSSFrequencyMap";
 
-const vfoType = z.enum([
-  VFOType.Current,
-  VFOType.Other
-])
+const vfoType = z.nativeEnum(VFOType)
 
 const BandSelectMap: Record<Band, string> = {
   "160m": "00",
