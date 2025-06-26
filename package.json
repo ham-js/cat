@@ -30,6 +30,18 @@
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "onFail": "error",
+      "version": "^22"
+    },
+    "packageManager": {
+      "name": "yarn",
+      "onFail": "error",
+      "version": "^1.22"
+    }
+  },
   "optionalDependencies": {
     "serialport": "^13.0.0"
   },
