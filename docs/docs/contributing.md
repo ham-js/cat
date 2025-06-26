@@ -118,8 +118,7 @@ order to support string and byte commands the `DataType` type parameter is used.
 
 ## Common Tasks
 
-**Note:** `@ham-js/cat` relies on automated tests. Please always add tests for
-*your pull requests.
+**Note:** `@ham-js/cat` relies on automated tests. Please always add tests for your pull requests.
 
 ### Adding new devices
 
@@ -154,4 +153,14 @@ simply add it.
 
 ### Adding new drivers
 
-### Adding new commands
+If you want to add a driver you can either do it in your own project or - if the driver might be useful
+for others as well directly in `@ham-js/cat`.
+
+1. Extend the `Driver` class (or a subclass of it if applicable, e.g. `WebUSBDriver`) and add a new `DriverType` for your driver.
+2. Implement the `type` property and add your driver to all devices which might support it by adding your `DriverType` to the `supportedDrivers` array.
+3. Also add your driver to the arrays in `src/drivers/index.ts` e.g. for device-agnostic drivers.
+4. Implement the `data` property which is the main way for your driver to read back data.
+5. Implement the `write` property which is the main way for your driver to write data.
+6. Optionally override `isOpen`, `open` and `close`.
+
+Note: If your driver allows writing strings, but the encoding is not UTF-8, you can override the string handling methods/properties `writeString` and `stringData`.
