@@ -3,11 +3,20 @@ import { Driver } from "../base/Driver"
 import { SerialPortStream } from "@serialport/stream"
 import { DriverType } from "../base/DriverType";
 
+/**
+ *  A driver for the [Node SerialPort](https://serialport.io/) library.
+ */
 export class SerialPortDriver extends Driver {
   readonly type = DriverType.SerialPortDriver
 
   readonly data: Observable<Uint8Array>
 
+  /**
+   * The constructor for the node serial port driver. Make sure to hand in a
+   * serial port that is not opened yet and has `autoOpen` set to `false`.
+   * @param {SerialPortStream} serialPort A not-yet-open serial port (make sure to set `autoOpen` to `false`.
+   * @param {number} timeout A timeout used for writing to the serial port
+   */
   constructor(protected serialPort: SerialPortStream, protected timeout = 1000) {
     super()
 

@@ -13,6 +13,10 @@ enum ModemHandshakeStateBitMask {
   RTS = 0b1000000010
 }
 
+/**
+ *  A rudimentary WebUSB based driver for CP210x devices by Silicon Labs used
+ *  e.g. in some Yaesu transceivers.
+ */
 export class CP210xWebUSBDriver extends WebUSBDriver {
   readonly type = DriverType.CP210xWebUSBDriver
 

@@ -2,6 +2,9 @@ import { Observable, share } from "rxjs";
 import { Driver } from "../base/Driver";
 import { DriverType } from "../base/DriverType";
 
+/**
+ *  A [WebSerial](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) based driver for Chromium browsers.
+ */
 export class WebSerialDriver extends Driver {
   private reader: ReadableStreamDefaultReader | null = null
 
@@ -12,6 +15,11 @@ export class WebSerialDriver extends Driver {
     return this.serialPort.connected
   }
 
+  /**
+   *  The constructor for the web serial driver
+   *  @param {object} serialPort a serial port returned by [requestPort](https://developer.mozilla.org/en-US/docs/Web/API/Serial/requestPort)
+   *  @param {object} options Options used for [opening](https://developer.mozilla.org/en-US/docs/Web/API/SerialPort/open) the serial port (such as `baudRate`)
+   */
   constructor(protected serialPort: SerialPort, protected options: SerialOptions) {
     super()
 

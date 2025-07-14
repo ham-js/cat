@@ -1,3 +1,6 @@
+/**
+ *  All available CTCSS frequencies.
+ */
 export const CTCSSFrequencies = [
   67,
   69.3,

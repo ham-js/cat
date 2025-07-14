@@ -13,6 +13,10 @@ export type DriverLog = ({
   timestamp: Date
 }
 
+/**
+ *  An internal driver that wraps another driver and decorates the write
+ *  function and data observable to capture logs.
+ */
 export class LogDriver extends Driver {
   readonly type: DriverType;
   protected _log = new Subject<DriverLog>()

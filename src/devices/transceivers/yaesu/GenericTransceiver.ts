@@ -19,6 +19,7 @@ import { AGCState } from "../base/AGCState";
 import { Transceiver } from "../base/Transceiver";
 import { CTCSSFrequencyToStringMap } from "../kenwood/CTCSSFrequencyToStringMap";
 import { StringToCTCSSFrequencyMap } from "../kenwood/StringToCTCSSFrequencyMap";
+import { CTCSSFrequency } from "../base/CTCSSFrequencies";
 
 const vfoType = z.nativeEnum(VFOType)
 
@@ -37,7 +38,7 @@ const BandSelectMap: Record<Band, string> = {
   "10km": "12",
 }
 
-const StringToDCSCodeMap = new Map([
+const StringToDCSCodeMap: Map<string, number> = new Map([
   ["000", 0o23,],
   ["001", 0o25,],
   ["002", 0o26,],
@@ -489,11 +490,11 @@ export class GenericTransceiver extends Transceiver<string> {
 
 
   @command()
-  getCTCSSFrequency(): Promise<number> {
+  getCTCSSFrequency(): Promise<CTCSSFrequency> {
     return this.readResponse("CN00;", this.parseCTCSSFrequencyResponse)
   }
 
-  protected parseCTCSSFrequencyResponse(response: string): number | undefined {
+  protected parseCTCSSFrequencyResponse(response: string): CTCSSFrequency | undefined {
     const ctcssMatch = response.match(/^CN000(\d{2});$/)
 
     if (!ctcssMatch) return

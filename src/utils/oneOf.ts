@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+/**
+ *  a zod utility to validate inclusion of a value in an array
+ *  @param {Array} ary The array in which the valud should be included.
+ *  @returns {z.Schema} A zod schema describing the validation
+ */
 export const oneOf = <T extends z.Primitive>(
   ary: readonly T[],
 ) => {

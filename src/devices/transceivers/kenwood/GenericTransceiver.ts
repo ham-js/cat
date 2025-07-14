@@ -15,6 +15,7 @@ import { oneOf } from "../../../utils/oneOf";
 import { CTCSSFrequencyToStringMap } from "./CTCSSFrequencyToStringMap";
 import { StringToCTCSSFrequencyMap } from "./StringToCTCSSFrequencyMap";
 import { delimiterParser } from "../../base/parsers/delimiterParser";
+import { CTCSSFrequency } from "../base/CTCSSFrequencies";
 
 const vfoType = z.nativeEnum(VFOType)
 
@@ -104,11 +105,11 @@ export class GenericTransceiver extends Transceiver<string> {
   }
 
   @command()
-  getCTCSSFrequency(): Promise<number> {
+  getCTCSSFrequency(): Promise<CTCSSFrequency> {
     return this.readResponse("CN;", this.parseCTCSSFrequencyResponse)
   }
 
-  protected parseCTCSSFrequencyResponse(response: string): number | undefined {
+  protected parseCTCSSFrequencyResponse(response: string): CTCSSFrequency | undefined {
     const ctcssMatch = response.match(/^CN(\d{2});$/)
 
     if (!ctcssMatch) return

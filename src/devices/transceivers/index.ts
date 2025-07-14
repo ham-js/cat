@@ -11,7 +11,7 @@ import { VFOType } from "./base/VFOType"
 import { TransceiverEvent } from "./base/TransceiverEvent"
 import { Direction } from "./base/Direction"
 import { Band, Bands } from "./base/Bands"
-import { CTCSSFrequencies } from "./base/CTCSSFrequencies"
+import { CTCSSFrequencies, CTCSSFrequency } from "./base/CTCSSFrequencies"
 import { AntennaTunerState } from "./base/AntennaTunerState"
 import { AGCState } from "./base/AGCState"
 import { CTCSSFrequencyToStringMap as KenwoodCTCSSFrequencyToStringMap } from "./kenwood/CTCSSFrequencyToStringMap"
@@ -48,6 +48,7 @@ export {
   AntennaTunerState,
   Band,
   Bands,
+  CTCSSFrequency,
   CTCSSFrequencies,
   Direction,
   ICOMGenericTransceiver,

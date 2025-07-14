@@ -1,5 +1,15 @@
 import { buffer, filter, map, mergeAll, Observable, connect, OperatorFunction } from "rxjs";
 
+/**
+ *  A utility that groups emissions of a source observable which are delimited by a certain delimiter.
+ *  @example
+ *  const source = of("F", "A", "14", "350", "000;")
+ *  const parsed = delimiterParser(source, ";")
+ *  parsed.subscribe(console.log) // "FA14350000;"
+ *  @param {Observable} source The source observable
+ *  @param {string|number} delimiter The delimiter for which the parser looks
+ *  @returns {Observable} A new observable which emits parsed emissions of the source observable
+ */
 export const delimiterParser = <T extends Uint8Array | string>(source: Observable<T>, delimiter: T extends Uint8Array ? number : string): Observable<T> => source.pipe(
   mergeAll() as OperatorFunction<T, T extends Uint8Array ? number : string>,
   connect((symbolwiseSource) =>

@@ -5,6 +5,10 @@ import { DriverType } from "./base/DriverType";
 const OPEN_POLLING_INTERVAL = 100
 const OPEN_TIMEOUT = 5000
 
+/**
+ *  A driver that receives data from websockets and writes to websockets as
+ *  well.
+ */
 export class WebSocketDriver extends Driver {
   readonly type = DriverType.WebSocketDriver
   readonly data: Observable<Uint8Array>

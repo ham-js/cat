@@ -2,6 +2,9 @@ import { AGCAttack } from "./AGCAttack"
 import { AntennaTunerState } from "./AntennaTunerState"
 import { VFOType } from "./VFOType"
 
+/**
+ *  The different types of transceiver events
+ */
 export enum TransceiverEventType {
   AFGain = "AFGain",
   AGCAttack = "AGCAttack",
@@ -18,6 +21,9 @@ export enum TransceiverEventType {
   VFO = "VFO"
 }
 
+/**
+ *  Transceiver events are specialized device events communicating the state of the transceiver
+ */
 export type TransceiverEvent = ({
   frequency: number,
   type: TransceiverEventType.VFO,

@@ -1,3 +1,6 @@
+/**
+ * A value for the AGC attack time.
+ */
 export enum AGCAttack {
   Off = "Off",
   Slow = "Slow",

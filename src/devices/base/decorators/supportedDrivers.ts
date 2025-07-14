@@ -10,6 +10,12 @@ const equal = (supportedDrivers: DriverType[], otherSupportedDrivers: any): bool
   return supportedDriversSet.size === otherSupportedDriversSet.size && Array.from(supportedDriversSet).every((supportedDriver) => otherSupportedDriversSet.has(supportedDriver))
 }
 
+/**
+ *  This decorator allows to define the drivers this device supports. For introspection reasons we use an enum here.
+ *  If not used the device supports all available drivers. **Hint:** You can use the convenience arrays of drivers, such as `DeviceAgnosticDriverTypes`.
+ *  @param {DriverType[]} supportedDrivers the supported drivers in form of the DriverType associated with them
+ *  @returns {object} the decorated class
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const supportedDrivers = <This extends new (...parameters: any[]) => any>(supportedDrivers: DriverType[]) => (target: This, context: ClassDecoratorContext<This>) => {
   const uniqueSupportedDrivers = Array.from(new Set(supportedDrivers).values())
