@@ -120,6 +120,12 @@ order to support string and byte commands the `DataType` type parameter is used.
 
 **Note:** `@ham-js/cat` relies on automated tests. Please always add tests for your pull requests.
 
+You can run the test suite (minus e2e tests) by running
+
+```bash
+yarn test
+```
+
 ### Adding new devices
 
 If you found that your device is not yet implemented in `@ham-js/cat` you can implement it yourself!
@@ -164,3 +170,17 @@ for others as well directly in `@ham-js/cat`.
 6. Optionally override `isOpen`, `open` and `close`.
 
 Note: If your driver allows writing strings, but the encoding is not UTF-8, you can override the string handling methods/properties `writeString` and `stringData`.
+
+## End-to-end tests
+
+There is a end-to-end test suite for transceivers which run against real
+physical devices, connected to your computer. Currently they are limited to
+simple devices which don't rely on the second device parameter.
+
+You can run the end-to-end test suite against your device by running
+
+```bash
+yarn test:e2e:transceiver
+```
+
+The test command is interactive and always runs on node using a serial port (not in the browser).
