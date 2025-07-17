@@ -56,7 +56,6 @@ const config: Config = {
         {to: "/docs/supported-devices", label: 'Supported Devices'},
         {to: '/docs/contributing', label: 'Contributing'},
         {to: '/docs/api', label: 'API'},
-        {to: '/docs/glossary', label: 'Glossary'},
         {
           href: 'https://github.com/ham-js/cat',
           label: 'GitHub',
