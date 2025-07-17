@@ -54,6 +54,7 @@ describe("end-to-end transceiver", <T extends string | Uint8Array,>() => {
       message: "Choose your transceiver",
       name: 'TransceiverClass',
       result() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (this as any).focused.value
       },
       type: 'select'
