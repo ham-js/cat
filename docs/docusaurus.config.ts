@@ -12,6 +12,7 @@ const config: Config = {
   baseUrl: '/cat',
   organizationName: 'ham-js',
   projectName: 'cat',
+  deploymentBranch: 'gh-pages',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   i18n: {

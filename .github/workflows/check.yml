@@ -16,7 +16,7 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn test --coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -30,7 +30,7 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn lint
   build:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn build --noEmit
   lint-docs:
     defaults:
@@ -53,7 +53,7 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn lint
   build-docs:
     defaults:
@@ -66,6 +66,6 @@ jobs:
         with:
           cache: yarn
           node-version: "^22"
-      - run: cd .. && yarn install && yarn build
-      - run: yarn install
+      - run: cd .. && yarn install --frozen-lockfile && yarn build
+      - run: yarn install --frozen-lockfile
       - run: yarn build
