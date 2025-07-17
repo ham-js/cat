@@ -1,20 +1,20 @@
 <div align="center">
-  <a href="https://github.com/ham-js/cat">
-    <img src="https://raw.githubusercontent.com/ham-js/cat/main/docs/static/img/logo.png" alt="Logo" width="128" height="128" />
-  </a>
+<a href="https://github.com/ham-js/cat">
+<img src="https://raw.githubusercontent.com/ham-js/cat/main/docs/static/img/logo.png" alt="Logo" width="128" height="128" />
+</a>
 
-  <h3 align="center">@ham-js/cat</h3>
-  <p align="center">
-    A JavaScript library for all things related to computer aided transceivers.
+<h3 align="center">@ham-js/cat</h3>
+<p align="center">
+A JavaScript library for all things related to computer aided transceivers.
 
-    <a href="https://ham-js.github.io/cat"><strong>Explore the docs »</strong></a>
-    <br />
-    <a href="https://ham-js.github.io/cat">View Demo</a>
-    &middot;
-    <a href="https://github.com/ham-js/cat/issues/new?template=bug_report.md">Report Bug</a>
-    &middot;
-    <a href="https://github.com/ham-js/cat/issues/new?template=feature_request.md">Request Feature</a>
-  </p>
+<a href="https://ham-js.github.io/cat/docs/getting-started"><strong>Explore the docs »</strong></a>
+<br />
+<a href="https://ham-js.github.io/cat/docs/playground">View Demo</a>
+&middot;
+<a href="https://github.com/ham-js/cat/issues/new?template=bug_report.md">Report Bug</a>
+&middot;
+<a href="https://github.com/ham-js/cat/issues/new?template=feature_request.md">Request Feature</a>
+</p>
 </div>
 
 ![NPM Version](https://img.shields.io/npm/v/@ham-js/cat)
@@ -24,7 +24,7 @@
 
 # Getting Started
 
-Check out the [docs](https://ham-js.github.io/cat/docs/getting-started!)
+Check out the [docs](https://ham-js.github.io/cat/docs/getting-started)!
 
 # Features
 
@@ -35,7 +35,7 @@ Check out the [docs](https://ham-js.github.io/cat/docs/getting-started!)
 
 # Contributing
 
-Please refer to [the contributing guide](https://ham-js.github.io/cat/contributing) in order to understand how the library works.
+Please refer to [the contributing guide](https://ham-js.github.io/cat/docs/contributing) in order to understand how the library works.
 
 # Contributors
 
