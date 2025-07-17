@@ -1,0 +1,11 @@
+.output {
+  background: var(--ifm-background-surface-color);
+  font-family: monospace;
+  height: 400px;
+  overflow: auto;
+  list-style-type: none;
+
+  .timestamp {
+    color: var(--ifm-color-secondary-darkest);
+  }
+}
