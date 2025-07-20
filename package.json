@@ -1,6 +1,6 @@
 {
   "name": "@ham-js/cat",
-  "version": "1.0.0",
+  "version": "0.0.1-beta",
   "description": "Computer aided transceiver from JS, works in the browser and node.",
   "main": "dist/index.js",
   "repository": "git@github.com:ham-js/cat.git",
