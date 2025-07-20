@@ -12,7 +12,8 @@ jobs:
           node-version: '^22'
           registry-url: 'https://registry.npmjs.org'
           scope: '@ham-js'
-      - run: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
       - run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
