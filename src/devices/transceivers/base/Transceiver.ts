@@ -215,4 +215,11 @@ export class Transceiver<DataType extends string | Uint8Array> extends Device<Da
    *  @param {number} parameter.code The desired DCS code
    */
   setDCSCode?(parameter: { code: number }): Promise<void>
+
+  /**
+   *  Set the TX state of the transceiver
+   *  @param {object} parameter The config of the command
+   *  @param {boolean} parameter.enabled If the TX is enabled or not
+   */
+  setTXEnabled?(parameter: { enabled: boolean }): Promise<void>
 }

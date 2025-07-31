@@ -1500,6 +1500,31 @@ describe("GenericTransceiver", () => {
     })
   })
 
+  describe("setTXEnabled", () => {
+    test("implements the command correctly", async () => {
+      await genericTransceiver.setTXEnabled({ enabled: true })
+      expect(driver.writeString).toHaveBeenCalledWith("TX1;")
+
+      await genericTransceiver.setTXEnabled({ enabled: false })
+      expect(driver.writeString).toHaveBeenCalledWith("TX0;")
+    })
+
+    test("specifies the schema correctly", () => {
+      expect(genericTransceiver.getCommandSchema('setTXEnabled')).toEqual(
+        expect.objectContaining({
+          properties: {
+            enabled: {
+              type: "boolean"
+            }
+          },
+          required: [
+            "enabled"
+          ]
+        })
+      )
+    })
+  })
+
   describe("parseInformationResponse", () => {
     test("it returns the information response", () => {
       expect(genericTransceiver["parseInformationResponse"]("ABC;")).toEqual(null)
