@@ -613,4 +613,11 @@ export class GenericTransceiver extends Transceiver<string> {
       duplex: duplex === "+" ? "+" : (duplex === "-" ? "-" : false)
     }
   }
+
+  @command({
+    enabled: z.boolean()
+  })
+  async setTXEnabled({ enabled }: { enabled: boolean }): Promise<void> {
+    await this.driver.writeString(`TX${enabled ? "1" : "0"};`)
+  }
 }

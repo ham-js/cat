@@ -51,6 +51,7 @@ export {
   CTCSSFrequency,
   CTCSSFrequencies,
   Direction,
+  FT891,
   ICOMGenericTransceiver,
   KenwoodCTCSSFrequencyToStringMap,
   KenwoodGenericTransceiver,
