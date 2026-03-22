@@ -17,7 +17,7 @@ import { CTCSSFrequency } from "./CTCSSFrequencies"
  * need to implement VFO get/set commands as that is what defines a
  * transceiver.
  */
-export class Transceiver<DataType extends string | Uint8Array> extends Device<DataType> {
+export class Transceiver<DataType extends string | Uint8Array = string | Uint8Array> extends Device<DataType> {
   static readonly deviceType = DeviceType.Transceiver
   static readonly deviceVendor: TransceiverVendor
 
