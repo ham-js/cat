@@ -1,7 +1,7 @@
 /**
- *  The different vendors of transceivers
+ *  The different manufacturers of transceivers
  */
-export enum TransceiverVendor {
+export enum TransceiverManufacturer {
   ICOM = "ICOM",
   Kenwood = "Kenwood",
   Yaesu = "Yaesu",

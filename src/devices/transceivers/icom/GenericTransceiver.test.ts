@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 
 import { GenericTransceiver } from "./GenericTransceiver";
 import { TestDriver } from "../../../test/utils/TestDriver";
-import { TransceiverVendor } from "../base/TransceiverVendor";
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer";
 import { DeviceType } from "../../base/DeviceType";
 import { VFOType } from "../base/VFOType";
 import { AGCAttack } from "../base/AGCAttack";
@@ -22,7 +22,7 @@ describe("GenericTransceiver", () => {
   })
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
-  test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.ICOM))
+  test("device manufacturer", () => expect(GenericTransceiver.deviceManufacturer).toBe(TransceiverManufacturer.ICOM))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
   describe("setVFOFrequency", () => {

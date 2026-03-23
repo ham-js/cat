@@ -12,7 +12,7 @@ This is a live document. Look at the source code ("Edit this page" at
 :::warning
 "Generic devices" are still based on a specific device. This means that your
 device might not work with a generic device while we are figuring out common
-ground between devices of the same vendor.
+ground between devices of the same manufacturer.
 
 You can help us by [reporting bugs or missing features](https://github.com/ham-js/cat/issues/new) on GitHub!
 :::
@@ -23,16 +23,16 @@ The following devices are supported:
   <thead>
     <tr>
       <td>Device Type</td>
-      <td>Device Vendor</td>
+      <td>Device Manufacturer</td>
       <td>Device Name</td>
     </tr>
   </thead>
   <tbody>
     {
-      Devices.map(({deviceName, deviceType, deviceVendor}) => (
+      Devices.map(({deviceName, deviceType, deviceManufacturer}) => (
         <tr>
           <td>{DeviceTypes[deviceType]}</td>
-          <td>{deviceVendor}</td>
+          <td>{deviceManufacturer}</td>
           <td>{deviceName}</td>
         </tr>
       ))

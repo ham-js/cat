@@ -1,6 +1,6 @@
 import { Device } from "../../base/Device"
 import { DeviceType } from "../../base/DeviceType"
-import { TransceiverVendor } from "./TransceiverVendor"
+import { TransceiverManufacturer } from "./TransceiverManufacturer"
 import { VFOType } from "./VFOType"
 import { merge, Observable, share, Subject, takeUntil } from "rxjs"
 import { TransceiverEvent, TransceiverEventType } from "./TransceiverEvent"
@@ -19,7 +19,7 @@ import { CTCSSFrequency } from "./CTCSSFrequencies"
  */
 export class Transceiver<DataType extends string | Uint8Array = string | Uint8Array> extends Device<DataType> {
   static readonly deviceType = DeviceType.Transceiver
-  static readonly deviceVendor: TransceiverVendor
+  static readonly deviceManufacturer: TransceiverManufacturer
 
   pollingInterval = 500
 

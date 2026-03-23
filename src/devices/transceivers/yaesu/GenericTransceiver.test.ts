@@ -3,7 +3,7 @@ import { DeviceType } from "../../base/DeviceType";
 import { DriverType } from "../../../drivers/base/DriverType";
 import { TestDriver } from "../../../test/utils/TestDriver";
 import { AGCAttack } from "../base/AGCAttack";
-import { TransceiverVendor } from "../base/TransceiverVendor";
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer";
 import { VFOType } from "../base/VFOType";
 import { GenericTransceiver } from "./GenericTransceiver";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
@@ -32,7 +32,7 @@ describe("GenericTransceiver", () => {
   })
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
-  test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Yaesu))
+  test("device manufacturer", () => expect(GenericTransceiver.deviceManufacturer).toBe(TransceiverManufacturer.Yaesu))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([DriverType.CP210xWebUSBDriver, ...DeviceAgnosticDriverTypes]))
 
   describe("events", () => {

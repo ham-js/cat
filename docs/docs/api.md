@@ -43,8 +43,8 @@ Transceiver is really in use.</p></dd>
 <dd><p>A generic direction enum, used e.g. for navigating device menus via commands.</p></dd>
 <dt><a href="#TransceiverEventType">TransceiverEventType</a></dt>
 <dd><p>The different types of transceiver events</p></dd>
-<dt><a href="#TransceiverVendor">TransceiverVendor</a></dt>
-<dd><p>The different vendors of transceivers</p></dd>
+<dt><a href="#TransceiverManufacturer">TransceiverManufacturer</a></dt>
+<dd><p>The different manufacturers of transceivers</p></dd>
 <dt><a href="#VFOType">VFOType</a></dt>
 <dd><p>The different VFO types of transceivers</p></dd>
 <dt><a href="#DriverType">DriverType</a></dt>
@@ -260,7 +260,7 @@ constructor.</p>
 <p>Convenience method to get the display name of the device.</p>
 
 **Kind**: static property of [<code>Device</code>](#Device)  
-**Returns**: <code>string</code> - <p>the concatenated device vendor and device name</p>  
+**Returns**: <code>string</code> - <p>the concatenated device manufacturer and device name</p>  
 <a name="Device.supportedDrivers"></a>
 
 ### Device.supportedDrivers ⇒ [<code>Array.&lt;DriverType&gt;</code>](#DriverType)
@@ -470,10 +470,10 @@ Transceiver is really in use.</p>
 <p>The different types of transceiver events</p>
 
 **Kind**: global variable  
-<a name="TransceiverVendor"></a>
+<a name="TransceiverManufacturer"></a>
 
-## TransceiverVendor
-<p>The different vendors of transceivers</p>
+## TransceiverManufacturer
+<p>The different manufacturers of transceivers</p>
 
 **Kind**: global variable  
 <a name="VFOType"></a>

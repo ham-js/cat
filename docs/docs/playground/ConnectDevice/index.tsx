@@ -5,7 +5,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { ChooseDriver, DriverFactory } from "./ChooseDriver"
 import { Form } from "../Form"
 
-const getDeviceKey = ({ deviceType, deviceName, deviceVendor }: typeof Device): string => deviceType + deviceVendor + deviceName
+const getDeviceKey = ({ deviceType, deviceName, deviceManufacturer }: typeof Device): string => deviceType + deviceManufacturer + deviceName
 
 interface Props {
   onChange: (device: Device | null) => void

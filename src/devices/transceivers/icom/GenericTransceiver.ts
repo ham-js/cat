@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { AGCAttack } from "../base/AGCAttack"
-import { TransceiverVendor } from "../base/TransceiverVendor"
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer"
 import { delimiterParser } from "../../base/parsers/delimiterParser"
 import { fromLittleEndianBCD } from "../../base/utils/fromLittleEndianBCD"
 import { padBytesEnd } from "../../base/utils/padBytesEnd"
@@ -42,7 +42,7 @@ const AGCAttackNumbers: Record<AGCAttack.Fast | AGCAttack.Mid | AGCAttack.Slow, 
 })
 export class GenericTransceiver extends Transceiver<Uint8Array> {
   static readonly deviceName: string = "Generic Transceiver"
-  static readonly deviceVendor = TransceiverVendor.ICOM
+  static readonly deviceManufacturer = TransceiverManufacturer.ICOM
 
   constructor(protected driver: Driver, protected parameter: { deviceAddress: number, controllerAddress: number }) {
     super(driver, parameter)

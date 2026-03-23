@@ -5,7 +5,7 @@ import { command } from "../../base/decorators/command";
 import { supportedDrivers } from "../../base/decorators/supportedDrivers";
 import { delimiterParser } from "../../base/parsers/delimiterParser";
 import { AGCAttack } from "../base/AGCAttack";
-import { TransceiverVendor } from "../base/TransceiverVendor";
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer";
 import { VFOType } from "../base/VFOType";
 import { TransceiverEventType } from "../base/TransceiverEvent";
 import { parseResponse } from "../../base/utils/parseResponse";
@@ -153,7 +153,7 @@ const DCSCodeToStringMap = invertMap(StringToDCSCodeMap)
 ])
 export class GenericTransceiver extends Transceiver<string> {
   static readonly deviceName: string = "Generic Transceiver"
-  static readonly deviceVendor = TransceiverVendor.Yaesu
+  static readonly deviceManufacturer = TransceiverManufacturer.Yaesu
 
   protected data = delimiterParser(this.driver.stringData(), ";")
 

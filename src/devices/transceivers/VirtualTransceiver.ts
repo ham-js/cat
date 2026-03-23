@@ -4,7 +4,7 @@ import { command } from "../base/decorators/command";
 import { supportedDrivers } from "../base/decorators/supportedDrivers";
 import { AGCAttack } from "./base/AGCAttack";
 import { Transceiver } from "./base/Transceiver";
-import { TransceiverVendor } from "./base/TransceiverVendor";
+import { TransceiverManufacturer } from "./base/TransceiverManufacturer";
 import { VFOType } from "./base/VFOType";
 
 interface State {
@@ -17,7 +17,7 @@ interface State {
 ])
 export class VirtualTransceiver extends Transceiver<never> {
   static deviceName = "Transceiver"
-  static deviceVendor = TransceiverVendor.Virtual
+  static deviceManufacturer = TransceiverManufacturer.Virtual
 
   state: State = {
     agcAttack: AGCAttack.Auto,

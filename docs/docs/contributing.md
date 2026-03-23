@@ -43,7 +43,7 @@ The interface for a driver is fairly simple:
 
 A device implements a rich interface for supporting common features of physical devices:
 
-* `deviceName`, `deviceType`, `deviceVendor` and `displayName` allow introspection at runtime and enable building rich configuration dialogs without hardcoding specific devices
+* `deviceName`, `deviceType`, `deviceManufacturer` and `displayName` allow introspection at runtime and enable building rich configuration dialogs without hardcoding specific devices
 * `events` allow subscribing to devices which emit events when their state changes (e.g. when you turn the VFO knob on a transceiver) - transceivers which don't support this implement a polling mechanism for basic changes
 * `deviceSchema` - Devices always receive **at least one parameter** when constructed: **The driver used to communicate with a real device**. Some devices need an additional **second parameter** which is **always an object**. This method allows you to query the **shape of that parameter as JSON schema** e.g. to build configuration dialogs. An example are ICOM devices which need to be configured with a device and controller address.
 * `driverLog` and `deviceLog` emit logging information when logging was enabled when `open` was called on the device
@@ -133,8 +133,8 @@ If you found that your device is not yet implemented in `@ham-js/cat` you can im
 1. If your device is a transceiver use the `Transceiver` class and start there,
 if not you might want to open a discussion on GitHub around **adding a new
 subclass for a different group of accessories** (such as antennas).
-2. Implement the `deviceVendor` and `deviceName` properties. If the vendor of
-the transceiver you are implementing is not part of the `DeviceVendor` enum,
+2. Implement the `deviceManufacturer` and `deviceName` properties. If the manufacturer of
+the transceiver you are implementing is not part of the `DeviceManufacturer` enum,
 simply add it.
 3. Describe the transceiver using `@supportedDrivers` (usually required) and `@device` (optional).
 4. Implement transceiver commands and don't forget to use the `@command` decorator.

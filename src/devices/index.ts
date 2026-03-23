@@ -2,7 +2,7 @@ import { Device } from "./base/Device"
 import { DeviceEvent } from "./base/DeviceEvent"
 import { DeviceLog } from "./base/DeviceLog"
 import { DeviceType } from "./base/DeviceType"
-import { DeviceVendor } from "./base/DeviceVendor"
+import { DeviceManufacturer } from "./base/DeviceManufacturer"
 import { Transceivers } from "./transceivers"
 
 export * from "./transceivers"
@@ -16,5 +16,5 @@ export {
   DeviceEvent,
   DeviceLog,
   DeviceType,
-  DeviceVendor
+  DeviceManufacturer
 }

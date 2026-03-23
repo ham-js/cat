@@ -7,7 +7,7 @@ import { VFOType } from "./VFOType"
 import { TransceiverEventType } from "./TransceiverEvent"
 
 describe("Transceiver", () => {
-  test("device vendor", () => expect(Transceiver.deviceType).toBe(DeviceType.Transceiver))
+  test("device manufacturer", () => expect(Transceiver.deviceType).toBe(DeviceType.Transceiver))
 
   describe("events", () => {
     test("it polls the VFOs", async () => {

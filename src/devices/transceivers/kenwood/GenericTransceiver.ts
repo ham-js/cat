@@ -3,7 +3,7 @@ import { command } from "../../base/decorators/command";
 import { supportedDrivers } from "../../base/decorators/supportedDrivers";
 import { AGCAttack } from "../base/AGCAttack";
 import { Transceiver } from "../base/Transceiver";
-import { TransceiverVendor } from "../base/TransceiverVendor";
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer";
 import { VFOType } from "../base/VFOType";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
 import { AntennaTunerState } from "../base/AntennaTunerState";
@@ -46,7 +46,7 @@ const AGCAttackNumbers: Record<AGCAttack.Off | AGCAttack.Slow | AGCAttack.Mid | 
 ])
 export class GenericTransceiver extends Transceiver<string> {
   static readonly deviceName: string = "Generic Transceiver"
-  static readonly deviceVendor = TransceiverVendor.Kenwood
+  static readonly deviceManufacturer = TransceiverManufacturer.Kenwood
 
   protected data = delimiterParser(this.driver.stringData(), ";")
 

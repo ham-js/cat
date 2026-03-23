@@ -6,7 +6,7 @@ import { GenericTransceiver as YaesuGenericTransceiver } from "./yaesu/GenericTr
 import { VirtualTransceiver } from "./VirtualTransceiver"
 import { Transceiver } from "./base/Transceiver"
 import { AGCAttack } from "./base/AGCAttack"
-import { TransceiverVendor } from "./base/TransceiverVendor"
+import { TransceiverManufacturer } from "./base/TransceiverManufacturer"
 import { VFOType } from "./base/VFOType"
 import { TransceiverEvent } from "./base/TransceiverEvent"
 import { Direction } from "./base/Direction"
@@ -58,7 +58,7 @@ export {
   KenwoodStringToCTCSSFrequencyMap,
   Transceiver,
   TransceiverEvent,
-  TransceiverVendor,
+  TransceiverManufacturer as TransceiverManufacturer,
   VFOType,
   VirtualTransceiver,
   YaesuGenericTransceiver,

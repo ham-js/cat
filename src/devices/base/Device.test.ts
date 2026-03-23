@@ -3,7 +3,7 @@ import { z } from "zod"
 import { Device } from "./Device"
 import { command } from "./decorators/command"
 import { TEST_DRIVER_TYPE, TestDriver } from "../../test/utils/TestDriver"
-import { TransceiverVendor } from "../transceivers"
+import { TransceiverManufacturer } from "../transceivers"
 import { DriverType } from "../../drivers"
 import { supportedDrivers } from "./decorators/supportedDrivers"
 
@@ -11,7 +11,7 @@ import { supportedDrivers } from "./decorators/supportedDrivers"
   TEST_DRIVER_TYPE
 ])
 class TestDevice extends Device {
-  static deviceVendor = TransceiverVendor.Kenwood
+  static deviceManufacturer = TransceiverManufacturer.Kenwood
   static deviceName = "Test"
 
   @command({

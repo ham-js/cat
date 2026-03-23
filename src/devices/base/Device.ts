@@ -3,7 +3,7 @@ import { JSONSchema7 } from "json-schema"
 
 import { firstValueFrom, map, filter, EMPTY, Observable, share, Subject, timeout } from "rxjs"
 import { DeviceType } from "./DeviceType"
-import { DeviceVendor } from "./DeviceVendor"
+import { DeviceManufacturer } from "./DeviceManufacturer"
 import { DriverType } from "../../drivers/base/DriverType"
 import { LogDriver } from "../../drivers/LogDriver"
 import { Driver } from "../../drivers/base/Driver"
@@ -17,7 +17,7 @@ import { DeviceEvent } from "./DeviceEvent"
 export class Device<DataType extends string | Uint8Array = never> {
   static readonly deviceName: string
   static readonly deviceType: DeviceType
-  static readonly deviceVendor: DeviceVendor
+  static readonly deviceManufacturer: DeviceManufacturer
 
   /**
    * The response timeout used by `readResponse`
@@ -51,10 +51,10 @@ export class Device<DataType extends string | Uint8Array = never> {
 
   /**
    * Convenience method to get the display name of the device.
-   * @returns {string} the concatenated device vendor and device name
+   * @returns {string} the concatenated device manufacturer and device name
    */
   static get displayName(): string {
-    return `${this.deviceVendor} ${this.deviceName}`
+    return `${this.deviceManufacturer} ${this.deviceName}`
   }
 
   /**

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, jest, test } from "@jest/globa
 import { GenericTransceiver } from "./GenericTransceiver";
 import { TestDriver } from "../../../test/utils/TestDriver";
 import { DeviceType } from "../../base/DeviceType";
-import { TransceiverVendor } from "../base/TransceiverVendor";
+import { TransceiverManufacturer } from "../base/TransceiverManufacturer";
 import { VFOType } from "../base/VFOType";
 import { AGCAttack } from "../base/AGCAttack";
 import { DeviceAgnosticDriverTypes } from "../../../drivers";
@@ -29,7 +29,7 @@ describe("GenericTransceiver", () => {
   })
 
   test("device type", () => expect(GenericTransceiver.deviceType).toBe(DeviceType.Transceiver))
-  test("device vendor", () => expect(GenericTransceiver.deviceVendor).toBe(TransceiverVendor.Kenwood))
+  test("device manufacturer", () => expect(GenericTransceiver.deviceManufacturer).toBe(TransceiverManufacturer.Kenwood))
   test("supportedDrivers", () => expect(GenericTransceiver.supportedDrivers).toEqual([...DeviceAgnosticDriverTypes]))
 
   describe("getTXBusy", () => {
